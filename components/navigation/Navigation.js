@@ -22,28 +22,6 @@ export default function Navigation() {
                         ease-in-out
                         hover:text-yellow-300
                         hover:bg-slate-800
-                        " to={base+"about"}>ABOUT</NavLink>
-                <NavLink className="
-                        font-light
-                        tracking-wide
-                        px-5
-                        py-3
-                        transition-colors 
-                        duration-300
-                        ease-in-out
-                        hover:text-yellow-300
-                        hover:bg-slate-800
-                        " to={base+"./datasets"}>DATASETS</NavLink>
-                <NavLink className="
-                        font-light
-                        tracking-wide
-                        px-5
-                        py-3
-                        transition-colors 
-                        duration-300
-                        ease-in-out
-                        hover:text-yellow-300
-                        hover:bg-slate-800
                         " to={base}>DASHBOARD</NavLink>
             </div>
         </nav>
