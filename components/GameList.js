@@ -1,16 +1,16 @@
 import { React } from 'react';
 import SmallButton from "./buttons/SmallButton"
 
-export default function GameList(props) {
+export default function GameList({gameList, game, setGame}) {
 
     const games = []
-    Object.keys(props.fileList).forEach(key => {
+    Object.keys(gameList).forEach(key => {
         games.push(
             <SmallButton
                 key={key}
-                selected={props.game === key}
+                selected={game === key}
                 label={key.replace('_', ' ')} 
-                action={() => props.setGame(key)}/>
+                action={() => setGame(key)}/>
         )
 
     })
