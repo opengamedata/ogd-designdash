@@ -1,6 +1,7 @@
 import { React } from 'react';
 import { thumbs, data_readmes, feature_readmes, game_links } from '../config'
 
+// TODO: make into an expandable element similar to filter, as an "info" icon next to selected game
 export default function InfoCard({ game }) {
 
     return (
