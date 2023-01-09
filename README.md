@@ -12,9 +12,7 @@ Under the `src` folder, we have the following structure:
 - `old_pages`  : Only exists to hold old code until refactoring is completed.
 - `view`       : Display code, mostly as renderable JSX, for displaying the model and controls to a user, as in MVC view.
   - `pages`    : Contains subfolders for individual app pages
-    - `About`  : View for the "About" tab.
     - `Dashboard` : View for the "Dashboard" tab.
-    - `Datasets`  : View for the "Datasets" tab.
 
 ## Getting Started with Create React App
 
