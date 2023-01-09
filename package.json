@@ -1,0 +1,65 @@
+{
+  "name": "ogd-react",
+  "version": "0.1.0",
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "author": "Yuheng Chen, Luke Swanson",
+  "license": "MIT",
+  "main": "src/index.js",
+  "homepage": "https://fielddaylab.wisc.edu/opengamedata-testing/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opengamedata/opengamedata-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/opengamedata/opengamedata-frontend/issues"
+  },
+  "private": true,
+  "dependencies": {
+    "@heroicons/react": "^1.0.5",
+    "@tailwindcss/forms": "^0.4.0",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "c3": "^0.7.20",
+    "d3": "^7.6.1",
+    "d3-selection-multi": "^1.0.1",
+    "prop-types": "^15.8.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.2.1",
+    "react-scripts": "5.0.0",
+    "sass": "^1.56.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": ">=16.11.1",
+    "autoprefixer": "^10.4.2",
+    "postcss": "^8.4.5",
+    "tailwindcss": "^3.2.4",
+    "typescript": ">=4.4.4"
+  }
+}
