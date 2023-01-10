@@ -19,15 +19,10 @@ jobs:
       run: sudo apt-get -q install nodejs
     - name: Connect VPN
       run: echo ${{ secrets.VPN_PASS }} | sudo openconnect --protocol=gp -u ${{ secrets.VPN_USER }} --passwd-on-stdin soe.vpn.wisc.edu &
-    # - name: Set up Config File
-    #   uses: ./.github/actions/OGD_config
-    #   with:
-    #     vpn_user: ${{secrets.VPN_USER}}
-    #     vpn_pass: ${{secrets.VPN_PASS}}
-    #     sql_host: ${{secrets.SQL_HOST}}
-    #     sql_user: ${{secrets.SQL_USER}}
-    #     sql_pass: ${{secrets.SQL_PASS}}
-    #     log_level: "DEBUG"
+    - name: Set up Config File
+      uses: ./.github/actions/DesignDash_config
+      with:
+        api_origin: "https://fieldday-web.wcer.wisc.edu/wsgi-bin/opengamedata.wsgi/"
     - name: Set up npm libraries and build
       run: |
         npm install

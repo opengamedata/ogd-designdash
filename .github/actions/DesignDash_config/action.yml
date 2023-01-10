@@ -1,0 +1,20 @@
+name: "Set up config file for a run"
+author: Luke Swanson
+description: "Given a set of appropriate inputs, this action prepares a config.js file for a data export."
+branding:
+  icon: 'clipboard'
+  color: 'blue'
+inputs:
+  api_origin:
+    description: "API path for hitting the ogd-server api"
+    required: true
+    default: 'api placeholder'
+runs:
+  using: "composite"
+  steps:
+    - name: Set up config
+      run: cp src/config.js.template src/config.js 
+      shell: bash
+    - name: Set SSH hostname
+      run: sed -i 's/api origin default/${{inputs.api_origin}}/g' config/config.py
+      shell: bash
