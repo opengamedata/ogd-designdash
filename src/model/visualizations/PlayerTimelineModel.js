@@ -9,6 +9,14 @@ export class PlayerTimelineModel {
    static RequiredExtractors() {
       return {
          "AQUALAB" : [
+            'JobsCompleted',
+            'SessionID',
+            'SessionDuration'
+         ],
+         "SHIPWRECKS" : [
+            'JobsCompleted',
+            'SessionID',
+            'SessionDuration'
          ]
       };
    }

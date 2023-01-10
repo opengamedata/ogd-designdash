@@ -109,32 +109,6 @@ export const API_ORIGIN = 'https://fieldday-web.wcer.wisc.edu/wsgi-bin/opengamed
 // list of games that can be visualized in the Dashboard (used in VisForm)
 export const vis_games = ['AQUALAB', 'SHIPWRECKS']
 
-// list of API call params for each game
-// export const requested_extractors = {
-//     'AQUALAB': [
-//         'TopJobCompletionDestinations',
-//         'ActiveJobs',
-//         'JobsAttempted',
-//         'TopJobSwitchDestinations',
-//         'PlayerSummary',
-//         'PopulationSummary',
-
-//         'JobsCompleted',
-//         'SessionID',
-//         'SessionDuration'
-//     ],
-//     'SHIPWRECKS': ['TopJobCompletionDestinations',
-//         'ActiveJobs',
-//         'JobsAttempted',
-//         'PlayerSummary',
-//         'PopulationSummary',
-
-//         'JobsCompleted',
-//         'SessionID',
-//         'SessionDuration'
-//     ],
-// }
-
 // when fetching timeline from the graph, what type of timeline each game supports (either 'player' or 'session')
 export const timeline_url_path = {
     'AQUALAB': 'player',

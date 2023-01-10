@@ -17,12 +17,20 @@ export class JobGraphModel {
    static RequiredExtractors() {
       return {
          "AQUALAB" : [
-            'TopJobCompletionDestinations',
-            'TopJobSwitchDestinations',
             'ActiveJobs',
             'JobsAttempted-avg-time-per-attempt',
             'JobsAttempted-job-name',
             'JobsAttempted-job-difficulties',
+            'TopJobCompletionDestinations',
+            'TopJobSwitchDestinations',
+            'PlayerSummary',
+            'PopulationSummary',
+         ],
+         "SHIPWRECKS" : [
+            'ActiveJobs',
+            'JobsAttempted',
+            'PlayerSummary',
+            'PopulationSummary'
          ]
       };
    }
