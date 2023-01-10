@@ -30,12 +30,10 @@ import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
  * @returns 
  */
 export default function VizContainer(props) {
-   // whether initial form completed
-   const [initialized, setInitialized] = useState(false); // in production: defalt to false 
+   // data loading vars
    const [loading, setLoading] = useState(false);
    const [viewData, setViewData] = useState(null);
    const [rawData, setRawData] = useState(null);
-   const [viewMode, setViewMode] = useState(ViewModes.POPULATION);
    const [filterOptions, setFilterOptions] = useState(new FilterOptions(0, null, null));
    const [selectionOptions, setSelectionOptions] = useState(
       new PopulationSelectionOptions(
@@ -45,6 +43,8 @@ export default function VizContainer(props) {
          new Date(), new Date()
       )
    );
+   // data view vars
+   const [viewMode, setViewMode] = useState(ViewModes.INITIAL);
    const [viewRenderer, setViewRenderer] = useState(() => {return (<InitialVisualizer/>)})
    const [viewModel, setViewModel] = useState(InitialVisualizerModel)
    const [viewAPI, setViewAPI] = useState(OGDPopulationAPI)
@@ -99,6 +99,7 @@ export default function VizContainer(props) {
             setViewModel(InitialVisualizerModel);
             setViewAPI(OGDSessionAPI);
          break;
+         case ViewModes.INITIAL:
          default:
             setViewRenderer(() => {
                return (
@@ -122,8 +123,6 @@ export default function VizContainer(props) {
         if (localData) {
          // if query found in storage, retreive JSON
             setRawData(JSON.parse(localData)) 
-            // store response to parent component state
-            setInitialized(true)
             // stop loading animation
             setLoading(false)
         }
@@ -139,7 +138,6 @@ export default function VizContainer(props) {
                // store data locally and in the state variable
                localStorage.setItem(selectionOptions.ToLocalStorageKey(), JSON.stringify(data.val))
                setRawData(data.val)
-               setInitialized(true)
                // stop loading animation
                setLoading(false)
             })
