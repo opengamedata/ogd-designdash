@@ -36,8 +36,6 @@ export default function VizContainer(props) {
    const [rawData, setRawData] = useState(null);
    const [viewMode, setViewMode] = useState(ViewModes.POPULATION);
    const [filterOptions, setFilterOptions] = useState(new FilterOptions(0, null, null));
-   const [vizRenderer, setVizRenderer] = useState(() => {return (<InitialVisualizer/>)})
-   const [vizModel, setVizModel] = useState()
    const [selectionOptions, setSelectionOptions] = useState(
       new PopulationSelectionOptions(
          vis_games[0],
@@ -46,6 +44,9 @@ export default function VizContainer(props) {
          new Date(), new Date()
       )
    );
+   const [vizRenderer, setVizRenderer] = useState(() => {return (<InitialVisualizer/>)})
+   const [vizModel, setVizModel] = useState(InitialVisualizerModel)
+   const [vizFetch, setVizFetch] = useState(OGDPopulationAPI.fetch)
 
    useEffect(() => {
       retrieveData();
@@ -57,10 +58,55 @@ export default function VizContainer(props) {
       setViewData(rawData);
    }, [filterOptions, rawData]);
 
+   useEffect(() => {
+      updateView();
+   }, [viewMode])
+
    const updateView = () => {
       switch (viewMode) {
          case ViewModes.POPULATION:
-
+            setVizRenderer(() => {
+               return (
+                  <JobVisualizer
+                     rawData={viewData}
+                     setViewMode={setViewMode}
+                  />
+               )
+            });
+            setVizModel(JobGraphModel);
+            setVizFetch(OGDPopulationAPI.fetch)
+         break;
+         case ViewModes.PLAYER:
+            setVizRenderer(() => {
+               return (
+                     <PlayerVisualizer
+                        rawData={viewData}
+                        setViewMode={setViewMode}
+                        selectedGame={selectionOptions.game_name}
+                     />
+                  )
+            });
+            setVizModel(PlayerTimelineModel);
+            setVizFetch(OGDPlayerAPI.fetch)
+         break;
+         case ViewModes.SESSION:
+            setVizRenderer(() => {
+               return (
+                     <div>No Viz for Session View</div>
+                  )
+            });
+            setVizModel(InitialVisualizerModel);
+            setVizFetch(() => { throw Error("Session view mode not yet supported!"); });
+         break;
+         default:
+            setVizRenderer(() => {
+               return (
+                     <InitialVisualizer/>
+                  )
+            });
+            setVizModel(InitialVisualizerModel);
+            setVizFetch(OGDPopulationAPI.fetch)
+         break;
       }
    }
 
@@ -83,23 +129,8 @@ export default function VizContainer(props) {
         // if not found in storage, request dataset
         else {
             console.log('fetching:', selectionOptions.ToLocalStorageKey())
-            const metrics = ["Foo", "Bar"]; // TODO: figure out how to get list of metrics to load.
 
-            let fetch_call;
-            switch (viewMode) {
-               case ViewModes.POPULATION:
-                  fetch_call = OGDPopulationAPI.fetch;
-                  break;
-               case ViewModes.PLAYER:
-                  fetch_call = OGDPlayerAPI.fetch;
-                  break;
-               case ViewModes.SESSION:
-                  throw Error("Session view mode not yet supported!");
-               default:
-                  throw Error(`Invalid view mode ${viewMode}!`)
-            }
-
-            fetch_call(selectionOptions, metrics)
+            vizFetch(selectionOptions, vizModel.RequiredExtractors())
             .then(res => res.json())
             .then(data => {
                if (data.status !== 'SUCCESS') throw data.msg
@@ -117,34 +148,6 @@ export default function VizContainer(props) {
                alert(error)
             })
         }
-   }
-
-   const renderEmptyContainer = () => {
-      return (
-         
-      )
-   }
-
-   const renderFilledContainer = () => {
-      <>
-         {/* TODO: figure out what the height and width ought to be */}
-         <LoadingBlur loading={loading} height={10} width={10}/>
-         {viewData &&
-            {
-               'JobGraph':
-                  <JobVisualizer
-                     rawData={viewData}
-                     setViewMode={setViewMode}
-                  />,
-               'PlayerTimeline':
-                  <PlayerVisualizer
-                     rawData={viewData}
-                     setViewMode={setViewMode}
-                     selectedGame={selectionOptions.game_name}
-                  />
-            }[viewMode]
-         }
-      </>
    }
 
    return (
@@ -167,8 +170,9 @@ export default function VizContainer(props) {
          setContainerSelection={setSelectionOptions}
          containerFilter={filterOptions}
          setContainerFilter={setFilterOptions}
-         ></DataFilter>
-      { initialized ? renderFilledContainer() : renderEmptyContainer() }
+      />
+      <LoadingBlur loading={loading} height={10} width={10}/>
+      { vizRenderer() }
    </div>
 
    )
