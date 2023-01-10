@@ -1,0 +1,42 @@
+# Workflow to build and deploy designer dashboard to server.
+name: OpenGameData-DesignDash CI
+on:
+  push:
+    paths:
+    - 'src/**'
+    - '.github/workflows/DesignDash_CI.yml'
+    - '.github/actions/**'
+  workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
+
+jobs:
+  test_export:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get OpenConnect and node installed
+      run: |
+        sudo apt-get -q update && sudo apt-get -q install openconnect
+        sudo apt-get -q install node=16.14.0
+    - name: Connect VPN
+      run: echo ${{ secrets.VPN_PASS }} | sudo openconnect --protocol=gp -u ${{ secrets.VPN_USER }} --passwd-on-stdin soe.vpn.wisc.edu &
+    # - name: Set up Config File
+    #   uses: ./.github/actions/OGD_config
+    #   with:
+    #     vpn_user: ${{secrets.VPN_USER}}
+    #     vpn_pass: ${{secrets.VPN_PASS}}
+    #     sql_host: ${{secrets.SQL_HOST}}
+    #     sql_user: ${{secrets.SQL_USER}}
+    #     sql_pass: ${{secrets.SQL_PASS}}
+    #     log_level: "DEBUG"
+    - name: Set up npm libraries and build
+      run: |
+        npm install
+        npm run build
+      shell: bash
+    # - name: Deploy to CI folder on server
+    #   run: make deploy-test
+    #   shell: bash
+    - name: Upload logs as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./*.log
