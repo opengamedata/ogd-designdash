@@ -16,5 +16,5 @@ runs:
       run: cp src/config.js.template src/config.js 
       shell: bash
     - name: Set SSH hostname
-      run: sed -i --expression 's@api_origin_default@${{inputs.api_origin}}@g' src/config.py
+      run: sed -i 's@api_origin_default@${{inputs.api_origin}}@g' src/config.js
       shell: bash
