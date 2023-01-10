@@ -1,24 +1,24 @@
 // global imports
 import { React, useState, useEffect, useReducer } from 'react';
 // local imports
-import LargeButton from '../../../components/buttons/LargeButton';
-import { vis_games } from '../../../config';
-import LoadingBlur from '../../../components/LoadingBlur';
+import { vis_games } from '../config';
+import LargeButton from '../components/buttons/LargeButton';
+import LoadingBlur from '../components/LoadingBlur';
 
 // model imports
-import { OGDPlayerAPI } from '../../../model/apis/OGDPlayerAPI';
-import { OGDPopulationAPI } from '../../../model/apis/OGDPopulationAPI';
+import { ViewModes } from '../model/ViewModes';
+import { OGDPlayerAPI } from '../model/apis/OGDPlayerAPI';
+import { OGDPopulationAPI } from '../model/apis/OGDPopulationAPI';
 
 // controller imports
-import { ViewModes } from '../../../model/ViewModes';
-import { PopulationSelectionOptions } from '../../../controller/SelectionOptions';
-import { FilterOptions } from '../../../controller/FilterOptions';
+import { PopulationSelectionOptions } from '../controller/SelectionOptions';
+import { FilterOptions } from '../controller/FilterOptions';
 
 // view imports
-import DataFilter from '../../DataFilter/DataFilter';
-import InitialVisualizer from './InitialVisualizer';
-import JobVisualizer from '../../visualizations/JobGraph/JobVisualizer';
-import PlayerVisualizer from '../../visualizations/PlayerTimeline/PlayerVisualizer';
+import DataFilter from './DataFilter/DataFilter';
+import InitialVisualizer from './visualizations/InitialVisualizer';
+import JobVisualizer from './visualizations/JobGraph/JobVisualizer';
+import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
 
 /**
  * 
