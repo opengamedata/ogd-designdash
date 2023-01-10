@@ -10,8 +10,9 @@ import { ViewModes } from '../model/ViewModes';
 import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
 import { JobGraphModel } from '../model/visualizations/JobGraphModel';
 import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
-import { OGDPlayerAPI } from '../model/apis/OGDPlayerAPI';
 import { OGDPopulationAPI } from '../model/apis/OGDPopulationAPI';
+import { OGDPlayerAPI } from '../model/apis/OGDPlayerAPI';
+import { OGDSessionAPI } from '../model/apis/OGDSessionAPI';
 
 // controller imports
 import { PopulationSelectionOptions } from '../controller/SelectionOptions';
@@ -44,9 +45,9 @@ export default function VizContainer(props) {
          new Date(), new Date()
       )
    );
-   const [vizRenderer, setVizRenderer] = useState(() => {return (<InitialVisualizer/>)})
-   const [vizModel, setVizModel] = useState(InitialVisualizerModel)
-   const [vizFetch, setVizFetch] = useState(OGDPopulationAPI.fetch)
+   const [viewRenderer, setViewRenderer] = useState(() => {return (<InitialVisualizer/>)})
+   const [viewModel, setViewModel] = useState(InitialVisualizerModel)
+   const [viewAPI, setViewAPI] = useState(OGDPopulationAPI)
 
    useEffect(() => {
       retrieveData();
@@ -65,7 +66,7 @@ export default function VizContainer(props) {
    const updateView = () => {
       switch (viewMode) {
          case ViewModes.POPULATION:
-            setVizRenderer(() => {
+            setViewRenderer(() => {
                return (
                   <JobVisualizer
                      rawData={viewData}
@@ -73,11 +74,11 @@ export default function VizContainer(props) {
                   />
                )
             });
-            setVizModel(JobGraphModel);
-            setVizFetch(OGDPopulationAPI.fetch)
+            setViewModel(JobGraphModel);
+            setViewAPI(OGDPopulationAPI)
          break;
          case ViewModes.PLAYER:
-            setVizRenderer(() => {
+            setViewRenderer(() => {
                return (
                      <PlayerVisualizer
                         rawData={viewData}
@@ -86,26 +87,26 @@ export default function VizContainer(props) {
                      />
                   )
             });
-            setVizModel(PlayerTimelineModel);
-            setVizFetch(OGDPlayerAPI.fetch)
+            setViewModel(PlayerTimelineModel);
+            setViewAPI(OGDPlayerAPI)
          break;
          case ViewModes.SESSION:
-            setVizRenderer(() => {
+            setViewRenderer(() => {
                return (
                      <div>No Viz for Session View</div>
                   )
             });
-            setVizModel(InitialVisualizerModel);
-            setVizFetch(() => { throw Error("Session view mode not yet supported!"); });
+            setViewModel(InitialVisualizerModel);
+            setViewAPI(OGDSessionAPI);
          break;
          default:
-            setVizRenderer(() => {
+            setViewRenderer(() => {
                return (
                      <InitialVisualizer/>
                   )
             });
-            setVizModel(InitialVisualizerModel);
-            setVizFetch(OGDPopulationAPI.fetch)
+            setViewModel(InitialVisualizerModel);
+            setViewAPI(OGDPopulationAPI)
          break;
       }
    }
@@ -130,7 +131,7 @@ export default function VizContainer(props) {
         else {
             console.log('fetching:', selectionOptions.ToLocalStorageKey())
 
-            vizFetch(selectionOptions, vizModel.RequiredExtractors())
+            viewAPI.fetch(selectionOptions, viewModel.RequiredExtractors())
             .then(res => res.json())
             .then(data => {
                if (data.status !== 'SUCCESS') throw data.msg
@@ -172,7 +173,7 @@ export default function VizContainer(props) {
          setContainerFilter={setFilterOptions}
       />
       <LoadingBlur loading={loading} height={10} width={10}/>
-      { vizRenderer() }
+      { viewRenderer() }
    </div>
 
    )
