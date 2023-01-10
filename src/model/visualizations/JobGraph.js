@@ -1,4 +1,4 @@
-export class JobGraph {
+export class JobGraphModel {
    /**
     * 
     * @param {Array} nodes 
@@ -36,10 +36,10 @@ export class JobGraph {
         }
 
         // nodes
-        let nodeBuckets = JobGraph.genNodeBuckets(rawData, meta);
+        let nodeBuckets = JobGraphModel.genNodeBuckets(rawData, meta);
 
         // links
-        let l = JobGraph.genLinks(rawData, linkMode)
+        let l = JobGraphModel.genLinks(rawData, linkMode)
 
       // filter out nodes w/ no edges
       const relevantNodes = Object.values(nodeBuckets).filter(
@@ -55,7 +55,7 @@ export class JobGraph {
 
       // console.log('relevantNodes', relevantNodes)
       // console.log('links', l)
-      return new JobGraph(relevantNodes, l, meta);
+      return new JobGraphModel(relevantNodes, l, meta);
    }
 
    static genNodeBuckets(rawData, meta) {
