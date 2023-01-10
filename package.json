@@ -8,10 +8,10 @@
   "homepage": "https://fielddaylab.wisc.edu/opengamedata-testing/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/opengamedata/opengamedata-frontend.git"
+    "url": "git+https://github.com/opengamedata/opengamedata-designdash.git"
   },
   "bugs": {
-    "url": "https://github.com/opengamedata/opengamedata-frontend/issues"
+    "url": "https://github.com/opengamedata/opengamedata-designdash/issues"
   },
   "private": true,
   "dependencies": {
@@ -57,6 +57,8 @@
   },
   "devDependencies": {
     "@types/node": ">=16.11.1",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
     "tailwindcss": "^3.2.4",
