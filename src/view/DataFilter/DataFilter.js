@@ -1,5 +1,5 @@
 // global imports
-import { React, alert } from 'react';
+import { React } from 'react';
 import { AdjustmentsIcon, XIcon, CogIcon } from '@heroicons/react/solid';
 import { PropTypes } from 'prop-types';
 import { useEffect, useState } from 'react';
