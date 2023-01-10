@@ -1,6 +1,5 @@
 // global imports
-import { React } from 'react';
-import { useEffect, useState } from 'react'
+import React from 'react';
 // local imports
 import { vis_games } from '../../config';
 import { ViewModes } from "../../model/ViewModes"

@@ -1,7 +1,6 @@
 // global imports
-import { React } from 'react';
+import React from 'react';
 import { AdjustmentsIcon, XIcon, CogIcon } from '@heroicons/react/solid';
-import { PropTypes } from 'prop-types';
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
@@ -206,9 +205,4 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
 
       </div>
    )
-}
-
-DataFilter.propTypes = {
-   loading: PropTypes.bool,
-
 }

@@ -1,5 +1,5 @@
 // global imports
-import { React } from 'react';
+import React from 'react';
 // local imports
 import { ViewModes } from "../../model/ViewModes"
 

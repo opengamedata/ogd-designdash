@@ -1,5 +1,5 @@
 // global imports
-import { React, useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 // local imports
 import { vis_games } from '../config';
 import LargeButton from '../components/buttons/LargeButton';
