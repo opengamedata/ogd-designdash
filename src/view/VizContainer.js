@@ -7,6 +7,9 @@ import LoadingBlur from '../components/LoadingBlur';
 
 // model imports
 import { ViewModes } from '../model/ViewModes';
+import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
+import { JobGraphModel } from '../model/visualizations/JobGraphModel';
+import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
 import { OGDPlayerAPI } from '../model/apis/OGDPlayerAPI';
 import { OGDPopulationAPI } from '../model/apis/OGDPopulationAPI';
 
@@ -33,6 +36,8 @@ export default function VizContainer(props) {
    const [rawData, setRawData] = useState(null);
    const [viewMode, setViewMode] = useState(ViewModes.POPULATION);
    const [filterOptions, setFilterOptions] = useState(new FilterOptions(0, null, null));
+   const [vizRenderer, setVizRenderer] = useState(() => {return (<InitialVisualizer/>)})
+   const [vizModel, setVizModel] = useState()
    const [selectionOptions, setSelectionOptions] = useState(
       new PopulationSelectionOptions(
          vis_games[0],
@@ -46,11 +51,18 @@ export default function VizContainer(props) {
       retrieveData();
    }, [selectionOptions])
 
-   // TODO: Whenever filtering or underlying data change, refresh the view data.
+   // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    useEffect(() => {
       console.warn("Filtering of data on client side is not yet implemented!");
       setViewData(rawData);
    }, [filterOptions, rawData]);
+
+   const updateView = () => {
+      switch (viewMode) {
+         case ViewModes.POPULATION:
+
+      }
+   }
 
    const retrieveData = () => {
         // flush current dataset and start loading animation
@@ -109,7 +121,7 @@ export default function VizContainer(props) {
 
    const renderEmptyContainer = () => {
       return (
-         <InitialVisualizer/>
+         
       )
    }
 
