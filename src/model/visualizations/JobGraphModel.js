@@ -11,6 +11,9 @@ export class JobGraphModel {
       this.meta  = meta
    }
 
+   /**
+    * @returns {Object.<string, string[]>}
+    */
    static RequiredExtractors() {
       return {
          "AQUALAB" : [

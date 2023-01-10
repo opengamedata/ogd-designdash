@@ -3,6 +3,9 @@ export class InitialVisualizerModel {
       this.val = 0;
    }
 
+   /**
+    * @returns {Object.<string, string[]>}
+    */
    static RequiredExtractors() {
       return {
          "AQUALAB" : [
