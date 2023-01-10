@@ -1,4 +1,4 @@
-import { React } from 'react'
+import React from 'react'
 import { Routes, Route } from "react-router-dom";
 import './App.scss';
 // import './assets/scss/styles_ver1.scss';
