@@ -7,7 +7,7 @@ import Dashboard from './view/Dashboard';
 import NotFound from "./view/NotFound";
 
 function App() {
-  let base_path = "/opengamedata-testing/";
+  let base_path = "/opengamedata-testing2/"; // TODO: this goes in a config or something
   return (
     <>
       <Navigation />

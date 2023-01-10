@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from "react-router-dom";
 
 export default function Navigation() {
-    let base = 'opengamedata-testing/'
+    let base = 'opengamedata-testing2/' // TODO: this goes in a config or something
 
     return (
         <nav className="w-screen flex justify-between fixed top-0 bg-white">
