@@ -4,14 +4,14 @@ import { React, useEffect, useState } from "react";
 // local imports
 import { useD3 } from "../../../controller/hooks/useD3";
 import { ViewModes } from "../../../model/ViewModes";
-import { JobGraph } from "../../../model/visualizations/JobGraph";
+import { JobGraphModel } from "../../../model/visualizations/JobGraphModel";
 import PlayersList from "./PlayersList";
 import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
 
 /**
  * @callback JobGraphSetter
- * @param {JobGraph} newVal
+ * @param {JobGraphModel} newVal
  */
 
 /**
@@ -20,14 +20,14 @@ import JobGraphLegend from "./JobGraphLegend";
  * @returns 
  */
 export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
-    /** @type {[JobGraph, JobGraphSetter]} data */
-    const [data, setData] = useState(new JobGraph())
+    /** @type {[JobGraphModel, JobGraphSetter]} data */
+    const [data, setData] = useState(new JobGraphModel())
     const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
     const [playersList, setPlayerList] = useState()
     const [playerHighlight, setHighlight] = useState()
 
     useEffect(() => {
-        setData(JobGraph.fromRawData(rawData, linkMode))
+        setData(JobGraphModel.fromRawData(rawData, linkMode))
         setPlayerList(null)
     }, [rawData, linkMode])
 
@@ -153,7 +153,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                 <fieldset className="block">
                     <legend >Show paths of players who</legend>
                     <div className="mt-2">
-                        {JobGraph.RequiredExtractors()[selectedGame].includes('TopJobCompletionDestinations') &&
+                        {JobGraphModel.RequiredExtractors()[selectedGame].includes('TopJobCompletionDestinations') &&
                             <div>
                                 <label className="inline-flex items-center">
                                     <input
@@ -167,7 +167,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                                 </label>
                             </div>
                         }
-                        {JobGraph.RequiredExtractors()[selectedGame].includes('TopJobSwitchDestinations') &&
+                        {JobGraphModel.RequiredExtractors()[selectedGame].includes('TopJobSwitchDestinations') &&
                             <div>
                                 <label className="inline-flex items-center">
                                     <input
@@ -181,7 +181,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                                 </label>
                             </div>
                         }
-                        {JobGraph.RequiredExtractors()[selectedGame].includes('ActiveJobs') &&
+                        {JobGraphModel.RequiredExtractors()[selectedGame].includes('ActiveJobs') &&
                             <div>
                                 <label className="inline-flex items-center">
                                     <input
