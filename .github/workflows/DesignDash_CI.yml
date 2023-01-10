@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: Get OpenConnect and node installed
-      run: |
-        sudo apt-get -q update && sudo apt-get -q install openconnect
-        sudo apt-get -q install node=16.14.0
+    - name: Get OpenConnect installed
+      run: sudo apt-get -q update && sudo apt-get -q install openconnect
+    - name: Get Node installed
+      run: sudo apt-get -q install nodejs=16.14.0
     - name: Connect VPN
       run: echo ${{ secrets.VPN_PASS }} | sudo openconnect --protocol=gp -u ${{ secrets.VPN_USER }} --passwd-on-stdin soe.vpn.wisc.edu &
     # - name: Set up Config File
