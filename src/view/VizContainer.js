@@ -46,7 +46,7 @@ export default function VizContainer(props) {
    // data view vars
    const [viewMode, setViewMode] = useState(ViewModes.INITIAL);
    const [viewRenderer, setViewRenderer] = useState(() => {return (<InitialVisualizer/>)})
-   const [viewModel, setViewModel] = useState(InitialVisualizerModel)
+   const [viewFeatures, setViewFeatures] = useState(() => { return InitialVisualizerModel.RequiredExtractors() })
    const [viewAPI, setViewAPI] = useState(OGDPopulationAPI)
 
    useEffect(() => {
@@ -74,7 +74,7 @@ export default function VizContainer(props) {
                   />
                )
             });
-            setViewModel(JobGraphModel);
+            setViewFeatures(() => { return JobGraphModel.RequiredExtractors() });
             setViewAPI(OGDPopulationAPI)
          break;
          case ViewModes.PLAYER:
@@ -87,16 +87,18 @@ export default function VizContainer(props) {
                      />
                   )
             });
-            setViewModel(PlayerTimelineModel);
+            setViewFeatures(() => { return PlayerTimelineModel.RequiredExtractors() });
             setViewAPI(OGDPlayerAPI)
          break;
          case ViewModes.SESSION:
+            // TODO: put in something here, maybe it's even the timeline...?
             setViewRenderer(() => {
                return (
                      <div>No Viz for Session View</div>
                   )
             });
-            setViewModel(InitialVisualizerModel);
+            // TODO: once there's something above, need corresponding class here.
+            setViewFeatures(() => { return InitialVisualizerModel.RequiredExtractors() });
             setViewAPI(OGDSessionAPI);
          break;
          case ViewModes.INITIAL:
@@ -106,7 +108,7 @@ export default function VizContainer(props) {
                      <InitialVisualizer/>
                   )
             });
-            setViewModel(InitialVisualizerModel);
+            setViewFeatures(() => { return InitialVisualizerModel.RequiredExtractors() });
             setViewAPI(OGDPopulationAPI)
          break;
       }
@@ -130,7 +132,7 @@ export default function VizContainer(props) {
         else {
             console.log('fetching:', selectionOptions.ToLocalStorageKey())
 
-            viewAPI.fetch(selectionOptions, viewModel.RequiredExtractors())
+            viewAPI.fetch(selectionOptions, viewFeatures())
             .then(res => res.json())
             .then(data => {
                if (data.status !== 'SUCCESS') throw data.msg
