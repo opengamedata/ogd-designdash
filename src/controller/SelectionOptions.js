@@ -1,6 +1,6 @@
 import { vis_games } from '../config';
 
-class SelectionOptions {
+export class SelectionOptions {
    /**
     * @param {string} game
     * @param {string?} min_app_version
