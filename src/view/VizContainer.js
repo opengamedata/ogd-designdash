@@ -10,9 +10,9 @@ import { ViewModes } from '../model/ViewModes';
 import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
 import { JobGraphModel } from '../model/visualizations/JobGraphModel';
 import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
-import { OGDPopulationAPI } from '../model/apis/OGDPopulationAPI';
-import { OGDPlayerAPI } from '../model/apis/OGDPlayerAPI';
-import { OGDSessionAPI } from '../model/apis/OGDSessionAPI';
+import { OGDPopulationAPI } from '../controller/apis/OGDPopulationAPI';
+import { OGDPlayerAPI } from '../controller/apis/OGDPlayerAPI';
+import { OGDSessionAPI } from '../controller/apis/OGDSessionAPI';
 
 // controller imports
 import { PopulationSelectionOptions } from '../controller/SelectionOptions';
