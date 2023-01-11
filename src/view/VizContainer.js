@@ -10,19 +10,20 @@ import { ViewModes } from '../model/ViewModes';
 import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
 import { JobGraphModel } from '../model/visualizations/JobGraphModel';
 import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
-import { OGDPopulationAPI } from '../controller/apis/OGDPopulationAPI';
-import { OGDPlayerAPI } from '../controller/apis/OGDPlayerAPI';
-import { OGDSessionAPI } from '../controller/apis/OGDSessionAPI';
 
 // controller imports
 import { PopulationSelectionOptions } from '../controller/SelectionOptions';
 import { FilterOptions } from '../controller/FilterOptions';
+import { OGDPopulationAPI } from '../controller/apis/OGDPopulationAPI';
+import { OGDPlayerAPI } from '../controller/apis/OGDPlayerAPI';
+import { OGDSessionAPI } from '../controller/apis/OGDSessionAPI';
 
 // view imports
 import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobVisualizer from './visualizations/JobGraph/JobVisualizer';
 import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
+import { OGDAPI } from '../controller/apis/OGDAPI';
 
 /**
  * 
@@ -47,7 +48,6 @@ export default function VizContainer(props) {
    const [viewMode, setViewMode] = useState(ViewModes.INITIAL);
    const [viewRenderer, setViewRenderer] = useState(() => {return (<InitialVisualizer/>)})
    const [viewFeatures, setViewFeatures] = useState(() => { return InitialVisualizerModel.RequiredExtractors() })
-   const [viewAPI, setViewAPI] = useState(OGDPopulationAPI)
 
    useEffect(() => {
       retrieveData();
@@ -75,7 +75,6 @@ export default function VizContainer(props) {
                )
             });
             setViewFeatures(() => { return JobGraphModel.RequiredExtractors() });
-            setViewAPI(OGDPopulationAPI)
          break;
          case ViewModes.PLAYER:
             setViewRenderer(() => {
@@ -88,7 +87,6 @@ export default function VizContainer(props) {
                   )
             });
             setViewFeatures(() => { return PlayerTimelineModel.RequiredExtractors() });
-            setViewAPI(OGDPlayerAPI)
          break;
          case ViewModes.SESSION:
             // TODO: put in something here, maybe it's even the timeline...?
@@ -99,7 +97,6 @@ export default function VizContainer(props) {
             });
             // TODO: once there's something above, need corresponding class here.
             setViewFeatures(() => { return InitialVisualizerModel.RequiredExtractors() });
-            setViewAPI(OGDSessionAPI);
          break;
          case ViewModes.INITIAL:
          default:
@@ -109,7 +106,6 @@ export default function VizContainer(props) {
                   )
             });
             setViewFeatures(() => { return InitialVisualizerModel.RequiredExtractors() });
-            setViewAPI(OGDPopulationAPI)
          break;
       }
    }
@@ -132,7 +128,7 @@ export default function VizContainer(props) {
         else {
             console.log('fetching:', selectionOptions.ToLocalStorageKey())
 
-            viewAPI.fetch(selectionOptions, viewFeatures())
+            OGDAPI.fetch(viewMode, selectionOptions, viewFeatures())
             .then(res => res.json())
             .then(data => {
                if (data.status !== 'SUCCESS') throw data.msg
