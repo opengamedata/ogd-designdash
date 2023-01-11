@@ -1,15 +1,21 @@
 import { API_ORIGIN } from '../../config';
-import { PlayerSelectionOptions } from '../../controller/SelectionOptions';
+import OGDAPIInterface from './OGDAPIInterface';
+import { SelectionOptions, PlayerSelectionOptions } from '../../controller/SelectionOptions';
 
-export class OGDPlayerAPI {
+export class OGDPlayerAPI extends OGDAPIInterface {
    /**
-    * @param {PlayerSelectionOptions} selection_options 
+    * @param {SelectionOptions} selection_options 
     * @param {string[]} metrics 
     * @returns {Promise<Response>}
     */
    static fetch(selection_options, metrics) {
-      const path = OGDPlayerAPI.getURLPath(selection_options, metrics)
-      return       fetch(path)
+      if (selection_options instanceof PlayerSelectionOptions) {
+         const path = OGDPlayerAPI.getURLPath(selection_options, metrics)
+         return       fetch(path)
+      }
+      else {
+         throw new TypeError("Sent wrong type of selection options to Player API!");
+      }
    }
 
    /**

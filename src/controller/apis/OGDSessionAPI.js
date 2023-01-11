@@ -1,15 +1,22 @@
 import { API_ORIGIN } from '../../config';
-import { SessionSelectionOptions } from '../../controller/SelectionOptions';
+import OGDAPIInterface from './OGDAPIInterface';
+import { SelectionOptions, SessionSelectionOptions } from '../../controller/SelectionOptions';
 
-export class OGDSessionAPI {
+export class OGDSessionAPI extends OGDAPIInterface {
    /**
-    * @param {SessionSelectionOptions} selection_options 
+    * @param {SelectionOptions} selection_options 
     * @param {string[]} metrics 
     * @returns {Promise<Response>}
+    * @throws {Exception}
     */
    static fetch(selection_options, metrics) {
-      const path = OGDSessionAPI.getURLPath(selection_options, metrics)
-      return       fetch(path)
+      if (selection_options instanceof SessionSelectionOptions) {
+         const path = OGDSessionAPI.getURLPath(selection_options, metrics)
+         return       fetch(path)
+      }
+      else {
+         throw new TypeError("Sent wrong type of selection options to Session API!");
+      }
    }
 
    /**
