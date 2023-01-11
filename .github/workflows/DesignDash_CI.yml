@@ -25,7 +25,7 @@ jobs:
     - name: Set up Config File
       uses: ./.github/actions/DesignDash_config
       with:
-        api_origin: "https://fieldday-web.wcer.wisc.edu/wsgi-bin/opengamedata.wsgi/"
+        api_origin: ${{ secrets.OGD_API_ORIGIN }}
     - name: Set up npm libraries and build
       run: |
         npm install
@@ -34,6 +34,15 @@ jobs:
     # - name: Deploy to CI folder on server
     #   run: make deploy-test
     #   shell: bash
+    - name: Upload to web server via rsync
+      uses: burnett01/rsync-deployments@5.2
+      with:
+        switches: -vrc --exclude-from rsync-exclude
+        path: opengamedata-ci/*
+        remote_path: ${{ secrets.DESIGN_DASH_PATH }}
+        remote_host: ${{ secrets.DESIGN_DASH_HOST }}
+        remote_user: ${{ secrets.DESIGN_DASH_USER }}
+        remote_key:  ${{ secrets.DESIGN_DASH_KEY  }}
     - name: Upload logs as artifacts
       uses: actions/upload-artifact@v2
       with:
