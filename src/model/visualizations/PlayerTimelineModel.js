@@ -4,13 +4,14 @@ import VisualizerModel from "./VisualizerModel";
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  */
 
-export class PlayerTimelineModel {
+export class PlayerTimelineModel extends VisualizerModel {
    constructor() {
+      super();
       this.val = 0;
    }
 
    /**
-    * @returns {Object.<string, string[]>}
+    * @returns {FeaturesMap}
     */
    static RequiredExtractors() {
       return {
