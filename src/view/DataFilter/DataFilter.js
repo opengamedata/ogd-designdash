@@ -1,6 +1,6 @@
 // global imports
 import React from 'react';
-import { AdjustmentsVerticalIcon, XIcon, CogIcon } from '@heroicons/react/solid';
+import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
@@ -162,7 +162,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       if (adjustMode) {
          if (!loading) {
             // If in adjustment mode, and not currently loading, then we'll have expanded view so show an X.
-            return (<XIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(false)} />);
+            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(false)} />);
          }
          else {
             return (<></>);
@@ -194,7 +194,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
             updateFunctions={setFilterVars}></FilterOptionsView>
          <div className='flex space-x-2 items-center'>
             {loading ?
-               <><CogIcon className='animate-spin h-8 w-8' /> &nbsp;Please wait...</>
+               <><Cog6ToothIcon className='animate-spin h-8 w-8' /> &nbsp;Please wait...</>
                :
                <LargeButton label='visualize' onClick={adjust} selected="false"/>
             }
