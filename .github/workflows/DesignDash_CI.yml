@@ -31,7 +31,7 @@ jobs:
         api_origin: ${{ secrets.OGD_API_ORIGIN }}
     - name: Set up npm libraries and build
       run: |
-        npm install
+        npm ci
         npm run build
       shell: bash
     # - name: Deploy to CI folder on server
