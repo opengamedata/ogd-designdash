@@ -1,6 +1,6 @@
 // global imports
 import * as d3 from "d3";
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 // local imports
 import { useD3 } from "../../../controller/hooks/useD3";
 import { ViewModes } from "../../../model/ViewModes";
@@ -10,8 +10,9 @@ import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
 
 /**
- * @callback JobGraphSetter
- * @param {JobGraphModel} newVal
+ * @typedef {import("../../../typedefs").JobGraphSetter} JobGraphSetter
+ * @typedef {import("../../../typedefs").StringSetter} StringSetter
+ * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
  */
 
 /**
@@ -22,7 +23,9 @@ import JobGraphLegend from "./JobGraphLegend";
 export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
     /** @type {[JobGraphModel, JobGraphSetter]} data */
     const [data, setData] = useState(new JobGraphModel())
+    /** @type {[string, StringSetter]} data */
     const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
+    /** @type {[string[] | undefined, StringListSetter]} data */
     const [playersList, setPlayerList] = useState()
     const [playerHighlight, setHighlight] = useState()
 
