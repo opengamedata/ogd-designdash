@@ -1,3 +1,9 @@
+import VisualizerModel from "./VisualizerModel";
+
+ /**
+ * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
+ */
+
 export class PlayerTimelineModel {
    constructor() {
       this.val = 0;

@@ -1,15 +1,21 @@
-export class InitialVisualizerModel {
+ import VisualizerModel from './VisualizerModel';
+
+ /**
+ * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
+ */
+
+export class InitialVisualizerModel extends VisualizerModel {
    constructor() {
+      super();
       this.val = 0;
    }
 
    /**
-    * @returns {Object.<string, string[]>}
+    * @returns {FeaturesMap}
     */
    static RequiredExtractors() {
       return {
-         "AQUALAB" : [
-         ]
+         "AQUALAB" : []
       };
    }
 }
