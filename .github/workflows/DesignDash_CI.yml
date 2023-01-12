@@ -38,7 +38,7 @@ jobs:
       uses: burnett01/rsync-deployments@5.2
       with:
         switches: -vrc --exclude-from rsync-exclude
-        path: opengamedata-ci/*
+        path: build/*
         remote_path: ${{ secrets.DESIGN_DASH_PATH }}
         remote_host: ${{ secrets.DESIGN_DASH_HOST }}
         remote_user: ${{ secrets.DESIGN_DASH_USER }}
