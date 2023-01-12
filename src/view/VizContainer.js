@@ -14,16 +14,21 @@ import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel
 // controller imports
 import { PopulationSelectionOptions } from '../controller/SelectionOptions';
 import { FilterOptions } from '../controller/FilterOptions';
-import { OGDPopulationAPI } from '../controller/apis/OGDPopulationAPI';
-import { OGDPlayerAPI } from '../controller/apis/OGDPlayerAPI';
-import { OGDSessionAPI } from '../controller/apis/OGDSessionAPI';
+import { OGDAPI } from '../controller/apis/OGDAPI';
 
 // view imports
 import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobVisualizer from './visualizations/JobGraph/JobVisualizer';
 import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
-import { OGDAPI } from '../controller/apis/OGDAPI';
+
+/**
+ * @typedef {import('../typedefs').ViewModeSetter} ViewModeSetter
+ * @typedef {import('../typedefs').FeaturesMap} FeaturesMap
+ * @typedef {import('../typedefs').FeatureMapSetter} FeatureMapSetter
+ * @typedef {import('../typedefs').ElementRenderer} ElementRenderer
+ * @typedef {import('../typedefs').ElementSetter} ElementSetter
+ */
 
 /**
  * 
@@ -45,9 +50,10 @@ export default function VizContainer(props) {
       )
    );
    // data view vars
+   /** @type {[ViewModes, ViewModeSetter]} */
    const [viewMode, setViewMode] = useState(ViewModes.INITIAL);
-   const [viewRenderer, setViewRenderer] = useState(() => {return (<InitialVisualizer/>)})
-   const [viewFeatures, setViewFeatures] = useState(() => { return InitialVisualizerModel.RequiredExtractors() })
+   /** @type {[FeaturesMap, FeatureMapSetter]} */
+   const [viewFeatures, setViewFeatures] = useState(InitialVisualizerModel.RequiredExtractors())
 
    useEffect(() => {
       retrieveData();
@@ -59,56 +65,25 @@ export default function VizContainer(props) {
       setViewData(rawData);
    }, [filterOptions, rawData]);
 
+   // When view mode changes, update the list of features to request.
    useEffect(() => {
-      updateView();
-   }, [viewMode])
-
-   const updateView = () => {
       switch (viewMode) {
          case ViewModes.POPULATION:
-            setViewRenderer(() => {
-               return (
-                  <JobVisualizer
-                     rawData={viewData}
-                     setViewMode={setViewMode}
-                  />
-               )
-            });
-            setViewFeatures(() => { return JobGraphModel.RequiredExtractors() });
+            setViewFeatures(JobGraphModel.RequiredExtractors());
          break;
          case ViewModes.PLAYER:
-            setViewRenderer(() => {
-               return (
-                     <PlayerVisualizer
-                        rawData={viewData}
-                        setViewMode={setViewMode}
-                        selectedGame={selectionOptions.game_name}
-                     />
-                  )
-            });
-            setViewFeatures(() => { return PlayerTimelineModel.RequiredExtractors() });
+            setViewFeatures(PlayerTimelineModel.RequiredExtractors());
          break;
          case ViewModes.SESSION:
-            // TODO: put in something here, maybe it's even the timeline...?
-            setViewRenderer(() => {
-               return (
-                     <div>No Viz for Session View</div>
-                  )
-            });
             // TODO: once there's something above, need corresponding class here.
-            setViewFeatures(() => { return InitialVisualizerModel.RequiredExtractors() });
+            setViewFeatures(InitialVisualizerModel.RequiredExtractors());
          break;
          case ViewModes.INITIAL:
          default:
-            setViewRenderer(() => {
-               return (
-                     <InitialVisualizer/>
-                  )
-            });
-            setViewFeatures(() => { return InitialVisualizerModel.RequiredExtractors() });
+            setViewFeatures(InitialVisualizerModel.RequiredExtractors());
          break;
       }
-   }
+   }, [viewMode])
 
    const retrieveData = () => {
         // flush current dataset and start loading animation
@@ -128,7 +103,7 @@ export default function VizContainer(props) {
         else {
             console.log('fetching:', selectionOptions.ToLocalStorageKey())
 
-            OGDAPI.fetch(viewMode, selectionOptions, viewFeatures())
+            OGDAPI.fetch(viewMode, selectionOptions, viewFeatures)
             .then(res => res.json())
             .then(data => {
                if (data.status !== 'SUCCESS') throw data.msg
@@ -145,6 +120,36 @@ export default function VizContainer(props) {
                alert(error)
             })
         }
+   }
+
+   const renderVisualizer = () => {
+      switch (viewMode) {
+         case ViewModes.POPULATION:
+            return (
+               <JobVisualizer
+                  rawData={viewData}
+                  setViewMode={setViewMode}
+               />
+            )
+         case ViewModes.PLAYER:
+            return (
+                  <PlayerVisualizer
+                     rawData={viewData}
+                     setViewMode={setViewMode}
+                     selectedGame={selectionOptions.game_name}
+                  />
+               )
+         case ViewModes.SESSION:
+         // TODO: put in something here, maybe it's even the timeline...?
+            return (
+                  <div>No Viz for Session View</div>
+               );
+         case ViewModes.INITIAL:
+         default:
+            return (
+                  <InitialVisualizer/>
+               );
+      }
    }
 
    return (
@@ -169,7 +174,7 @@ export default function VizContainer(props) {
          setContainerFilter={setFilterOptions}
       />
       <LoadingBlur loading={loading} height={10} width={10}/>
-      { viewRenderer() }
+      { renderVisualizer() }
    </div>
 
    )
