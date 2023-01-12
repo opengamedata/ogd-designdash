@@ -7,5 +7,5 @@ build:
 # 	rsync -vrc ./site/* mli-field@fielddaylab.wisc.edu:/httpdocs/opengamedata --exclude-from rsync-exclude
 
 deploy-test:
-	rsync -vrc ./build/* mli-field@fielddaylab.wisc.edu:/httpdocs/opengamedata-ci --exclude-from rsync-exclude
+	rsync -vrc ./build/* mli-field@fielddaylab.wisc.edu:/httpdocs/opengamedata/designdashboard/ci/master/ --exclude-from rsync-exclude
 
