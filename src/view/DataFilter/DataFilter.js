@@ -1,6 +1,6 @@
 // global imports
 import React from 'react';
-import { AdjustmentsIcon, XIcon, CogIcon } from '@heroicons/react/solid';
+import { AdjustmentsVertical, XIcon, CogIcon } from '@heroicons/react/solid';
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
@@ -170,7 +170,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       }
       else {
          // If not in adjustment mode, show "adjustments" button to expand the filter.
-         return (<AdjustmentsIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(true)} />);
+         return (<AdjustmentsVertical className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(true)} />);
       }
    }
 
