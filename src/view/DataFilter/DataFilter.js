@@ -9,10 +9,8 @@ import { FilterOptions } from '../../controller/FilterOptions';
 import SelectionOptionsView from './SelectionOptionsView'
 import FilterOptionsView from './FilterOptionsView';
 import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOptions } from '../../controller/SelectionOptions';
-
 /**
- * @callback SetterCallback
- * @param {object} newVal
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
 
 /**
@@ -28,7 +26,6 @@ import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOpt
  /**
  * @param {DataFilterProps} props
  */
-
 export default function DataFilter({ loading, viewMode, containerSelection, setContainerSelection, containerFilter, setContainerFilter}) {
    // server-side selection options
    const [gameSelected, setGameSelected]   = useState(containerSelection.game_name);
