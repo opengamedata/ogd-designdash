@@ -24,7 +24,7 @@ jobs:
     #     sudo apt-get -q install nodejs
     - uses: actions/setup-node@v3
       with:
-        node-version: 12
+        node-version: 16
     - name: Set up Config File
       uses: ./.github/actions/DesignDash_config
       with:
