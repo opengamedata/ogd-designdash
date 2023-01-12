@@ -2,8 +2,7 @@ import { JobGraphModel } from "./model/visualizations/JobGraphModel";
 import { ViewModes } from "./model/ViewModes";
 
 /**
- * @typedef FeaturesMap
- * @property {Object.<string, string[]>} map
+ * @typedef {Object.<string, string[]>} FeaturesMap
  */
 
 /**
