@@ -3,6 +3,23 @@ import React from 'react';
 // local imports
 import { ViewModes } from "../../model/ViewModes"
 
+/**
+ * @typedef {import("../../typedefs").SetterMap} SetterMap
+ */
+
+/**
+ * @typedef  {object} FilterOptionsProps
+ * @property {boolean} adjustMode
+ * @property {ViewModes} viewMode
+ * @property {Date} minPlaytime
+ * @property {Date} maxPlaytime
+ * @property {number} minJobs
+ * @property {SetterMap} updateFunctions
+ */
+
+ /**
+ * @param {FilterOptionsProps} props
+ */
 export default function FilterOptionsView({
    adjustMode, viewMode, 
    minPlaytime, maxPlaytime,

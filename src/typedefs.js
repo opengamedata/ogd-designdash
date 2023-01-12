@@ -6,6 +6,10 @@ import { ViewModes } from "./model/ViewModes";
  */
 
 /**
+ * @typedef {Object.<string, SetterCallback>} SetterMap
+ */
+
+/**
  * @callback SetterCallback
  * @param {object} newVal
  */
