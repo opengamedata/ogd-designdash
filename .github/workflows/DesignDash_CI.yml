@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
-    - name: Get Node installed
-      run: |
-        sudo apt-get update
-        apt-cache madison nodejs
-        sudo apt-get -q install nodejs
-    # - uses: actions/setup-node@v3
-    #   with:
-    #     node-version: 16
+    # - name: Get Node installed
+    #   run: |
+    #     sudo apt-get update
+    #     apt-cache madison nodejs
+    #     sudo apt-get -q install nodejs
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 12
     - name: Set up Config File
       uses: ./.github/actions/DesignDash_config
       with:
