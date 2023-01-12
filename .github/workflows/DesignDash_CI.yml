@@ -14,15 +14,14 @@ env:
 
 jobs:
   test_export:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
-    - name: Get OpenConnect installed
-      run: sudo apt-get -q update && sudo apt-get -q install openconnect
     - name: Get Node installed
       run: sudo apt-get -q install nodejs
-    - name: Connect VPN
-      run: echo ${{ secrets.VPN_PASS }} | sudo openconnect --protocol=gp -u ${{ secrets.VPN_USER }} --passwd-on-stdin soe.vpn.wisc.edu &
+    # - uses: actions/setup-node@v3
+    #   with:
+    #     node-version: 16
     - name: Set up Config File
       uses: ./.github/actions/DesignDash_config
       with:
@@ -35,6 +34,10 @@ jobs:
     # - name: Deploy to CI folder on server
     #   run: make deploy-test
     #   shell: bash
+    - name: Get OpenConnect installed
+      run: sudo apt-get -q update && sudo apt-get -q install openconnect
+    - name: Connect VPN
+      run: echo ${{ secrets.VPN_PASS }} | sudo openconnect --protocol=gp -u ${{ secrets.VPN_USER }} --passwd-on-stdin soe.vpn.wisc.edu &
     - name: Upload to web server via rsync
       uses: burnett01/rsync-deployments@5.2
       with:
