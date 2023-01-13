@@ -1,5 +1,6 @@
 import { JobGraphModel } from "./model/visualizations/JobGraphModel";
 import { ViewModes } from "./model/ViewModes";
+import Timedelta from "./model/Timedelta";
 
 /**
  * @typedef {Object.<string, string[]>} FeaturesMap
@@ -56,4 +57,9 @@ import { ViewModes } from "./model/ViewModes";
 /**
  * @callback FeatureMapSetter
  * @param {FeaturesMap} newVal
+ */
+
+/**
+ * @callback TimedeltaSetter
+ * @param {Timedelta} newVal
  */
