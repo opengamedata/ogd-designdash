@@ -40,6 +40,7 @@ export default function FilterOptionsView({
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >From</h4>
                      </div>
+                     {/* TODO: add checkboxes so user can decide if they want this to be part of filter or not. */}
                      <div className='block w-full' >
                         <TimedeltaInput value={minPlaytime} setValue={updateFunctions["setMinPlaytime"]} />
                      </div>
@@ -61,7 +62,7 @@ export default function FilterOptionsView({
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >To</h4>
                      </div>
-                     <input type='number' className='block w-full' value={minJobs} onChange={(e) => updateFunctions["setMinJobs"](e.target.value)}></input>
+                        <input type='number' className='block w-full' value={minJobs} onChange={(e) => updateFunctions["setMinJobs"](e.target.value)}></input>
                      </div>
                </div>
             </div>

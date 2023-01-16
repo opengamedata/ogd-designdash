@@ -31,14 +31,16 @@ import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOpt
  * @param {DataFilterProps} props
  */
 export default function DataFilter({ loading, viewMode, containerSelection, setContainerSelection, containerFilter, setContainerFilter}) {
+   let yesterday = new Date();
+   yesterday.setDate(yesterday.getDate() - 1);
    // server-side selection options
    const [gameSelected, setGameSelected]   = useState(containerSelection.game_name);
    const [minAppVersion, setMinAppVersion] = useState(containerSelection.min_app_version);
    const [maxAppVersion, setMaxAppVersion] = useState(containerSelection.max_app_version);
    const [minLogVersion, setMinLogVersion] = useState(containerSelection.min_log_version);
    const [maxLogVersion, setMaxLogVersion] = useState(containerSelection.max_log_version);
-   const [startDate, setStartDate] = useState();
-   const [endDate, setEndDate] = useState();
+   const [startDate, setStartDate] = useState(yesterday);
+   const [endDate, setEndDate] = useState(yesterday);
    const [ids, setIDs] = useState([]);
    const setSelectionVars = {
       "setGameSelected":setGameSelected,
@@ -52,9 +54,12 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
    };
 
    // local filtering options
-   const [minJobs, setMinJobs] = useState(null);
-   const [minPlaytime, setMinPlaytime] = useState(null);
-   const [maxPlaytime, setMaxPlaytime] = useState(null);
+   /** @type {[number | null, SetterCallback]} */
+   const [minJobs, setMinJobs] = useState(1);
+   /** @type {[Timedelta | null, SetterCallback]} */
+   const [minPlaytime, setMinPlaytime] = useState(new Timedelta());
+   /** @type {[Timedelta | null, SetterCallback]} */
+   const [maxPlaytime, setMaxPlaytime] = useState(new Timedelta(24)); // default to 24 hour max playtime
    const setFilterVars = {
       "minJobs":setMinJobs,
       "minPlaytime":setMinPlaytime,
@@ -125,8 +130,6 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       setContainerSelection(getSelectionOptions());
       setContainerFilter(getFilterOptions());
    }
-
-
 
    const getSelectionOptions = () => {
       switch (viewMode) {
