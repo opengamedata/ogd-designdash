@@ -96,10 +96,17 @@ export default function VizContainer(props) {
         const localData = localStorage.getItem(selectionOptions.ToLocalStorageKey())
         // console.log(localData)
         if (localData) {
-         // if query found in storage, retreive JSON
+         try {
+            // if query found in storage, retreive JSON
             setRawData(JSON.parse(localData)) 
+         }
+         catch (err) {
+            console.error(`Local data (${localData}) was not valid JSON!\nResulted in error ${err}`)
+         }
+         finally {
             // stop loading animation
             setLoading(false)
+         }
         }
         // if not found in storage, request dataset
         else {
