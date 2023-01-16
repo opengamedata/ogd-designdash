@@ -1,7 +1,10 @@
 // global imports
 import React from 'react';
 // local imports
+import TimedeltaInput from '../../components/TimedeltaInput';
+//    model imports
 import { ViewModes } from "../../model/ViewModes"
+import Timedelta from '../../model/Timedelta';
 
 /**
  * @typedef {import("../../typedefs").SetterMap} SetterMap
@@ -11,8 +14,8 @@ import { ViewModes } from "../../model/ViewModes"
  * @typedef  {object} FilterOptionsProps
  * @property {boolean} adjustMode
  * @property {ViewModes} viewMode
- * @property {Date} minPlaytime
- * @property {Date} maxPlaytime
+ * @property {Timedelta} minPlaytime
+ * @property {Timedelta} maxPlaytime
  * @property {number} minJobs
  * @property {SetterMap} updateFunctions
  */
@@ -37,15 +40,17 @@ export default function FilterOptionsView({
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >From</h4>
                      </div>
-                     <div>
-                        <input type='time' className='block w-full' value={minPlaytime} onChange={(e) => updateFunctions["setMinPlaytime"](e.target.value)}></input>
+                     <div className='block w-full' >
+                        <TimedeltaInput value={minPlaytime} setValue={updateFunctions["setMinPlaytime"]} />
                      </div>
                   </div>
                   <div id="MaxPlaytimeInput" className="col">
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >To</h4>
                      </div>
-                     <input type='time' className='block w-full' value={maxPlaytime} onChange={(e) => updateFunctions["setMaxPlaytime"](e.target.value)}></input>
+                     <div className='block w-full' >
+                        <TimedeltaInput value={maxPlaytime} setValue={updateFunctions["setMaxPlaytime"]} />
+                     </div>
                   </div>
                </div>
             </div>
@@ -64,21 +69,14 @@ export default function FilterOptionsView({
       )
    }
 
-   /**
-    * @param {Date} date
-   */
-   const renderTimedelta = (date) => {
-      return `${date.getDay()} days; ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-   }
-
    const renderFilterChoices = () => {
       return (
          <div>
             <span>Filtering:</span>
             <div>
-               <div className='text-sm'>{renderTimedelta(minPlaytime)}</div>
+               <div className='text-sm'>{minPlaytime.ToString}</div>
                <div className='text-sm'>to</div>
-               <div className='text-sm'>{renderTimedelta(maxPlaytime)}</div>
+               <div className='text-sm'>{maxPlaytime.ToString}</div>
                <div className='text-sm'>playtime</div>
             </div>
             <div>
