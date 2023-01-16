@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 // local imports
 import { vis_games } from '../config';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import LargeButton from '../components/buttons/LargeButton';
 import LoadingBlur from '../components/LoadingBlur';
 
@@ -127,29 +128,35 @@ export default function VizContainer(props) {
       switch (viewMode) {
          case ViewModes.POPULATION:
             return (
-               <JobVisualizer
-                  rawData={viewData}
-                  setViewMode={setViewMode}
-               />
+               <ErrorBoundary childName={"JobVisualizer"}>
+                  <JobVisualizer
+                     rawData={viewData}
+                     setViewMode={setViewMode}
+                  />
+               </ErrorBoundary>
             )
          case ViewModes.PLAYER:
             return (
+               <ErrorBoundary childName={"PlayerVisualizer"}>
                   <PlayerVisualizer
                      rawData={viewData}
                      setViewMode={setViewMode}
                      selectedGame={selectionOptions.game_name}
                   />
-               )
+               </ErrorBoundary>
+            )
          case ViewModes.SESSION:
          // TODO: put in something here, maybe it's even the timeline...?
             return (
-                  <div>No Viz for Session View</div>
-               );
+               <div>No Viz for Session View</div>
+            );
          case ViewModes.INITIAL:
          default:
             return (
+               <ErrorBoundary childName={"InitialVisualizer"}>
                   <InitialVisualizer/>
-               );
+               </ErrorBoundary>
+            );
       }
    }
 
@@ -166,15 +173,17 @@ export default function VizContainer(props) {
             }}
          />
       </div>
-      <DataFilter
-         loading={loading}
-         viewMode={viewMode}
-         containerSelection={selectionOptions}
-         setContainerSelection={setSelectionOptions}
-         containerFilter={filterOptions}
-         setContainerFilter={setFilterOptions}
-      />
-      <LoadingBlur loading={loading} height={10} width={10}/>
+      <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
+         <DataFilter
+            loading={loading}
+            viewMode={viewMode}
+            containerSelection={selectionOptions}
+            setContainerSelection={setSelectionOptions}
+            containerFilter={filterOptions}
+            setContainerFilter={setFilterOptions}
+         />
+         <LoadingBlur loading={loading} height={10} width={10}/>
+      </ErrorBoundary>
       { renderVisualizer() }
    </div>
 
