@@ -143,9 +143,9 @@ export default function SelectionOptionsView({
          case ViewModes.POPULATION:
             return (
                <div>
-                  <div className='text-sm'>{startDate.replace('T', ' ')}</div>
+                  <div className='text-sm'>{startDate.toDateString().replace('T', ' ')}</div>
                   <div className='text-sm'>to</div>
-                  <div className='text-sm'>{endDate.replace('T', ' ')}</div>
+                  <div className='text-sm'>{endDate.toDateString().replace('T', ' ')}</div>
                </div>
             );
          case ViewModes.PLAYER:
@@ -158,7 +158,7 @@ export default function SelectionOptionsView({
             );
          default:
             return (
-               <div>Invalid ViewMode selected: {viewMode}</div>
+               <div>Invalid ViewMode selected: {viewMode.toString}</div>
             )
       }
    }
@@ -186,7 +186,7 @@ export default function SelectionOptionsView({
                <span className='text-sm'> to </span>
                <span className='text-sm'>{maxLogVersion || "-"}</span>
             </div>
-            {/* {renderModeSpecificChoices()} */}
+            {renderModeSpecificChoices()}
          </div>
       )
       // return <div>SelectionChoices</div>
