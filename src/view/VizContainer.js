@@ -10,6 +10,7 @@ import { ViewModes } from '../model/ViewModes';
 import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
 import { JobGraphModel } from '../model/visualizations/JobGraphModel';
 import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
+import Timedelta from '../model/Timedelta';
 
 // controller imports
 import { PopulationSelectionOptions } from '../controller/SelectionOptions';
@@ -40,7 +41,7 @@ export default function VizContainer(props) {
    const [loading, setLoading] = useState(false);
    const [viewData, setViewData] = useState(null);
    const [rawData, setRawData] = useState(null);
-   const [filterOptions, setFilterOptions] = useState(new FilterOptions(0, null, null));
+   const [filterOptions, setFilterOptions] = useState(new FilterOptions(0, new Timedelta(), new Timedelta(24)));
    const [selectionOptions, setSelectionOptions] = useState(
       new PopulationSelectionOptions(
          vis_games[0],
