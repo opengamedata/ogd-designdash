@@ -4,11 +4,15 @@ import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/re
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
-import { ViewModes } from '../../model/ViewModes';
-import { FilterOptions } from '../../controller/FilterOptions';
 import SelectionOptionsView from './SelectionOptionsView'
 import FilterOptionsView from './FilterOptionsView';
+//    model imports
+import Timedelta from '../../model/Timedelta';
+import { ViewModes } from '../../model/ViewModes';
+//    controller imports
+import { FilterOptions } from '../../controller/FilterOptions';
 import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOptions } from '../../controller/SelectionOptions';
+
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
