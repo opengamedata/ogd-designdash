@@ -26,7 +26,8 @@ export class OGDAPI {
          default:
             let response_data = {
                result: "No Data Requested",
-               status: "SUCCESS"
+               status: "SUCCESS",
+               val: "{}"
             }
             let dummy = new Response(JSON.stringify(response_data), {status:200});
             return Promise.resolve(dummy);
