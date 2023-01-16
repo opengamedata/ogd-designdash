@@ -1,8 +1,10 @@
+import Timedelta from "../model/Timedelta";
+
 export class FilterOptions {
    /**
     * @param {number} min_jobs
-    * @param {string?} min_playtime
-    * @param {string?} max_playtime
+    * @param {Timedelta | null} min_playtime
+    * @param {Timedelta | null} max_playtime
     */
    constructor(min_jobs=1, min_playtime=null, max_playtime=null) {
       this.min_jobs = min_jobs;

@@ -3,10 +3,10 @@ import { vis_games } from '../config';
 export class SelectionOptions {
    /**
     * @param {string} game
-    * @param {string?} min_app_version
-    * @param {string?} max_app_version
-    * @param {string?} min_log_version
-    * @param {string?} max_log_version
+    * @param {string | null} min_app_version
+    * @param {string | null} max_app_version
+    * @param {string | null} min_log_version
+    * @param {string | null} max_log_version
     */
    constructor(game=vis_games[0],
                min_app_version=null, max_app_version=null,
@@ -26,12 +26,12 @@ export class SelectionOptions {
 export class PopulationSelectionOptions extends SelectionOptions {
    /**
     * @param {string} game
-    * @param {string?} min_app_version
-    * @param {string?} max_app_version
-    * @param {string?} min_log_version
-    * @param {string?} max_log_version
-    * @param {Date?} start_date
-    * @param {Date?} end_date
+    * @param {string | null} min_app_version
+    * @param {string | null} max_app_version
+    * @param {string | null} min_log_version
+    * @param {string | null} max_log_version
+    * @param {Date | null} start_date
+    * @param {Date | null} end_date
     */
    constructor(game=vis_games[0],
                min_app_version=null, max_app_version=null,
@@ -48,15 +48,15 @@ export class PopulationSelectionOptions extends SelectionOptions {
 export class PlayerSelectionOptions extends SelectionOptions {
    /**
     * @param {string} game
-    * @param {string} min_app_version
-    * @param {string} max_app_version
-    * @param {string} min_log_version
-    * @param {string} max_log_version
+    * @param {string | null} min_app_version
+    * @param {string | null} max_app_version
+    * @param {string | null} min_log_version
+    * @param {string | null} max_log_version
     * @param {Array.<string>} player_ids
     */
    constructor(game=vis_games[0],
-               min_app_version="", max_app_version="",
-               min_log_version="", max_log_version="",
+               min_app_version=null, max_app_version=null,
+               min_log_version=null, max_log_version=null,
                player_ids=[]) {
       super(game,
             min_app_version, max_app_version,
@@ -68,15 +68,15 @@ export class PlayerSelectionOptions extends SelectionOptions {
 export class SessionSelectionOptions extends SelectionOptions {
    /**
     * @param {string} game
-    * @param {string} min_app_version
-    * @param {string} max_app_version
-    * @param {string} min_log_version
-    * @param {string} max_log_version
+    * @param {string | null} min_app_version
+    * @param {string | null} max_app_version
+    * @param {string | null} min_log_version
+    * @param {string | null} max_log_version
     * @param {Array.<string>} session_ids
     */
    constructor(game=vis_games[0],
-               min_app_version="", max_app_version="",
-               min_log_version="", max_log_version="",
+               min_app_version=null, max_app_version=null,
+               min_log_version=null, max_log_version=null,
                session_ids=[]) {
       super(game,
             min_app_version, max_app_version,
