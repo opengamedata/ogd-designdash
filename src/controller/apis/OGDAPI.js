@@ -24,7 +24,11 @@ export class OGDAPI {
          break;
          case ViewModes.INITIAL:
          default:
-            let dummy = new Request("No data requested");
+            let response_data = {
+               result: "No Data Requested",
+               status: "SUCCESS"
+            }
+            let dummy = new Response(JSON.stringify(response_data), {status:200});
             return Promise.resolve(dummy);
          break;
       }
