@@ -54,7 +54,7 @@ export default class Timedelta {
     * @returns {number}
     */
    get Hours() {
-      return this.Hours
+      return this.hours
    }
 
    /**
