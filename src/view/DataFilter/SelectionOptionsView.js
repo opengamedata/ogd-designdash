@@ -4,6 +4,28 @@ import React from 'react';
 import { vis_games } from '../../config';
 import { ViewModes } from "../../model/ViewModes"
 
+/**
+ * @typedef {import("../../typedefs").SetterMap} SetterMap
+ */
+
+/**
+ * @typedef  {object} FilterOptionsProps
+ * @property {boolean} adjustMode
+ * @property {ViewModes} viewMode
+ * @property {string} gameSelected
+ * @property {string} minAppVersion
+ * @property {string} maxAppVersion
+ * @property {string} minLogVersion
+ * @property {string} maxLogVersion
+ * @property {Date} startDate
+ * @property {Date} endDate
+ * @property {string[]} ids
+ * @property {SetterMap} updateFunctions
+ */
+
+ /**
+ * @param {FilterOptionsProps} props
+ */
 export default function SelectionOptionsView({
    adjustMode, viewMode, 
    gameSelected,
@@ -79,7 +101,7 @@ export default function SelectionOptionsView({
                </div>
             </div>
             <div id="ModeSpecificPickers">
-               {renderModeSpecificPickers()}
+               {/* {renderModeSpecificPickers()} */}
             </div>
          </div>
       )
@@ -111,31 +133,9 @@ export default function SelectionOptionsView({
             return (<></>);
          default:
             return (
-               <div>Invalid ViewMode selected: {viewMode}</div>
+               <div>Invalid ViewMode selected: {viewMode.toString}</div>
             )
       }
-   }
-
-   const renderSelectionChoices = () => {
-      return (
-         <div>
-            <div>
-               <span className='font-medium '>{gameSelected}&nbsp;</span>
-               {/* <span>version</span> */}
-            </div>
-            <div>
-               <div className='text-sm'>{minAppVersion}</div>
-               <div className='text-sm'>to</div>
-               <div className='text-sm'>{maxAppVersion}</div>
-            </div>
-            <div>
-               <div className='text-sm'>{minLogVersion}</div>
-               <div className='text-sm'>to</div>
-               <div className='text-sm'>{maxLogVersion}</div>
-            </div>
-            {renderModeSpecificChoices()}
-         </div>
-      )
    }
 
    const renderModeSpecificChoices = () => {
@@ -164,9 +164,31 @@ export default function SelectionOptionsView({
    }
 
    if (adjustMode) {
-      return renderSelectionPickers();
+      // return renderSelectionPickers();
+      return <div>SelectionPickers</div>
    }
    else {
-      return renderSelectionChoices();
+      return(
+         <div>
+            <div>
+               <span className='font-medium '>{gameSelected}&nbsp;</span>
+               {/* <span>version</span> */}
+            </div>
+            <div>
+               <span className='text-sm'>App Version: </span>
+               <span className='text-sm'> {minAppVersion || "-"}</span>
+               <span className='text-sm'> to </span>
+               <span className='text-sm'>{maxAppVersion || "-"}</span>
+            </div>
+            <div>
+               <span className='text-sm'>Log Version: </span>
+               <span className='text-sm'> {minLogVersion || "-"}</span>
+               <span className='text-sm'> to </span>
+               <span className='text-sm'>{maxLogVersion || "-"}</span>
+            </div>
+            {/* {renderModeSpecificChoices()} */}
+         </div>
+      )
+      // return <div>SelectionChoices</div>
    }
 }
