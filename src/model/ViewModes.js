@@ -5,5 +5,5 @@ export class ViewModes {
    static INITIAL = new ViewModes('INITIAL');
 
    constructor(name) { this.name = name; }
-   toString() { return this.name; }
+   get toString() { return this.name; }
 }
