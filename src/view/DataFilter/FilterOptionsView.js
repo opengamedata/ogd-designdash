@@ -73,17 +73,16 @@ export default function FilterOptionsView({
    const renderFilterChoices = () => {
       return (
          <div>
-            <span>Filtering:</span>
             <div>
-               <div className='text-sm'>{minPlaytime.ToString}</div>
-               <div className='text-sm'>to</div>
-               <div className='text-sm'>{maxPlaytime.ToString}</div>
-               <div className='text-sm'>playtime</div>
+               <div className='text-sm'>Playtime:</div>
+               <span className='text-sm'>{minPlaytime.ToString}</span>
+               <span className='text-sm'> to </span>
+               <span className='text-sm'>{maxPlaytime.ToString}</span>
             </div>
             <div>
-               <div className='text-sm'>minimum</div>
-               <div className='text-sm'>{minJobs}</div>
-               <div className='text-sm'>jobs</div>
+               <div className='text-sm'>Jobs:</div>
+               <span className='text-sm'>Min.</span>
+               <span className='text-sm'> {minJobs} </span>
             </div>
          </div>
       )

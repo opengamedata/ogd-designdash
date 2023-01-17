@@ -13,10 +13,10 @@ import { ViewModes } from "../../model/ViewModes"
  * @property {boolean} adjustMode
  * @property {ViewModes} viewMode
  * @property {string} gameSelected
- * @property {string} minAppVersion
- * @property {string} maxAppVersion
- * @property {string} minLogVersion
- * @property {string} maxLogVersion
+ * @property {string | null} minAppVersion
+ * @property {string | null} maxAppVersion
+ * @property {string | null} minLogVersion
+ * @property {string | null} maxLogVersion
  * @property {Date} startDate
  * @property {Date} endDate
  * @property {string[]} ids
@@ -131,9 +131,11 @@ export default function SelectionOptionsView({
          case ViewModes.SESSION:
             // TODO: render ID selector
             return (<></>);
+         case ViewModes.INITIAL:
+            return (<></>);
          default:
             return (
-               <div>Invalid ViewMode selected: {viewMode.toString}</div>
+               <div>Invalid ViewMode selected: "{viewMode.toString()}"</div>
             )
       }
    }
@@ -156,6 +158,8 @@ export default function SelectionOptionsView({
             return (
                <div className='text-sm'>{ids.join(", ")}</div>
             );
+         case ViewModes.INITIAL:
+            return (<></>);
          default:
             return (
                <div>Invalid ViewMode selected: {viewMode.toString}</div>

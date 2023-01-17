@@ -194,6 +194,9 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
             startDate={startDate} endDate={endDate}
             ids={ids}
             updateFunctions={setSelectionVars}></SelectionOptionsView>
+         {/* <br/> */}
+         <hr style={{"margin": "10px 0px"}}/>
+         {/* <br/> */}
          <FilterOptionsView
             adjustMode={adjustMode} viewMode={viewMode}
             minPlaytime={minPlaytime} maxPlaytime={maxPlaytime}
