@@ -30,13 +30,13 @@ export default function TimedeltaInput({value, setValue}) {
    return (
       <div>
          <div className="row mb-5">
-            <input id="hours"        type='number' className='block w-full' value={value.Hours}        onChange={(e) => setHours(parseInt(e.target.value))}></input>
+            <input id="hours"        type='number' className='block' value={value.Hours}        onChange={(e) => setHours(parseInt(e.target.value))}></input>
             :
-            <input id="minutes"      type='number' className='block w-full' value={value.Minutes}      onChange={(e) => setMinutes(parseInt(e.target.value))}></input>
+            <input id="minutes"      type='number' className='block' value={value.Minutes}      onChange={(e) => setMinutes(parseInt(e.target.value))}></input>
             :
-            <input id="seconds"      type='number' className='block w-full' value={value.Seconds}      onChange={(e) => setSeconds(parseInt(e.target.value))}></input>
+            <input id="seconds"      type='number' className='block' value={value.Seconds}      onChange={(e) => setSeconds(parseInt(e.target.value))}></input>
             .
-            <input id="milliseconds" type='number' className='block w-full' value={value.Milliseconds} onChange={(e) => setMilliseconds(parseInt(e.target.value))}></input>
+            <input id="milliseconds" type='number' className='block' value={value.Milliseconds} onChange={(e) => setMilliseconds(parseInt(e.target.value))}></input>
          </div>
       </div>
    )
