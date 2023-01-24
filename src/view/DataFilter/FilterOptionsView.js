@@ -8,6 +8,14 @@ import Timedelta from '../../model/Timedelta';
 
 /**
  * @typedef {import("../../typedefs").SetterMap} SetterMap
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
+ */
+
+/**
+ * @typedef {object} FilterSetters
+ * @property {SetterCallback} setMinJobs
+ * @property {SetterCallback} setMinPlaytime
+ * @property {SetterCallback} setMaxPlaytime
  */
 
 /**
@@ -17,7 +25,7 @@ import Timedelta from '../../model/Timedelta';
  * @property {Timedelta} minPlaytime
  * @property {Timedelta} maxPlaytime
  * @property {number} minJobs
- * @property {SetterMap} updateFunctions
+ * @property {FilterSetters} updateFunctions
  */
 
  /**
@@ -29,7 +37,6 @@ export default function FilterOptionsView({
    minJobs,
    updateFunctions
 }) {
-
    const renderFilterPickers = () => {
       return (
          <div>
@@ -42,7 +49,7 @@ export default function FilterOptionsView({
                      </div>
                      {/* TODO: add checkboxes so user can decide if they want this to be part of filter or not. */}
                      <div className='block w-full' >
-                        <TimedeltaInput value={minPlaytime} setValue={updateFunctions["setMinPlaytime"]} />
+                        <TimedeltaInput value={minPlaytime} setValue={updateFunctions.setMinPlaytime} />
                      </div>
                   </div>
                   <div id="MaxPlaytimeInput" className="col">
@@ -50,7 +57,7 @@ export default function FilterOptionsView({
                         <h4 className="text-sm" >To</h4>
                      </div>
                      <div className='block w-full' >
-                        <TimedeltaInput value={maxPlaytime} setValue={updateFunctions["setMaxPlaytime"]} />
+                        <TimedeltaInput value={maxPlaytime} setValue={updateFunctions.setMaxPlaytime} />
                      </div>
                   </div>
                </div>
@@ -62,7 +69,7 @@ export default function FilterOptionsView({
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >To</h4>
                      </div>
-                        <input type='number' className='block w-full' value={minJobs} onChange={(e) => updateFunctions["setMinJobs"](e.target.value)}></input>
+                        <input type='number' className='block w-full' value={minJobs} onChange={(e) => updateFunctions.setMinJobs(e.target.value)}></input>
                      </div>
                </div>
             </div>

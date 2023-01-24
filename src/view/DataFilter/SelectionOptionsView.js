@@ -6,25 +6,38 @@ import { ViewModes } from "../../model/ViewModes"
 
 /**
  * @typedef {import("../../typedefs").SetterMap} SetterMap
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
 
 /**
- * @typedef  {object} FilterOptionsProps
+ * @typedef {object} SelectionSetters
+ * @property {SetterCallback} setGameSelected
+ * @property {SetterCallback} setMinAppVersion
+ * @property {SetterCallback} setMaxAppVersion
+ * @property {SetterCallback} setMinLogVersion
+ * @property {SetterCallback} setMaxLogVersion
+ * @property {SetterCallback} setStartDate
+ * @property {SetterCallback} setEndDate
+ * @property {SetterCallback} setIDs
+ */
+
+/**
+ * @typedef  {object} SelectionOptionsProps
  * @property {boolean} adjustMode
  * @property {ViewModes} viewMode
  * @property {string} gameSelected
- * @property {string | null} minAppVersion
- * @property {string | null} maxAppVersion
- * @property {string | null} minLogVersion
- * @property {string | null} maxLogVersion
+ * @property {string?} minAppVersion
+ * @property {string?} maxAppVersion
+ * @property {string?} minLogVersion
+ * @property {string?} maxLogVersion
  * @property {Date} startDate
  * @property {Date} endDate
  * @property {string[]} ids
- * @property {SetterMap} updateFunctions
+ * @property {SelectionSetters} updateFunctions
  */
 
  /**
- * @param {FilterOptionsProps} props
+ * @param {SelectionOptionsProps} props
  */
 export default function SelectionOptionsView({
    adjustMode, viewMode, 
@@ -51,12 +64,12 @@ export default function SelectionOptionsView({
             <div id="GameSelector" className="col">
                <div className="input-group">
                      <div className="mb-2">
-                        <span className='text-xl font-light' >Game</span>
+                        <span className='text-xl font-light'>Game</span>
                      </div>
                      <select
                         className="form-select block w-full"
                         value={gameSelected}
-                        onChange={(e) => updateFunctions["setGameSelected"](e.target.value)}>
+                        onChange={(e) => updateFunctions.setGameSelected(e.target.value)}>
                         <option> </option>
                         {gameList()}
                      </select>
@@ -70,14 +83,14 @@ export default function SelectionOptionsView({
                         <h4 className="text-sm" >From</h4>
                      </div>
                      <div>
-                        <input type='text' className='block w-full' value={minAppVersion} onChange={(e) => updateFunctions["setMinAppVersion"](e.target.value)}></input>
+                        <input type='text' className='block w-half' value={minAppVersion} onChange={(e) => updateFunctions.setMinAppVersion(e.target.value)}></input>
                      </div>
                   </div>
-                  <div id="MaxAppVersionInput" className="col">
+                  <div id="MaxAppVersionInput" className="col mb-2">
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >To</h4>
                      </div>
-                     <input type='text' className='block w-full' value={maxAppVersion} onChange={(e) => updateFunctions["setMaxAppVersion"](e.target.value)}></input>
+                     <input type='text' className='block w-half' value={maxAppVersion} onChange={(e) => updateFunctions.setMaxAppVersion(e.target.value)}></input>
                   </div>
                </div>
             </div>
@@ -89,14 +102,14 @@ export default function SelectionOptionsView({
                         <h4 className="text-sm" >From</h4>
                      </div>
                      <div>
-                        <input type='text' className='block w-full' value={minLogVersion} onChange={(e) => updateFunctions["setMinLogVersion"](e.target.value)}></input>
+                        <input type='text' className='block w-full' value={minLogVersion} onChange={(e) => updateFunctions.setMinLogVersion(e.target.value)}></input>
                      </div>
                   </div>
                   <div id="MaxLogVersionInput" className="col">
                      <div className="input-group-prepend">
                         <h4 className="text-sm" >To</h4>
                      </div>
-                     <input type='text' className='block w-full' value={maxLogVersion} onChange={(e) => updateFunctions["setMaxLogVersion"](e.target.value)}></input>
+                     <input type='text' className='block w-full' value={maxLogVersion} onChange={(e) => updateFunctions.setMaxLogVersion(e.target.value)}></input>
                   </div>
                </div>
             </div>
@@ -116,11 +129,11 @@ export default function SelectionOptionsView({
                <div className="mb-5">
                   <div id="MinDateInput" className="col mb-2">
                      <div className="input-group-prepend"><h4 className="text-sm" >From</h4></div>
-                     <input type='date' className='block w-full' value={startDate} onChange={(e) => updateFunctions["setStartDate"](e.target.value)}></input>
+                     <input type='date' className='block w-full' value={startDate} onChange={(e) => updateFunctions.setStartDate(e.target.value)}></input>
                   </div>
                   <div id="MaxDateInput" className="col">
                      <div className="input-group-prepend"><h4 className="text-sm" >To</h4></div>
-                     <input type='date' className='block w-full' value={endDate} onChange={(e) => updateFunctions["setEndDate"](e.target.value)}></input>
+                     <input type='date' className='block w-full' value={endDate} onChange={(e) => updateFunctions.setEndDate(e.target.value)}></input>
                   </div>
                </div>
             </div>
@@ -168,8 +181,8 @@ export default function SelectionOptionsView({
    }
 
    if (adjustMode) {
-      // return renderSelectionPickers();
-      return <div>SelectionPickers</div>
+      return renderSelectionPickers();
+      // return <div>SelectionPickers</div>
    }
    else {
       return(

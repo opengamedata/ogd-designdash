@@ -15,6 +15,8 @@ import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOpt
 
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
+ * @typedef {import("./SelectionOptionsView").SelectionSetters} SelectionSetters
+ * @typedef {import("./FilterOptionsView").FilterSetters} FilterSetters
  */
 
 /**
@@ -42,15 +44,16 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
    const [startDate, setStartDate] = useState(yesterday);
    const [endDate, setEndDate] = useState(yesterday);
    const [ids, setIDs] = useState([]);
+   /** @type {SelectionSetters} */
    const setSelectionVars = {
-      "setGameSelected":setGameSelected,
-      "setMinAppVersion":setMinAppVersion,
-      "setMaxAppVersion":setMaxAppVersion,
-      "setMaxLogVersion":setMaxLogVersion,
-      "setMinLogVersion":setMinLogVersion,
-      "setStartDate":setStartDate,
-      "setEndDate":setEndDate,
-      "setIDs":setIDs
+      setGameSelected:setGameSelected,
+      setMinAppVersion:setMinAppVersion,
+      setMaxAppVersion:setMaxAppVersion,
+      setMinLogVersion:setMinLogVersion,
+      setMaxLogVersion:setMaxLogVersion,
+      setStartDate:setStartDate,
+      setEndDate:setEndDate,
+      setIDs:setIDs
    };
 
    // local filtering options
@@ -60,11 +63,14 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
    const [minPlaytime, setMinPlaytime] = useState(new Timedelta());
    /** @type {[Timedelta | null, SetterCallback]} */
    const [maxPlaytime, setMaxPlaytime] = useState(new Timedelta(24)); // default to 24 hour max playtime
+   /** @type {FilterSetters} */
    const setFilterVars = {
-      "minJobs":setMinJobs,
-      "minPlaytime":setMinPlaytime,
-      "maxPlaytime":setMaxPlaytime,
+      "setMinJobs":setMinJobs,
+      "setMinPlaytime":setMinPlaytime,
+      "setMaxPlaytime":setMaxPlaytime,
    };
+   console.log(`type of setMinPlaytime: ${typeof setMinPlaytime}, setMinPlaytime itself: ${setMinPlaytime}`);
+   console.log(`type of setFilterVars["setMinPlaytime"]: ${typeof setFilterVars["setMinPlaytime"]}, setFilterVars["setMinPlaytime"] itself: ${setFilterVars["setMinPlaytime"]}`);
 
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
@@ -195,7 +201,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
             ids={ids}
             updateFunctions={setSelectionVars}></SelectionOptionsView>
          {/* <br/> */}
-         <hr style={{"margin": "10px 0px"}}/>
+         <hr style={{margin: "10px 0px"}}/>
          {/* <br/> */}
          <FilterOptionsView
             adjustMode={adjustMode} viewMode={viewMode}
