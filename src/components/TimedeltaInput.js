@@ -27,16 +27,13 @@ export default function TimedeltaInput({value, setValue}) {
       setValue(new Timedelta(hours, minutes, seconds, milliseconds));
    }, [hours, minutes, seconds, milliseconds])
 
+   // const ms = (<input id="milliseconds" type='number' className='inline w-16 col-span-1' value={value.Milliseconds} onChange={(e) => setMilliseconds(parseInt(e.target.value))}></input>)
    return (
-      <div>
-         <div className="row mb-5">
-            <input id="hours"        type='number' className='block' value={value.Hours}        onChange={(e) => setHours(parseInt(e.target.value))}></input>
-            :
-            <input id="minutes"      type='number' className='block' value={value.Minutes}      onChange={(e) => setMinutes(parseInt(e.target.value))}></input>
-            :
-            <input id="seconds"      type='number' className='block' value={value.Seconds}      onChange={(e) => setSeconds(parseInt(e.target.value))}></input>
-            .
-            <input id="milliseconds" type='number' className='block' value={value.Milliseconds} onChange={(e) => setMilliseconds(parseInt(e.target.value))}></input>
+      <div className="row mb-5">
+         <div className="flex flex-row">
+            <input id="hours"        type='number' className='inline w-16 col-span-1' value={value.Hours}         onChange={(e) => setHours(parseInt(e.target.value))}/> hr
+            <input id="minutes"      type='number' className='inline w-16 col-span-1' value={value.Minutes}       onChange={(e) => setMinutes(parseInt(e.target.value))}/> min
+            <input id="seconds"      type='number' className='inline w-16 col-span-1' value={value.Seconds}       onChange={(e) => setSeconds(parseInt(e.target.value))}/> s
          </div>
       </div>
    )
