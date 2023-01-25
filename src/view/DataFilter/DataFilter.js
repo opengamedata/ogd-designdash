@@ -69,8 +69,6 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       "setMinPlaytime":setMinPlaytime,
       "setMaxPlaytime":setMaxPlaytime,
    };
-   console.log(`type of setMinPlaytime: ${typeof setMinPlaytime}, setMinPlaytime itself: ${setMinPlaytime}`);
-   console.log(`type of setFilterVars["setMinPlaytime"]: ${typeof setFilterVars["setMinPlaytime"]}, setFilterVars["setMinPlaytime"] itself: ${setFilterVars["setMinPlaytime"]}`);
 
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
@@ -83,7 +81,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       setMinLogVersion(containerSelection.min_log_version)
       setMaxLogVersion(containerSelection.min_log_version)
       setStartDate(containerSelection['start_date'] || null)
-      setEndDate(containerSelection['endDate'] || null)
+      setEndDate(containerSelection['end_date'] || null)
       setIDs(containerSelection['ids'] || null)
    }, [adjustMode])
 
@@ -151,6 +149,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
             return new SessionSelectionOptions(gameSelected,
                minAppVersion, maxAppVersion, minLogVersion, maxLogVersion,
                ids);
+         case ViewModes.INITIAL:
          default:
             return new PopulationSelectionOptions(gameSelected,
                minAppVersion, maxAppVersion, minLogVersion, maxLogVersion,
@@ -161,11 +160,12 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
    const getFilterOptions = () => {
       switch (viewMode) {
          case ViewModes.POPULATION:
-            return new FilterOptions();
+            return new FilterOptions(minJobs, minPlaytime, maxPlaytime);
          case ViewModes.PLAYER:
             return new FilterOptions(minJobs, minPlaytime, maxPlaytime);
          case ViewModes.SESSION:
             return new FilterOptions(minJobs, minPlaytime, maxPlaytime);
+         case ViewModes.INITIAL:
          default:
             return new FilterOptions();
       }
@@ -187,8 +187,9 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       }
    }
 
+   // console.log(`In DataFilter, just before returning, viewMode is ${viewMode.asString}`)
    return (
-      <div className=" bg-white fixed top-14 left-3 p-3 w-content border shadow-sm">
+      <>
          <div className='flex justify-between mb-2'>
             { renderToggleButton() }
          </div>
@@ -199,7 +200,8 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
             minLogVersion={minLogVersion} maxLogVersion={maxLogVersion}
             startDate={startDate} endDate={endDate}
             ids={ids}
-            updateFunctions={setSelectionVars}></SelectionOptionsView>
+            updateFunctions={setSelectionVars}
+         />
          {/* <br/> */}
          <hr style={{margin: "10px 0px"}}/>
          {/* <br/> */}
@@ -207,7 +209,8 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
             adjustMode={adjustMode} viewMode={viewMode}
             minPlaytime={minPlaytime} maxPlaytime={maxPlaytime}
             minJobs={minJobs}
-            updateFunctions={setFilterVars}></FilterOptionsView>
+            updateFunctions={setFilterVars}
+         />
          <div className='flex space-x-2 items-center'>
             {loading ?
                <><Cog6ToothIcon className='animate-spin h-8 w-8' /> &nbsp;Please wait...</>
@@ -215,7 +218,6 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
                <LargeButton label='visualize' onClick={adjust} selected="false"/>
             }
          </div>
-
-      </div>
+      </>
    )
 }

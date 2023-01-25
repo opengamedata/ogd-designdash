@@ -38,9 +38,7 @@ export default function GamePicker({
       return(
          <div id="GameSelector" className="col">
             <div className="input-group">
-                  <div className="mb-2">
-                     <span className='text-xl font-light'>Game</span>
-                  </div>
+                  <div className='text-base font-semibold mb-2'>Game</div>
                   <select
                      className="form-select block w-full"
                      value={gameSelected}
