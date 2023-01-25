@@ -180,18 +180,22 @@ export default function VizContainer(props) {
             }}
          />
       </div>
-      <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
-         <DataFilter
-            loading={loading}
-            viewMode={viewMode}
-            containerSelection={selectionOptions}
-            setContainerSelection={setSelectionOptions}
-            containerFilter={filterOptions}
-            setContainerFilter={setFilterOptions}
-         />
-         <LoadingBlur loading={loading} height={10} width={10}/>
-      </ErrorBoundary>
-      { renderVisualizer() }
+      <div className="bg-white fixed top-14 left-3 p-3 w-content border shadow-sm overflow-auto">
+         <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
+            <DataFilter
+               loading={loading}
+               viewMode={viewMode}
+               containerSelection={selectionOptions}
+               setContainerSelection={setSelectionOptions}
+               containerFilter={filterOptions}
+               setContainerFilter={setFilterOptions}
+            />
+            <LoadingBlur loading={loading} height={10} width={10}/>
+         </ErrorBoundary>
+      </div>
+      <div className='right-1 top-1'>
+         { renderVisualizer() }
+      </div>
    </div>
 
    )
