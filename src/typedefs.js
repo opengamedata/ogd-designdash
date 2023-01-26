@@ -16,16 +16,6 @@ import Timedelta from "./model/Timedelta";
  */
 
 /**
- * @callback JobGraphSetter
- * @param {JobGraphModel} newVal
- */
-
-/**
- * @callback ViewModeSetter
- * @param {ViewModes} newVal
- */
-
-/**
  * @callback StringSetter
  * @param {string} newVal
  */
@@ -40,6 +30,16 @@ import Timedelta from "./model/Timedelta";
  */
 
 /**
+ * @callback PropertySetter
+ * @param {PropertyCallback} newCallback
+ */
+
+/**
+ * @callback TimedeltaSetter
+ * @param {Timedelta} newVal
+ */
+
+/**
  * @callback ElementSetter
  * @param {ElementRenderer} newRenderer
  */
@@ -50,16 +50,16 @@ import Timedelta from "./model/Timedelta";
  */
 
 /**
- * @callback PropertySetter
- * @param {PropertyCallback} newCallback
+ * @callback ViewModeSetter
+ * @param {ViewModes} newVal
+ */
+
+/**
+ * @callback JobGraphSetter
+ * @param {JobGraphModel} newVal
  */
 
 /**
  * @callback FeatureMapSetter
  * @param {FeaturesMap} newVal
- */
-
-/**
- * @callback TimedeltaSetter
- * @param {Timedelta} newVal
  */
