@@ -14,7 +14,6 @@ export function ISODateFormat(date) {
    let day   = leftPad(date.getDate(), 2, "0");
    let year  = leftPad(date.getFullYear(), 4, "0");
    const ret_val = [year, month, day].join('-');
-   console.log(`With toISOString: ${date.toISOString().split('T')[0]}, with our approach: ${ret_val}`)
    return ret_val
 }
 

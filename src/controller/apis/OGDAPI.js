@@ -1,7 +1,7 @@
 import { OGDPopulationAPI } from './OGDPopulationAPI';
 import { OGDPlayerAPI } from './OGDPlayerAPI';
 import { OGDSessionAPI } from './OGDSessionAPI';
-import { ViewModes } from '../../model/ViewModes';
+import { ViewModes } from '../../model/enums/ViewModes';
 import { SelectionOptions } from '../SelectionOptions';
 
 /**

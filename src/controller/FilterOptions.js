@@ -11,4 +11,8 @@ export class FilterOptions {
       this.min_playtime = min_playtime;
       this.max_playtime = max_playtime;
    }
+
+   get asString() {
+      return [this.min_jobs, this.min_playtime, this.max_playtime].join('/')
+   }
 }

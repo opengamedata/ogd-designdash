@@ -1,5 +1,5 @@
 import { JobGraphModel } from "./model/visualizations/JobGraphModel";
-import { ViewModes } from "./model/ViewModes";
+import { ViewModes } from "./model/enums/ViewModes";
 import Timedelta from "./model/Timedelta";
 
 /**
