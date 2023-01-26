@@ -3,7 +3,6 @@ import React, { useState, useEffect, useReducer } from 'react';
 // local imports
 import { vis_games } from '../config';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import LargeButton from '../components/buttons/LargeButton';
 import LoadingBlur from '../components/LoadingBlur';
 
 // model imports
@@ -168,19 +167,8 @@ export default function VizContainer(props) {
    }
 
    return (
-   <div className='w-screen'>
-      {/* For DEBUG purpose, remove in production */}
-      <div className='fixed top-0 right-1/2 z-10'>
-         <LargeButton
-            selected={false}
-            label='clear cache'
-            onClick={() => {
-               localStorage.clear()
-               alert('localStorage reset')
-            }}
-         />
-      </div>
-      <div className="bg-white fixed top-14 left-3 p-3 w-content border shadow-sm overflow-auto">
+   <div className='container relative flex'>
+      <div className="static top-4 left-2 w-content">
          <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
             <DataFilter
                loading={loading}
@@ -193,7 +181,7 @@ export default function VizContainer(props) {
             <LoadingBlur loading={loading} height={10} width={10}/>
          </ErrorBoundary>
       </div>
-      <div className='right-1 top-1'>
+      <div className='container relative right-1 top-1 border shadow-sm'>
          { renderVisualizer() }
       </div>
    </div>
