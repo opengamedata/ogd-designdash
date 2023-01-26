@@ -24,6 +24,10 @@ export default class EnumType {
       return this.EnumList().find((elem) => {return elem.asString === name})
    }
 
+   toString() {
+      return `${this.constructor.name}[${this.name}]`
+   }
+
    /**
     * @returns {string}
     */
