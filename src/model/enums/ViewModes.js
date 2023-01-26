@@ -11,10 +11,6 @@ export class ViewModes extends EnumType {
    }
 
    constructor(name, readable=name) {
-      super();
-      this.name = name;
-      this.readable = readable;
+      super(name, readable);
    }
-   get asString() { return this.name; }
-   get asDisplayString() { return this.readable; }
 }
