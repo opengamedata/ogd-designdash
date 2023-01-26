@@ -15,6 +15,15 @@ export default class EnumType {
       throw new Error("Tried to call EnumList on an EnumType that did not implement it!")
       return [];
    }
+
+   /**
+    * 
+    * @param {string} name 
+    */
+   static FromName(name) {
+      return this.EnumList().find((elem) => {return elem.asString === name})
+   }
+
    /**
     * @returns {string}
     */
