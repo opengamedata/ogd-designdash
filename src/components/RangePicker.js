@@ -2,6 +2,9 @@
 import React from 'react';
 // local imports
 import { InputModes } from '../model/InputModes';
+import { ISODateFormat, USDateFormat } from '../controller/TimeFormat';
+import Timedelta from '../model/Timedelta';
+import TimedeltaInput from './TimedeltaInput';
 
 /**
  * @typedef {import("../typedefs").SetterCallback} SetterCallback
@@ -12,10 +15,10 @@ import { InputModes } from '../model/InputModes';
  * @property {boolean} adjustMode
  * @property {InputModes} inputMode
  * @property {string} rangeName
- * @property {string | Date} minVal
- * @property {string | Date} maxVal
- * @property {SetterCallback} setMin
- * @property {SetterCallback} setMax
+ * @property {string | number | Date | Timedelta | undefined} minVal
+ * @property {string | number | Date | Timedelta | undefined} maxVal
+ * @property {SetterCallback | undefined} setMin
+ * @property {SetterCallback | undefined} setMax
  */
 
  /**
@@ -25,37 +28,26 @@ export default function RangePicker({
       adjustMode, inputMode, rangeName,
       minVal, maxVal, setMin, setMax
    }) {
+
    const BadType = () => {
       return (
          <div>
-            <span>Type of minVal ({typeof minVal}) or type of maxVal ({typeof maxVal}) did not match the input mode ({inputMode.asString})</span>
+            <span><code>typeof minVal</code> ({typeof minVal}) or <code>typeof maxVal</code> ({typeof maxVal}) did not match the input mode ({inputMode.asString})</span>
          </div>
       )
    }
 
-   const RenderPicker = () => {
+   const RenderPicker = (value, setter) => {
+      const classes = "block w-full font-base"
       switch (inputMode) {
          case InputModes.TEXT:
-            if (typeof minVal == 'string' && typeof maxVal == 'string') {
+            if (typeof value == 'string') {
                return (
                   <div>
-                     <div className="row"><h5 className='text-md font-bold'>{rangeName}</h5></div>
-                     <div className="mb-5">
-                        <div id="MinAppVersionInput" className="col mb-2">
-                           <div className="input-group-prepend">
-                              <h4 className="text-sm" >From</h4>
-                           </div>
-                           <div>
-                              <input type='text' className='block w-half' value={minVal || "Any"} onChange={(e) => setMin(e.target.value)}></input>
-                           </div>
-                        </div>
-                        <div id="MaxAppVersionInput" className="col mb-2">
-                           <div className="input-group-prepend">
-                              <h4 className="text-sm" >To</h4>
-                           </div>
-                           <input type='text' className='block w-half' value={maxVal || "Any"} onChange={(e) => setMax(e.target.value)}></input>
-                        </div>
-                     </div>
+                     <input
+                        type='text' className={classes} value={value || "Any"}
+                        onChange={(e) => setter(e.target.value)}
+                     />
                   </div>
                )
             }
@@ -64,21 +56,26 @@ export default function RangePicker({
             }
          break;
          case InputModes.DATE:
-            if (minVal instanceof Date && maxVal instanceof Date) {
+            if (value instanceof Date) {
                return (
-                  <div>
-                     <div className="row"><h5 className='text-md font-bold'>{rangeName}</h5></div>
-                     <div className="mb-5">
-                        <div id="MinDateInput" className="col mb-2">
-                           <div className="input-group-prepend"><h4 className="text-sm" >From</h4></div>
-                           <input type='date' className='block w-full' value={minVal.toISOString().split('T')[0]} onChange={(e) => setMin(new Date(e.target.value + 'T00:00'))}></input>
-                        </div>
-                        <div id="MaxDateInput" className="col">
-                           <div className="input-group-prepend"><h4 className="text-sm" >To</h4></div>
-                           <input type='date' className='block w-full' value={maxVal.toISOString().split('T')[0]} onChange={(e) => setMax(new Date(e.target.value + 'T00:00'))}></input>
-                        </div>
+                  <input
+                     type='date' className={`${classes}`} value={ISODateFormat(value)}
+                     onChange={(e) => setter(new Date(e.target.value + 'T00:00'))}
+                  />
+               )
+            }
+            else {
+               return BadType();
+            }
+         break;
+         case InputModes.TIME:
+            if (value instanceof Timedelta) {
+               return (
+                  <>
+                     <div className={`${classes}`} >
+                        <TimedeltaInput value={value} setValue={setter} />
                      </div>
-                  </div>
+                  </>
                )
             }
             else {
@@ -86,28 +83,13 @@ export default function RangePicker({
             }
          break;
          case InputModes.NUMBER:
-         case InputModes.TIME:
-         default:
-            return (
-               <div>
-                  <span>Input Mode not supported: {inputMode.asString}</span>
-               </div>
-            )
-      }
-   }
-
-   const RenderChoice = () => {
-      switch (inputMode) {
-         case InputModes.TEXT:
-            if (typeof minVal == 'string' && typeof maxVal == 'string') {
-               return(
+            if (typeof value == 'number') {
+               return (
                   <div>
-                     <div>
-                        <span className='text-sm'>App Version: </span>
-                        <span className='text-sm'> {minVal || "Any"}</span>
-                        <span className='text-sm'> to </span>
-                        <span className='text-sm'>{maxVal || "Any"}</span>
-                     </div>
+                     <input
+                        type='number' className={`${classes}`} value={value || 0}
+                        onChange={(e) => setter(parseInt(e.target.value))}
+                     />
                   </div>
                )
             }
@@ -115,36 +97,87 @@ export default function RangePicker({
                return BadType();
             }
          break;
+         default:
+            return (
+               <div className={`${classes}`}>
+                  <span>Input Mode not supported: {inputMode.asString}</span>
+               </div>
+            )
+      }
+   }
+
+   const RenderChoice = (value) => {
+      const classes = "text-sm"
+      switch (inputMode) {
+         case InputModes.TEXT:
+         case InputModes.NUMBER:
+            if (typeof minVal == 'string' && typeof maxVal == 'string') {
+               return(
+                  <span className={`${classes}`}> {value || "Any"}</span>
+               )
+            }
+            else {
+               return BadType();
+            }
+         break;
          case InputModes.DATE:
-            if (minVal instanceof Date && maxVal instanceof Date) {
+            if (value instanceof Date) {
                return (
-                  <div>
-                     <span>Date: </span>
-                     <span className='text-sm'>{minVal.toISOString().split('T')[0]}</span>
-                     <span className='text-sm'> to </span>
-                     <span className='text-sm'>{maxVal.toISOString().split('T')[0]}</span>
-                  </div>
+                  <span className={`${classes}`}>{USDateFormat(value)}</span>
                );
             }
             else {
                return BadType();
             }
          break;
-         case InputModes.NUMBER:
          case InputModes.TIME:
+            if (value instanceof Timedelta) {
+               return (
+                  <span className={`${classes}`}>{value.ToString}</span>
+               )
+            }
+            else {
+               return BadType();
+            }
          default:
             return (
-               <div>
+               <>
                   <span>Input Mode not supported: {inputMode.asString}</span>
-               </div>
+               </>
             )
       }
    }
 
    if (adjustMode) {
-      return RenderPicker()
+      return (
+         <>
+            <div className="row"><h5 className='text-base font-semibold'>{rangeName}</h5></div>
+            {/* TODO: add checkboxes so user can decide if they want this to be part of filter or not. */}
+            <div className="mb-5">
+               <div id="MinAppVersionInput" className="col mb-2">
+                  <div className="input-group-prepend">
+                     <h4 className="text-sm" >From</h4>
+                  </div>
+                  {RenderPicker(minVal, setMin)}
+               </div>
+               <div id="MaxAppVersionInput" className="col mb-2">
+                  <div className="input-group-prepend">
+                     <h4 className="text-sm" >To</h4>
+                  </div>
+                  {RenderPicker(maxVal, setMax)}
+               </div>
+            </div>
+         </>
+      )
    }
    else {
-      return RenderChoice()
+      return (
+         <>
+            <span className='text-sm'>{rangeName}: </span>
+            {RenderChoice(minVal)}
+            <span className='text-sm'> to </span>
+            {RenderChoice(maxVal)}
+         </>
+      )
    }
 }
