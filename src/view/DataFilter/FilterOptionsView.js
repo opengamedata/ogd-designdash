@@ -53,7 +53,8 @@ export default function FilterOptionsView({
                <RangePicker
                   adjustMode={adjustMode} inputMode={InputModes.NUMBER}
                   rangeName="Jobs"
-                  minVal={minJobs || "Any"} setMin={updateFunctions.setMinJobs}
+                  minVal={minJobs || 0} setMin={updateFunctions.setMinJobs}
+                  maxVal={undefined}    setMax={undefined}
                />
             </div>
          </div>
