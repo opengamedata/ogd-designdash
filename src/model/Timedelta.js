@@ -136,7 +136,11 @@ export default class Timedelta {
    /**
     * @returns {string}
     */
-   get ToString() {
+   get asString() {
       return `${this.Hours}:${this.Minutes}:${this.Seconds}.${this.Milliseconds}`
+   }
+
+   toString() {
+      return this.asString
    }
 }
