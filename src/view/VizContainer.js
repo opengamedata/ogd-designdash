@@ -6,7 +6,7 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
 
 // model imports
-import { ViewModes } from '../model/ViewModes';
+import { ViewModes } from '../model/enums/ViewModes';
 import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
 import { JobGraphModel } from '../model/visualizations/JobGraphModel';
 import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
@@ -37,6 +37,7 @@ import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
  * @returns 
  */
 export default function VizContainer(props) {
+   console.log(`As a test, attempting to retrieve INITIAL from ViewModes yields ${ViewModes.FromName('INITIAL')}`)
    // data loading vars
    const [loading, setLoading] = useState(false);
    const [viewData, setViewData] = useState(null);
@@ -57,14 +58,23 @@ export default function VizContainer(props) {
    const [viewFeatures, setViewFeatures] = useState(InitialVisualizerModel.RequiredExtractors())
 
    useEffect(() => {
+      console.log(`selectionOptions changed to ${selectionOptions.ToLocalStorageKey()}, calling retrieveData...`)
       retrieveData();
    }, [selectionOptions])
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
+   // useEffect(() => {
+   //    console.warn("Filtering of data on client side is not yet implemented!");
+   //    setViewData(rawData);
+   // }, [filterOptions, rawData]);
    useEffect(() => {
-      console.warn("Filtering of data on client side is not yet implemented!");
+      console.log(`filterOptions changed to ${filterOptions.asString}, calling setViewData...`)
       setViewData(rawData);
-   }, [filterOptions, rawData]);
+   }, [filterOptions]);
+   useEffect(() => {
+      console.log(`rawData changed to ${rawData}, calling setViewData...`)
+      setViewData(rawData);
+   }, [rawData]);
 
    // When view mode changes, update the list of features to request.
    useEffect(() => {
@@ -87,15 +97,17 @@ export default function VizContainer(props) {
    }, [viewMode])
 
    const retrieveData = () => {
-        // flush current dataset and start loading animation
-        setRawData(null)
-        setViewData(null)
-        setLoading(true)
+      console.log("Retrieving data...")
+      // flush current dataset and start loading animation
+      setRawData(null)
+      setViewData(null)
+      setLoading(true)
 
-        const localData = localStorage.getItem(selectionOptions.ToLocalStorageKey())
-        // console.log(localData)
-        if (localData) {
+      const localData = localStorage.getItem(selectionOptions.ToLocalStorageKey())
+      // console.log(localData)
+      if (localData) {
          try {
+            console.log(`Found ${selectionOptions.ToLocalStorageKey()} in the cache`)
             // if query found in storage, retreive JSON
             setRawData(JSON.parse(localData)) 
          }
@@ -106,9 +118,9 @@ export default function VizContainer(props) {
             // stop loading animation
             setLoading(false)
          }
-        }
-        // if not found in storage, request dataset
-        else {
+      }
+      // if not found in storage, request dataset
+      else {
             console.log('fetching:', selectionOptions.ToLocalStorageKey())
 
             OGDAPI.fetch(viewMode, selectionOptions, viewFeatures)
@@ -127,7 +139,7 @@ export default function VizContainer(props) {
                setLoading(false)
                alert(error)
             })
-        }
+      }
    }
 
    const renderVisualizer = () => {
@@ -166,23 +178,29 @@ export default function VizContainer(props) {
       }
    }
 
+   const styling = {
+      gridColumn: props.column,
+      gridRow: props.row
+   }
    return (
-   <div className='container relative flex'>
-      <div className="static top-4 left-2 w-content">
-         <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
-            <DataFilter
-               loading={loading}
-               viewMode={viewMode}
-               containerSelection={selectionOptions}
-               setContainerSelection={setSelectionOptions}
-               containerFilter={filterOptions}
-               setContainerFilter={setFilterOptions}
-            />
-            <LoadingBlur loading={loading} height={10} width={10}/>
-         </ErrorBoundary>
-      </div>
-      <div className='container relative right-1 top-1 border shadow-sm'>
-         { renderVisualizer() }
+   <div className='flex-auto border-4 border-red-700' style={styling}>
+      <div className='container relative flex'>
+         <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
+            <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
+               <DataFilter
+                  loading={loading}
+                  viewMode={viewMode}
+                  containerSelection={selectionOptions}
+                  setContainerSelection={(opts) => { console.log("DataFilter called setSelectionOptions"); setSelectionOptions(opts)}}
+                  containerFilter={filterOptions}
+                  setContainerFilter={(opts) => { console.log("DataFilter called setFilterOptions"); setFilterOptions(opts)}}
+               />
+               <LoadingBlur loading={loading} height={10} width={10}/>
+            </ErrorBoundary>
+         </div>
+         <div className='container relative left-72 border shadow-sm'>
+            { renderVisualizer() }
+         </div>
       </div>
    </div>
 

@@ -1,7 +1,7 @@
 // global imports
 import React from 'react';
 // local imports
-import { InputModes } from '../model/InputModes';
+import { InputModes } from '../model/enums/InputModes';
 import { ISODateFormat, USDateFormat } from '../controller/TimeFormat';
 import Timedelta from '../model/Timedelta';
 import TimedeltaInput from './TimedeltaInput';
@@ -144,7 +144,7 @@ export default function RangePicker({
          case InputModes.TIME:
             if (value instanceof Timedelta) {
                return (
-                  <span className={`${classes}`}>{value.ToString}</span>
+                  <span className={`${classes}`}>{value.asString}</span>
                )
             }
             else {
