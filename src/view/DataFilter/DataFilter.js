@@ -8,7 +8,7 @@ import SelectionOptionsView from './SelectionOptionsView'
 import FilterOptionsView from './FilterOptionsView';
 //    model imports
 import Timedelta from '../../model/Timedelta';
-import { ViewModes } from '../../model/ViewModes';
+import { ViewModes } from '../../model/enums/ViewModes';
 //    controller imports
 import { FilterOptions } from '../../controller/FilterOptions';
 import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOptions } from '../../controller/SelectionOptions';
@@ -189,7 +189,7 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
 
    // console.log(`In DataFilter, just before returning, viewMode is ${viewMode.asString}`)
    return (
-      <>
+      <div className='bg-white border shadow-sm px-4'>
          <div className='flex justify-between mb-2'>
             { renderToggleButton() }
          </div>
@@ -218,6 +218,6 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
                <LargeButton label='visualize' onClick={adjust} selected="false"/>
             }
          </div>
-      </>
+      </div>
    )
 }

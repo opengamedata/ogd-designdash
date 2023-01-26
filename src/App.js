@@ -17,7 +17,7 @@ class App extends React.Component {
     return (
       <>
         <Navigation />
-        <div className={`App h-screen w-screen py-12 ${gradient} border-8 border-blue-500`}>
+        <div className={`App h-screen w-screen py-12 ${gradient}`}>
           <Routes>
             <Route path={DASHBOARD_BASE+"/"} element={<Dashboard />} />
             <Route path="*" element={<NotFound />} />

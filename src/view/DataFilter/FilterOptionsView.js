@@ -2,9 +2,9 @@
 import React from 'react';
 // local imports
 //    model imports
-import { InputModes } from '../../model/InputModes';
 import RangePicker from '../../components/RangePicker';
-import { ViewModes } from '../../model/ViewModes';
+import { InputModes } from '../../model/enums/InputModes';
+import { ViewModes } from '../../model/enums/ViewModes';
 import Timedelta from '../../model/Timedelta';
 
 /**

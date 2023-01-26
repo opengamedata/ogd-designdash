@@ -1,10 +1,10 @@
 // global imports
 import React from 'react';
 // local imports
-import { ViewModes } from "../../model/ViewModes"
 import GamePicker from './GamePicker';
 import RangePicker from '../../components/RangePicker';
-import { InputModes } from '../../model/InputModes';
+import { ViewModes } from "../../model/enums/ViewModes"
+import { InputModes } from '../../model/enums/InputModes';
 
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback

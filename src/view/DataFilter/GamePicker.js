@@ -2,7 +2,6 @@
 import React from 'react';
 // local imports
 import { vis_games } from '../../config';
-import { ViewModes } from "../../model/ViewModes"
 
 /**
  * @typedef {import("../../typedefs").SetterMap} SetterMap
