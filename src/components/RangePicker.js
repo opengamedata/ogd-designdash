@@ -23,14 +23,14 @@ import TimedeltaInput from './TimedeltaInput';
  */
 export default function RangePicker({ adjustMode, filterItem, filterState, updateFilterState }) {
 
-   const [localMin, setLocalMin] = useState(filterState['min'] || filterItem.InitialValues['min']);
-   const [localMax, setLocalMax] = useState(filterState['max'] || filterItem.InitialValues['max']);
+   const [localMin, setLocalMin] = useState(filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min']);
+   const [localMax, setLocalMax] = useState(filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max']);
 
    useEffect(() => {
       try {
          if (filterItem.Validator({'min':localMin, 'max':localMax})) {
-            updateFilterState('min', localMin);
-            updateFilterState('max', localMax);
+            updateFilterState(`${filterItem.Name}Min`, localMin);
+            updateFilterState(`${filterItem.Name}Max`, localMax);
          }
       }
       catch (error) {

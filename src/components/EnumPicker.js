@@ -41,12 +41,12 @@ export default function EnumPicker({
 }) {
    const enumType = filterItem.InitialValues['type']
    /** @type {[EnumType, any]} */
-   const [localSelection, setLocalSelection] = useState(filterState['selected'] || filterItem.InitialValues['selected'])
+   const [localSelection, setLocalSelection] = useState(filterState[`${filterItem.Name}Selected`] || filterItem.InitialValues['selected'])
 
    useEffect(() => {
       try {
          if (filterItem.Validator({'selected':localSelection})) {
-            updateFilterState('selected', localSelection);
+            updateFilterState(`${filterItem.Name}selected`, localSelection);
          }
       }
       catch (error) {
