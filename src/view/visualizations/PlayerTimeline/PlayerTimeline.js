@@ -12,7 +12,7 @@ import timeline from "./timeline";
 import { PlayerTimelineModel } from '../../../model/visualizations/PlayerTimelineModel';
 
 /**
- * @typedef {import("../../../typedefs").JobGraphSetter} JobGraphSetter
+ * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import("../../../typedefs").StringSetter} StringSetter
  * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
  * @typedef {import("../../../typedefs").SetterCallback} SetterCallback
@@ -21,7 +21,7 @@ import { PlayerTimelineModel } from '../../../model/visualizations/PlayerTimelin
 /**
  * force directed graph component for job/mission level data
  * @param {object} props raw data JSON object 
- * @param {PlayerTimelineModel} props.model
+ * @param {VisualizerModel} props.model
  * @param {SetterCallback} props.setVisualizer
  * @returns 
  */
@@ -76,52 +76,53 @@ export default function PlayerTimeline({ model, setVisualizer }) {
     }, [data])
 
 
-
-    return (
-        <>
-            {/* chart */}
-            <svg
-                ref={diagram}
-                className="w-full mx-0"
-            />
-
-            {/* chart info */}
-            <div className="fixed bottom-5 left-8">
-                <LargeButton
-                    selected={false}
-                    onClick={() => { setVisualizer(Visualizers.JOB_GRAPH) }}
-                    label='← BACK TO JOB GRAPH'
+    if (model instanceof PlayerTimelineModel) {
+        return (
+            <>
+                {/* chart */}
+                <svg
+                    ref={diagram}
+                    className="w-full mx-0"
                 />
-                <p className='mb-3 text-4xl font-light'>Player {model.ConvertedData.meta.playerID}</p>
-                <p className="font-light">
-                    From <span className="font-bold">{model.ConvertedData.meta.startTime}</span> to <span className="font-bold">{model.ConvertedData.meta.endTime}</span>
-                </p>
-                <p className="font-light">
-                    Total time taken: <span className="font-bold">{model.ConvertedData.meta.totalTime}s</span>
-                </p>
-                <p className="font-light">
-                    Session count: <span className="font-bold">{model.ConvertedData.meta.sessionCount}</span>
-                </p>
-            </div>
-
-            {/* chart settings */}
-            <EventFilterCtrl
-                data={model.ConvertedData}
-                eventTypesDisplayed={eventTypesDisplayed}
-                setEventTypesDisplayed={updateEventTypesDisplayed}
-            />
-
-            {/* error code event tagging  */}
-            {formVisible &&
-                <CodeForm
-                selectedGame={model.Game}
-                selectedPlayer={null}
-                setFormVisible={setFormVisible}
-                event={selectedEventForTagging}
-            />
-            }
-        </>
-    )
+                {/* chart info */}
+                <div className="fixed bottom-5 left-8">
+                    <LargeButton
+                        selected={false}
+                        onClick={() => { setVisualizer(Visualizers.JOB_GRAPH) }}
+                        label='← BACK TO JOB GRAPH'
+                    />
+                    <p className='mb-3 text-4xl font-light'>Player {model.ConvertedData.meta.playerID}</p>
+                    <p className="font-light">
+                        From <span className="font-bold">{model.ConvertedData.meta.startTime}</span> to <span className="font-bold">{model.ConvertedData.meta.endTime}</span>
+                    </p>
+                    <p className="font-light">
+                        Total time taken: <span className="font-bold">{model.ConvertedData.meta.totalTime}s</span>
+                    </p>
+                    <p className="font-light">
+                        Session count: <span className="font-bold">{model.ConvertedData.meta.sessionCount}</span>
+                    </p>
+                </div>
+                {/* chart settings */}
+                <EventFilterCtrl
+                    data={model.ConvertedData}
+                    eventTypesDisplayed={eventTypesDisplayed}
+                    setEventTypesDisplayed={updateEventTypesDisplayed}
+                />
+                {/* error code event tagging  */}
+                {formVisible &&
+                    <CodeForm
+                    selectedGame={model.Game}
+                    selectedPlayer={null}
+                    setFormVisible={setFormVisible}
+                    event={selectedEventForTagging}
+                />
+                }
+            </>
+        )
+    }
+    else {
+        return <div>Wrong kind of VisualizerModel for PlayerTimeline</div>
+    }
 }
 
 /**
