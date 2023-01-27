@@ -3,9 +3,18 @@ import React from 'react';
 // local imports
 
 /**
- * @typedef {import("../typedefs").SetterMap} SetterMap
- * @typedef {import("../typedefs").SetterCallback} SetterCallback
  * @typedef {import("../model/enums/EnumType").default} EnumType
+ */
+
+/**
+ * @callback EnumSetter
+ * @param {EnumType} newVal
+ */
+
+/**
+ * @callback EnumGetter
+ * @param {string} name
+ * @returns {EnumType}
  */
 
 /**
@@ -18,8 +27,9 @@ import React from 'react';
  * @param {boolean} props.adjustMode
  * @param {object} props.enumType
  * @param {EnumList} props.enumType.EnumList
- * @param {string} props.selected
- * @param {SetterCallback} props.setSelected
+ * @param {EnumGetter} props.enumType.FromName
+ * @param {EnumType} props.selected
+ * @param {EnumSetter} props.setSelected
  */
 export default function EnumPicker({
    adjustMode,
@@ -27,27 +37,27 @@ export default function EnumPicker({
    selected,
    setSelected
 }) {
-    const gameList = () => {
-        const games = []
+    const optionList = () => {
+        const options = []
         enumType.EnumList().forEach((k) => {
-            games.push(
+            options.push(
                 <option key={k.asString} value={k.asString}>{k.asDisplayString}</option>
             )
         })
-        return games
+        return options
     }
 
    if (adjustMode) {
       return(
-         <div id="GameSelector" className="col">
+         <div id={`${selected.constructor.name}Selector`} className="col">
             <div className="input-group">
                   <div className='text-base font-semibold mb-2'>Game</div>
                   <select
                      className="form-select block w-full"
-                     value={selected}
-                     onChange={(e) => setGameSelected(e.target.value)}>
+                     value={selected.asString}
+                     onChange={(e) => setSelected(enumType.FromName(e.target.value))}>
                      <option> </option>
-                     {gameList()}
+                     {optionList()}
                   </select>
             </div>
          </div>
@@ -56,7 +66,7 @@ export default function EnumPicker({
    else {
       return(
          <div>
-            <span className='font-medium '>{selected}&nbsp;</span>
+            <span className='font-medium '>{selected.asDisplayString}&nbsp;</span>
          </div>
       )
       // return <div>SelectionChoices</div>
