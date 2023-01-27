@@ -34,10 +34,13 @@ export default class JobGraphRequest extends VisualizerRequest {
          new FilterItem("LogVersionRange", InputModes.RANGE, ValueModes.TEXT, {'min':"*", 'max':"*"}, JobGraphRequest.VersionValidator("Log"))
       )
       this.filter_request.AddItem(
-         new FilterItem("MinimumJobs", InputModes.RANGE, ValueModes.NUMBER, {'min':0, 'max':null}, JobGraphRequest.VersionValidator("Log"))
+         new FilterItem("MinimumJobs", InputModes.RANGE, ValueModes.NUMBER, {'min':0, 'max':null}, JobGraphRequest.MinJobsValidator)
       )
    }
 
+   /**
+    * @type {Validator}
+    */
    static GameValidator(vals) {
       const gameSelected = vals['selected'];
       if (!gameSelected) {
@@ -50,6 +53,9 @@ export default class JobGraphRequest extends VisualizerRequest {
       }
    }
 
+   /**
+    * @type {Validator}
+    */
    static DateValidator(vals) {
       // if empty fields, prompt user to fill in the blanks & return
       // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
@@ -76,6 +82,11 @@ export default class JobGraphRequest extends VisualizerRequest {
       }
    }
 
+   /**
+    * 
+    * @param {string} name 
+    * @returns {Validator}
+    */
    static VersionValidator(name) {
       return (vals) => {
          const minVersion = vals['min'];
@@ -90,12 +101,18 @@ export default class JobGraphRequest extends VisualizerRequest {
       }
    }
 
+   /**
+    * @type {Validator}
+    */
    static MinJobsValidator(vals) {
          const minPlaytime = vals['min'];
          const maxPlaytime = vals['max']
       if (minPlaytime != null && maxPlaytime != null && minPlaytime > maxPlaytime) {
          alert('The minimum play time must be less than the maximum!')
-         return
+         return false;
+      }
+      else {
+         return true;
       }
    }
 
