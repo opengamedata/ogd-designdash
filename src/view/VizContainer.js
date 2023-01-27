@@ -1,15 +1,11 @@
 // global imports
 import React, { useState, useEffect, useReducer } from 'react';
 // local imports
-import { vis_games } from '../config';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
 
 // model imports
 import { Visualizers } from '../model/enums/Visualizers';
-import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
-import { JobGraphModel } from '../model/visualizations/JobGraphModel';
-import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
 import InitialVisualizerRequest from '../model/requests/InitialVisualizerRequest';
 
 // controller imports
