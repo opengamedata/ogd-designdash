@@ -1,28 +1,25 @@
 import { OGDPopulationAPI } from './OGDPopulationAPI';
 import { OGDPlayerAPI } from './OGDPlayerAPI';
 import { OGDSessionAPI } from './OGDSessionAPI';
-import { ViewModes } from '../../model/enums/ViewModes';
-import { SelectionOptions } from '../SelectionOptions';
+import RequestModes from '../../model/enums/RequestModes';
+import { APIRequest } from '../../model/requests/APIRequest';
 
 /**
- * @param {ViewModes} viewMode
- * @param {SelectionOptions} selectionOptions
- * @param {string[]} metrics
+ * @param {APIRequest} request
  * @returns {Promise<Response>}
  */
 export class OGDAPI {
-   static fetch(viewMode, selectionOptions, metrics) {
-      switch (viewMode) {
-         case ViewModes.POPULATION:
-            return OGDPopulationAPI.fetch(selectionOptions, metrics);
+   static fetch(request) {
+      switch (request.RequestMode) {
+         case RequestModes.POPULATION:
+            return OGDPopulationAPI.fetch(request);
          break;
-         case ViewModes.PLAYER:
-            return OGDPlayerAPI.fetch(selectionOptions, metrics);
+         case RequestModes.PLAYER:
+            return OGDPlayerAPI.fetch(request);
          break;
-         case ViewModes.SESSION:
-            return OGDSessionAPI.fetch(selectionOptions, metrics);
+         case RequestModes.SESSION:
+            return OGDSessionAPI.fetch(request);
          break;
-         case ViewModes.INITIAL:
          default:
             let response_data = {
                result: "No Data Requested",

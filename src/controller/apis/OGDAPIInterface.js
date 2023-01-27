@@ -1,11 +1,10 @@
-import { SelectionOptions } from "../SelectionOptions";
+import { APIRequest } from "../../model/requests/APIRequest";
 
 export default class OGDAPIInterface {
    /**
-    * @param {SelectionOptions} selectionOptions 
-    * @param {string[]} metrics 
+    * @param {APIRequest} request 
     */
-   static fetch(selectionOptions, metrics) {
+   static fetch(request) {
       throw new Error("API must implement the fetch function!");
    }
 }
