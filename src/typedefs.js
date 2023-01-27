@@ -80,7 +80,7 @@
 
 /**
  * @callback VisualizerSetter
- * @param {VisualizerSetter} newVal
+ * @param {Visualizers} newVal
  */
 
 /**
