@@ -12,6 +12,10 @@ export default class VisualizerRequest {
       this.updateRequesterState = updateRequesterState;
    }
 
+   toString() {
+      return `${this.constructor.name} Instance`;
+   }
+
    /**
     * @returns {APIRequest?} The API request that gets the visualizer's required data.
     */
