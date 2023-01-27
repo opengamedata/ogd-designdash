@@ -24,6 +24,7 @@ export class ValueModes extends EnumType {
    static TEXT = new ValueModes('TEXT', 'Text');
    static DATE = new ValueModes('DATE', 'Date');
    static TIME = new ValueModes('TIME', 'Time');
+   static ENUM = new ValueModes('ENUM', 'Custom Enumerated Type');
 
    static EnumList() {
       return [ValueModes.NUMBER, ValueModes.TEXT, ValueModes.DATE, ValueModes.TIME]
