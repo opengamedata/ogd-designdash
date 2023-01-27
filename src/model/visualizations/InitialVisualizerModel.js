@@ -9,13 +9,4 @@ export class InitialVisualizerModel extends VisualizerModel {
       super();
       this.val = 0;
    }
-
-   /**
-    * @returns {FeaturesMap}
-    */
-   static RequiredExtractors() {
-      return {
-         "AQUALAB" : []
-      };
-   }
 }

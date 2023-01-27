@@ -1,9 +1,5 @@
 import VisualizerModel from "./VisualizerModel";
 
- /**
- * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
- */
-
 export class JobGraphModel extends VisualizerModel {
    /**
     * @param {Array} nodes 
@@ -15,30 +11,6 @@ export class JobGraphModel extends VisualizerModel {
       this.nodes = nodes;
       this.links = links;
       this.meta = meta
-   }
-
-   /**
-    * @returns {FeaturesMap}
-    */
-   static RequiredExtractors() {
-      return {
-         "AQUALAB": [
-            'ActiveJobs',
-            'JobsAttempted-avg-time-per-attempt',
-            'JobsAttempted-job-name',
-            'JobsAttempted-job-difficulties',
-            'TopJobCompletionDestinations',
-            'TopJobSwitchDestinations',
-            'PlayerSummary',
-            'PopulationSummary',
-         ],
-         "SHIPWRECKS": [
-            'ActiveJobs',
-            'JobsAttempted',
-            'PlayerSummary',
-            'PopulationSummary'
-         ]
-      };
    }
 
    /**
