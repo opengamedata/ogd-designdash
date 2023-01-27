@@ -67,6 +67,6 @@ export default class JobGraphRequest extends VisualizerRequest {
     * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
     */
    GetVisualizerModel(requesterState, rawData) {
-      return new JobGraphModel(requesterState['GameSelected'], rawData);
+      return new JobGraphModel(requesterState['GameSelected'], rawData, 'TopJobCompletionDestinations');
    }
 }
