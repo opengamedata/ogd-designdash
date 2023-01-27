@@ -65,7 +65,7 @@ export default function EnumPicker(props) {
                      <div className='text-base font-semibold mb-2'>{filterItem.Name}</div>
                      <select
                         className="form-select block w-full"
-                        value={`${filterItem.Name}${localSelection.asString}`}
+                        value={`${localSelection.asString}`}
                         onChange={updateSelection}>
                         <option key="Empty"> </option>
                         {optionList}
