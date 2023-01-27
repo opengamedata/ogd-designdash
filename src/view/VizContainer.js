@@ -8,6 +8,8 @@ import EnumPicker from '../components/EnumPicker';
 // model imports
 import { Visualizers } from '../model/enums/Visualizers';
 import InitialVisualizerRequest from '../model/requests/InitialVisualizerRequest';
+import JobGraphRequest from '../model/requests/JobGraphRequest';
+import PlayerTimelineRequest from '../model/requests/PlayerTimelineRequest';
 
 // controller imports
 import { OGDAPI } from '../controller/apis/OGDAPI';
@@ -17,6 +19,7 @@ import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobVisualizer from './visualizations/JobGraph/JobVisualizer';
 import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
+import { FilterItem, InputModes, ValueModes } from '../model/requests/FilterRequest';
 
 /**
  * @typedef {import('../typedefs').VisualizerSetter} VisualizerSetter
@@ -37,6 +40,7 @@ export default function VizContainer(props) {
    // data loading vars
    const [loading, setLoading] = useState(false);
    const [rawData, setRawData] = useState(null);
+   const [pickerState, setPickerState] = useState({})
    // data view vars
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, setVisualizer] = useState(Visualizers.INITIAL);
@@ -53,17 +57,23 @@ export default function VizContainer(props) {
       // clear state from last viz.
       setVisualizerRequestState({});
       // update the request type.
-      switch (visualizer) {
-         case Visualizers.INITIAL:
-            setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
-         break;
+      const selection = pickerState['selected']
+      switch (selection) {
          case Visualizers.JOB_GRAPH:
+            setVisualizer(selection);
+            setRequest(new JobGraphRequest(setVisualizerRequestState))
+         break;
          case Visualizers.PLAYER_TIMELINE:
+            setVisualizer(selection);
+            setRequest(new PlayerTimelineRequest(setVisualizerRequestState))
+         break;
+         case Visualizers.INITIAL:
          default:
+            setVisualizer(selection);
             setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
          break;
       }
-   }, [visualizer])
+   }, [pickerState])
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
@@ -153,6 +163,12 @@ export default function VizContainer(props) {
       }
    }
 
+   const dropdownFilterItem = new FilterItem(
+      "VizPicker",
+      InputModes.DROPDOWN,
+      ValueModes.ENUM,
+      {'type':Visualizers, 'selected':visualizer}
+   )
    const styling = {
       gridColumn: props.column,
       gridRow: props.row
@@ -162,9 +178,9 @@ export default function VizContainer(props) {
       <div className='container relative flex'>
          <EnumPicker
             adjustMode={true}
-            enumType={Visualizers}
-            selected={visualizer}
-            setSelected={setVisualizer}
+            filterItem={dropdownFilterItem}
+            filterState={pickerState}
+            updateFilterState={setPickerState}
          />
          <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>

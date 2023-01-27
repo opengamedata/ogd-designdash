@@ -23,7 +23,7 @@ import { Visualizers } from "../../../model/enums/Visualizers";
  * @param {SetterCallback} props.setVisualizer
  * @returns 
  */
-export default function JobVisualizer({ model, setVisualizer }) {
+export default function JobGraph({ model, setVisualizer }) {
     /** @type {[JobGraphModel, JobGraphSetter]} data */
     const [localModel, setLocalModel] = useState(model);
     /** @type {[string, StringSetter]} data */
