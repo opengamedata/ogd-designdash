@@ -48,6 +48,23 @@ export default function VizContainer(props) {
       retrieveData();
    }, [visualizerRequestState])
 
+   useEffect(() => {
+      console.log(`Visualizer changed to ${visualizer.asDisplayString}, setting up new request...`)
+      // clear state from last viz.
+      setVisualizerRequestState({});
+      // update the request type.
+      switch (visualizer) {
+         case Visualizers.INITIAL:
+            setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
+         break;
+         case Visualizers.JOB_GRAPH:
+         case Visualizers.PLAYER_TIMELINE:
+         default:
+            setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
+         break;
+      }
+   }, [visualizer])
+
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
    //    console.warn("Filtering of data on client side is not yet implemented!");
@@ -60,7 +77,7 @@ export default function VizContainer(props) {
       setRawData(null)
       setLoading(true)
 
-      const api_request = request.GetAPIRequest();
+      const api_request = request.GetAPIRequest(visualizerRequestState);
       if (api_request != null) {
          const localData = localStorage.getItem(api_request.LocalStorageKey)
          // console.log(localData)
@@ -152,12 +169,9 @@ export default function VizContainer(props) {
          <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
                <DataFilter
+                  filterRequest={request.GetFilterRequest()}
                   loading={loading}
-                  viewMode={viewMode}
-                  containerSelection={selectionOptions}
-                  setContainerSelection={(opts) => { console.log("DataFilter called setSelectionOptions"); setSelectionOptions(opts)}}
-                  containerFilter={filterOptions}
-                  setContainerFilter={(opts) => { console.log("DataFilter called setFilterOptions"); setFilterOptions(opts)}}
+                  updateData={retrieveData}
                />
                <LoadingBlur loading={loading} height={10} width={10}/>
             </ErrorBoundary>
