@@ -1,10 +1,17 @@
 /**
- * @typedef {import("../../typedefs").AnyMap} AnyMap
+ * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
  * @typedef {import("./FilterRequest").FilterRequest} FilterRequest
  */
 
 export default class VisualizerRequest {
+   /**
+    * @param {MapSetter} updateRequesterState
+    */
+   constructor(updateRequesterState) {
+      this.updateRequesterState = updateRequesterState;
+   }
+
    /**
     * @returns {APIRequest?} The API request that gets the visualizer's required data.
     */
