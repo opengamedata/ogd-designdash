@@ -9,10 +9,11 @@ import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterReque
 
 export default class InitialVisualizerRequest extends VisualizerRequest {
    /**
+    * @param {object} requesterState
     * @param {MapSetter} updateRequesterState
     */
-   constructor(updateRequesterState) {
-      super(updateRequesterState);
+   constructor(requesterState, updateRequesterState) {
+      super(requesterState, updateRequesterState);
       this.filter_request = new FilterRequest(this.updateRequesterState);
       this.filter_request.AddItem(
          new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"enum":AvailableGames})

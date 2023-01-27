@@ -6,9 +6,11 @@
 
 export default class VisualizerRequest {
    /**
+    * @param {object} requesterState
     * @param {MapSetter} updateRequesterState
     */
-   constructor(updateRequesterState) {
+   constructor(requesterState, updateRequesterState) {
+      this.requesterState = requesterState;
       this.updateRequesterState = updateRequesterState;
    }
 
