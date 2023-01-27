@@ -41,10 +41,6 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
       if (!loading) setAdjustMode(false)
    }, [loading])
 
-   const filterElements = filterRequest.Items.map(
-      (item) => RenderItem(item)
-   )
-
    // const adjust = () => {
    //    // if empty fields, prompt user to fill in the blanks & return
    //    // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
@@ -93,39 +89,6 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
     * 
     * @param {FilterItem} item 
     */
-   const RenderItem = (item) => {
-      switch (item.InputMode) {
-         case InputModes.DROPDOWN:
-            return RenderDropdown(item);
-         break;
-         case InputModes.INPUT:
-            return RenderInput(item);
-         break;
-         case InputModes.RANGE:
-            return (
-               <div id="DateRange">
-                  <RangePicker
-                     adjustMode={adjustMode}
-                     filterItem={item}
-                     filterState={localState}
-                     updateFilterState={updateFilterState}
-                  />
-               </div>
-            )
-         break;
-         case InputModes.SEPARATOR:
-            return ( <hr style={{margin: "10px 0px"}}/> )
-         break;
-         default:
-            return ( <div>Invalid Input Mode: {item.InputMode.asString}</div> );
-         break;
-      }
-   }
-
-   /**
-    * 
-    * @param {FilterItem} item 
-    */
    const RenderDropdown = (item) => {
       switch (item.ValueMode) {
          case ValueModes.ENUM:
@@ -164,6 +127,44 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
          break;
       }
    }
+
+   /**
+    * 
+    * @param {FilterItem} item 
+    */
+   const RenderItem = (item) => {
+      switch (item.InputMode) {
+         case InputModes.DROPDOWN:
+            return RenderDropdown(item);
+         break;
+         case InputModes.INPUT:
+            return RenderInput(item);
+         break;
+         case InputModes.RANGE:
+            return (
+               <div id="DateRange">
+                  <RangePicker
+                     adjustMode={adjustMode}
+                     filterItem={item}
+                     filterState={localState}
+                     updateFilterState={updateFilterState}
+                  />
+               </div>
+            )
+         break;
+         case InputModes.SEPARATOR:
+            return ( <hr style={{margin: "10px 0px"}}/> )
+         break;
+         default:
+            return ( <div>Invalid Input Mode: {item.InputMode.asString}</div> );
+         break;
+      }
+   }
+
+
+   const filterElements = filterRequest.Items.map(
+      (item) => RenderItem(item)
+   )
 
    const renderToggleButton = () => {
       if (adjustMode) {
