@@ -1,6 +1,7 @@
 /**
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
+ * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import("./FilterRequest").FilterRequest} FilterRequest
  */
 
@@ -17,6 +18,13 @@ export default class VisualizerRequest {
    }
 
    /**
+    * @returns {FilterRequest}
+    */
+   GetFilterRequest() {
+      throw new Error(`Request subclass ${this.constructor.name} failed to implement FilterRequest getter!`);
+   }
+
+   /**
     * @param {object} requesterState
     * @returns {APIRequest?} The API request that gets the visualizer's required data.
     */
@@ -25,9 +33,10 @@ export default class VisualizerRequest {
    }
 
    /**
-    * @returns {FilterRequest}
+    * @param {object} requesterState
+    * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
     */
-   GetFilterRequest() {
-      throw new Error(`Request subclass ${this.constructor.name} failed to implement FilterRequest getter!`);
+   GetVisualizerModel(requesterState) {
+      throw new Error(`Request subclass ${this.constructor.name} failed to implement VisualizerModel getter!`);
    }
 }

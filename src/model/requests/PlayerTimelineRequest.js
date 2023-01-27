@@ -1,8 +1,11 @@
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../enums/AvailableGames";
 import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
+import { PlayerTimelineModel } from "../visualizations/PlayerTimelineModel";
 
 /**
+ * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
  */
@@ -20,6 +23,24 @@ export default class PlayerTimelineRequest extends VisualizerRequest {
    }
 
    /**
+    * @returns {FeaturesMap}
+    */
+   static RequiredExtractors() {
+      return {
+         "AQUALAB" : [
+            'JobsCompleted',
+            'SessionID',
+            'SessionDuration'
+         ],
+         "SHIPWRECKS" : [
+            'JobsCompleted',
+            'SessionID',
+            'SessionDuration'
+         ]
+      };
+   }
+
+   /**
     * @param {object} requesterState
     * @returns {APIRequest?} The API request that gets the visualizer's required data.
     */
@@ -32,5 +53,13 @@ export default class PlayerTimelineRequest extends VisualizerRequest {
     */
    GetFilterRequest() {
       return this.filter_request;
+   }
+
+   /**
+    * @param {object} requesterState
+    * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
+    */
+   GetVisualizerModel(requesterState) {
+      return new PlayerTimelineModel();
    }
 }

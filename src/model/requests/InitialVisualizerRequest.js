@@ -1,8 +1,10 @@
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../enums/AvailableGames";
 import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
+import { InitialVisualizerModel } from "../visualizations/InitialVisualizerModel";
 
 /**
+ * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
  */
@@ -20,6 +22,13 @@ export default class InitialVisualizerRequest extends VisualizerRequest {
    }
 
    /**
+    * @returns {FilterRequest}
+    */
+   GetFilterRequest() {
+      return this.filter_request;
+   }
+
+   /**
     * @param {object} requesterState
     * @returns {APIRequest?} The API request that gets the visualizer's required data.
     */
@@ -28,9 +37,10 @@ export default class InitialVisualizerRequest extends VisualizerRequest {
    }
 
    /**
-    * @returns {FilterRequest}
+    * @param {object} requesterState
+    * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
     */
-   GetFilterRequest() {
-      return this.filter_request;
+   GetVisualizerModel(requesterState) {
+      return null;
    }
 }
