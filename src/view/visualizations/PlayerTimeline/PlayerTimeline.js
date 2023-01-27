@@ -93,7 +93,7 @@ export default function PlayerTimeline({ model, setVisualizer }) {
                 />
                 <p className='mb-3 text-4xl font-light'>Player {model.ConvertedData.meta.playerID}</p>
                 <p className="font-light">
-                    From <span className="font-bold">{model.ConvertedData.meta.startTime}</span> to <span className="font-bold">{convertedData.meta.endTime}</span>
+                    From <span className="font-bold">{model.ConvertedData.meta.startTime}</span> to <span className="font-bold">{model.ConvertedData.meta.endTime}</span>
                 </p>
                 <p className="font-light">
                     Total time taken: <span className="font-bold">{model.ConvertedData.meta.totalTime}s</span>
