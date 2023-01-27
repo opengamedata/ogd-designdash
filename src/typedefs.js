@@ -39,7 +39,7 @@
 
 /**
  * @callback Validator
- * @param {any} value
+ * @param {AnyMap} valueMap
  * @returns {boolean}
  */
 
