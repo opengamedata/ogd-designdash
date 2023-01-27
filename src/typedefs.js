@@ -1,6 +1,8 @@
-import { JobGraphModel } from "./model/visualizations/JobGraphModel";
-import { ViewModes } from "./model/enums/ViewModes";
-import Timedelta from "./model/Timedelta";
+/**
+ * @typedef {import('./model/visualizations/JobGraphModel').JobGraphModel} JobGraphModel
+ * @typedef {import('./model/enums/ViewModes').ViewModes} ViewModes
+ * @typedef {import('./model/Timedelta').default} Timedelta
+ */
 
 /**
  * @typedef {Object.<string, any>} AnyMap
@@ -17,6 +19,11 @@ import Timedelta from "./model/Timedelta";
 /**
  * @callback SetterCallback
  * @param {object} newVal
+ */
+
+/**
+ * @callback MapSetter
+ * @param {AnyMap} newVal
  */
 
 /**
@@ -67,3 +74,5 @@ import Timedelta from "./model/Timedelta";
  * @callback FeatureMapSetter
  * @param {FeaturesMap} newVal
  */
+
+export default function typedefs() {return true};
