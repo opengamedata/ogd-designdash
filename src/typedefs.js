@@ -3,6 +3,10 @@ import { ViewModes } from "./model/enums/ViewModes";
 import Timedelta from "./model/Timedelta";
 
 /**
+ * @typedef {Object.<string, any>} AnyMap
+ */
+
+/**
  * @typedef {Object.<string, string[]>} FeaturesMap
  */
 
