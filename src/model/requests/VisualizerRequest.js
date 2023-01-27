@@ -8,14 +8,14 @@ export default class VisualizerRequest {
    /**
     * @returns {APIRequest} The API request that gets the visualizer's required data.
     */
-   get APIRequest() {
+   APIRequest() {
       throw new Error(`Request subclass ${this.constructor.name} failed to implement APIRequest getter!`);
    }
 
    /**
     * @returns {FilterRequest}
     */
-   get FilterRequest() {
+   FilterRequest() {
       throw new Error(`Request subclass ${this.constructor.name} failed to implement FilterRequest getter!`);
    }
 }
