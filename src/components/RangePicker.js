@@ -17,13 +17,14 @@ import TimedeltaInput from './TimedeltaInput';
  * @param {object} props
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
+ * @param {object} props.filterState
  * @param {StateUpdater} props.updateFilterState
  * 
  */
-export default function RangePicker({ adjustMode, filterItem, updateFilterState }) {
+export default function RangePicker({ adjustMode, filterItem, filterState, updateFilterState }) {
 
-   const [localMin, setLocalMin] = useState(filterItem.InitialValues['min']);
-   const [localMax, setLocalMax] = useState(filterItem.InitialValues['max']);
+   const [localMin, setLocalMin] = useState(filterState['min'] || filterItem.InitialValues['min']);
+   const [localMax, setLocalMax] = useState(filterState['max'] || filterItem.InitialValues['max']);
 
    useEffect(() => {
       try {
