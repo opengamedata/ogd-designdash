@@ -4,92 +4,38 @@ import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/re
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
-import SelectionOptionsView from './SelectionOptionsView'
-import FilterOptionsView from './FilterOptionsView';
+import RangePicker from '../../components/RangePicker';
+import EnumPicker from '../../components/EnumPicker';
 //    model imports
 import Timedelta from '../../model/Timedelta';
 import { ViewModes } from '../../model/enums/ViewModes';
-//    controller imports
-import { FilterOptions } from '../../controller/FilterOptions';
-import { PopulationSelectionOptions, PlayerSelectionOptions, SessionSelectionOptions } from '../../controller/SelectionOptions';
+import { InputModes, ValueModes } from '../../model/requests/FilterRequest';
 
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
- * @typedef {import("./SelectionOptionsView").SelectionSetters} SelectionSetters
- * @typedef {import("./FilterOptionsView").FilterSetters} FilterSetters
- */
-
-/**
- * @typedef  {object} DataFilterProps
- * @property {boolean} loading
- * @property {ViewModes} viewMode
- * @property {PopulationSelectionOptions|PlayerSelectionOptions|SessionSelectionOptions} containerSelection
- * @property {SetterCallback} setContainerSelection
- * @property {FilterOptions} containerFilter
- * @property {SetterCallback} setContainerFilter
+ * @typedef {import("../../model/requests/FilterRequest").FilterRequest} FilterRequest
+ * @typedef {import("../../model/requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**
- * @param {DataFilterProps} props
+ * @param {object} props
+ * @param {FilterRequest} props.filterRequest
+ * @param {boolean} props.loading
+ * @param {function} props.updateData
  */
-export default function DataFilter({ loading, viewMode, containerSelection, setContainerSelection, containerFilter, setContainerFilter}) {
+export default function DataFilter({ filterRequest, loading, updateData }) {
    let yesterday = new Date();
    yesterday.setDate(yesterday.getDate() - 1);
-   // server-side selection options
-   const [gameSelected, setGameSelected]   = useState(containerSelection.game_name);
-   const [minAppVersion, setMinAppVersion] = useState(containerSelection.min_app_version);
-   const [maxAppVersion, setMaxAppVersion] = useState(containerSelection.max_app_version);
-   const [minLogVersion, setMinLogVersion] = useState(containerSelection.min_log_version);
-   const [maxLogVersion, setMaxLogVersion] = useState(containerSelection.max_log_version);
-   const [startDate, setStartDate] = useState(yesterday);
-   const [endDate, setEndDate] = useState(yesterday);
-   const [ids, setIDs] = useState([]);
-   /** @type {SelectionSetters} */
-   const setSelectionVars = {
-      setGameSelected:setGameSelected,
-      setMinAppVersion:setMinAppVersion,
-      setMaxAppVersion:setMaxAppVersion,
-      setMinLogVersion:setMinLogVersion,
-      setMaxLogVersion:setMaxLogVersion,
-      setStartDate:setStartDate,
-      setEndDate:setEndDate,
-      setIDs:setIDs
-   };
 
-   // local filtering options
-   /** @type {[number | null, SetterCallback]} */
-   const [minJobs, setMinJobs] = useState(1);
-   /** @type {[Timedelta | null, SetterCallback]} */
-   const [minPlaytime, setMinPlaytime] = useState(new Timedelta());
-   /** @type {[Timedelta | null, SetterCallback]} */
-   const [maxPlaytime, setMaxPlaytime] = useState(new Timedelta(24)); // default to 24 hour max playtime
-   /** @type {FilterSetters} */
-   const setFilterVars = {
-      "setMinJobs":setMinJobs,
-      "setMinPlaytime":setMinPlaytime,
-      "setMaxPlaytime":setMaxPlaytime,
-   };
+   const [localState, setLocalState] = useState({});
 
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
 
    // If adjustMode changes, reset selections from current container selection
    useEffect(() => {
-      setGameSelected(containerSelection.game_name)
-      setMinAppVersion(containerSelection.min_app_version)
-      setMaxAppVersion(containerSelection.min_app_version)
-      setMinLogVersion(containerSelection.min_log_version)
-      setMaxLogVersion(containerSelection.min_log_version)
-      setStartDate(containerSelection['start_date'] || null)
-      setEndDate(containerSelection['end_date'] || null)
-      setIDs(containerSelection['ids'] || null)
-   }, [adjustMode])
-
-   // If adjustMode changes, reset filters from current container filter
-   useEffect(() => {
-      setMinPlaytime(containerFilter.min_playtime)
-      setMaxPlaytime(containerFilter.max_playtime)
-      setMinJobs(containerFilter.min_jobs)
+      filterRequest.updateRequesterState(localState)
+      console.log(`In DataFilter, adjustMode changed, updated requester's state to ${localState}`)
    }, [adjustMode])
 
    // If loading changes to false, we are not adjusting and should return to false (resetting selections/filters)
@@ -97,77 +43,125 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
       if (!loading) setAdjustMode(false)
    }, [loading])
 
-   const adjust = () => {
-      // if empty fields, prompt user to fill in the blanks & return
-      // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
-      if (!gameSelected) {
-            // prompt user
-            alert('make sure a game has been selected!');
-            return;
-      }
-      if (startDate > endDate) {
-         alert("The start date must not be later than the end date!")
-         return;
-      }
-      // if end date later than yesterday, raise warnings & return
-      const today = new Date();
-      const queryEnd = new Date(endDate)
-      // console.log(today, queryEnd)
-      // console.log(today - queryEnd)
-      if (today.getTime() - queryEnd.getTime() <= 1000 * 60 * 60 * 24) {
-            alert('select an end date that\'s prior to yesterday')
-            return
-      }
-      if (minAppVersion !== null && maxAppVersion !== null && minAppVersion > maxAppVersion) {
-         alert('The minimum App version must be less than the maximum!')
-         return
-      }
-      if (minLogVersion !== null && maxLogVersion !== null && minLogVersion > maxLogVersion) {
-         alert('The minimum log version must be less than the maximum!')
-         return
-      }
-      if (minPlaytime !== null && maxPlaytime !== null && minPlaytime > maxPlaytime) {
-         alert('The minimum play time must be less than the maximum!')
-         return
-      }
+   const filterElements = filterRequest.Items.map(
+      (item) => RenderItem(item)
+   )
 
-      setContainerSelection(getSelectionOptions());
-      setContainerFilter(getFilterOptions());
+   // const adjust = () => {
+   //    // if empty fields, prompt user to fill in the blanks & return
+   //    // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
+   //    if (!gameSelected) {
+   //          // prompt user
+   //          alert('make sure a game has been selected!');
+   //          return;
+   //    }
+   //    if (startDate > endDate) {
+   //       alert("The start date must not be later than the end date!")
+   //       return;
+   //    }
+   //    // if end date later than yesterday, raise warnings & return
+   //    const today = new Date();
+   //    const queryEnd = new Date(endDate)
+   //    // console.log(today, queryEnd)
+   //    // console.log(today - queryEnd)
+   //    if (today.getTime() - queryEnd.getTime() <= 1000 * 60 * 60 * 24) {
+   //          alert('select an end date that\'s prior to yesterday')
+   //          return
+   //    }
+   //    if (minAppVersion !== null && maxAppVersion !== null && minAppVersion > maxAppVersion) {
+   //       alert('The minimum App version must be less than the maximum!')
+   //       return
+   //    }
+   //    if (minLogVersion !== null && maxLogVersion !== null && minLogVersion > maxLogVersion) {
+   //       alert('The minimum log version must be less than the maximum!')
+   //       return
+   //    }
+   //    if (minPlaytime !== null && maxPlaytime !== null && minPlaytime > maxPlaytime) {
+   //       alert('The minimum play time must be less than the maximum!')
+   //       return
+   //    }
+   // }
+   
+   /**
+    * 
+    * @param {string} key 
+    * @param {any} val 
+    */
+   const updateFilterState = (key, val) => {
+      let localCopy = localState; localCopy[key] = val; setLocalState(localCopy);
    }
 
-   const getSelectionOptions = () => {
-      switch (viewMode) {
-         case ViewModes.POPULATION:
-            return new PopulationSelectionOptions(gameSelected,
-               minAppVersion, maxAppVersion, minLogVersion, maxLogVersion,
-               startDate, endDate);
-         case ViewModes.PLAYER:
-            return new PlayerSelectionOptions(gameSelected,
-               minAppVersion, maxAppVersion, minLogVersion, maxLogVersion,
-               ids);
-         case ViewModes.SESSION:
-            return new SessionSelectionOptions(gameSelected,
-               minAppVersion, maxAppVersion, minLogVersion, maxLogVersion,
-               ids);
-         case ViewModes.INITIAL:
+   /**
+    * 
+    * @param {FilterItem} item 
+    */
+   const RenderItem = (item) => {
+      switch (item.InputMode) {
+         case InputModes.DROPDOWN:
+            return RenderDropdown(item);
+         break;
+         case InputModes.INPUT:
+            return RenderInput(item);
+         break;
+         case InputModes.RANGE:
+            return (
+               <div id="DateRange">
+                  <RangePicker
+                     adjustMode={adjustMode}
+                     filterItem={item}
+                     updateFilterState={updateFilterState}
+                  />
+               </div>
+            )
+         break;
+         case InputModes.SEPARATOR:
+            return ( <hr style={{margin: "10px 0px"}}/> )
+         break;
          default:
-            return new PopulationSelectionOptions(gameSelected,
-               minAppVersion, maxAppVersion, minLogVersion, maxLogVersion,
-               startDate, endDate);
+            return ( <div>Invalid Input Mode: {item.InputMode.asString}</div> );
+         break;
       }
    }
 
-   const getFilterOptions = () => {
-      switch (viewMode) {
-         case ViewModes.POPULATION:
-            return new FilterOptions(minJobs, minPlaytime, maxPlaytime);
-         case ViewModes.PLAYER:
-            return new FilterOptions(minJobs, minPlaytime, maxPlaytime);
-         case ViewModes.SESSION:
-            return new FilterOptions(minJobs, minPlaytime, maxPlaytime);
-         case ViewModes.INITIAL:
+   /**
+    * 
+    * @param {FilterItem} item 
+    */
+   const RenderDropdown = (item) => {
+      switch (item.ValueMode) {
+         case ValueModes.ENUM:
+            return (
+               <EnumPicker
+                  adjustMode={adjustMode}
+                  filterItem={item}
+                  updateFilterState={updateFilterState}
+               />
+            )
+         break;
+         case ValueModes.DATE:
+         case ValueModes.NUMBER:
+         case ValueModes.TEXT:
+         case ValueModes.TIME:
          default:
-            return new FilterOptions();
+            return (<div>Value Mode not supported for Dropdown: {item.ValueMode.asString}</div>)
+         break;
+      }
+   }
+
+   /**
+    * 
+    * @param {FilterItem} item 
+    */
+   const RenderInput = (item) => {
+      switch (item.ValueMode) {
+         case ValueModes.ENUM:
+         case ValueModes.DATE:
+         case ValueModes.NUMBER:
+         case ValueModes.TEXT:
+         case ValueModes.TIME:
+         default:
+            return (<div>Value Mode not supported for Input: {item.ValueMode.asString}</div>)
+         break;
       }
    }
 
@@ -193,29 +187,12 @@ export default function DataFilter({ loading, viewMode, containerSelection, setC
          <div className='flex justify-between mb-2'>
             { renderToggleButton() }
          </div>
-         <SelectionOptionsView
-            adjustMode={adjustMode} viewMode={viewMode}
-            gameSelected={gameSelected}
-            minAppVersion={minAppVersion} maxAppVersion={maxAppVersion}
-            minLogVersion={minLogVersion} maxLogVersion={maxLogVersion}
-            startDate={startDate} endDate={endDate}
-            ids={ids}
-            updateFunctions={setSelectionVars}
-         />
-         {/* <br/> */}
-         <hr style={{margin: "10px 0px"}}/>
-         {/* <br/> */}
-         <FilterOptionsView
-            adjustMode={adjustMode} viewMode={viewMode}
-            minPlaytime={minPlaytime} maxPlaytime={maxPlaytime}
-            minJobs={minJobs}
-            updateFunctions={setFilterVars}
-         />
+         {filterElements}
          <div className='flex space-x-2 items-center'>
             {loading ?
                <><Cog6ToothIcon className='animate-spin h-8 w-8' /> &nbsp;Please wait...</>
                :
-               <LargeButton label='visualize' onClick={adjust} selected="false"/>
+               <LargeButton label='visualize' onClick={updateData} selected="false"/>
             }
          </div>
       </div>
