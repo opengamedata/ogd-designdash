@@ -3,26 +3,29 @@ import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 // local imports
 import { useD3 } from "../../../controller/hooks/useD3";
-import { ViewModes } from "../../../model/enums/ViewModes";
 import { JobGraphModel } from "../../../model/visualizations/JobGraphModel";
 import PlayersList from "./PlayersList";
 import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
+import { Visualizers } from "../../../model/enums/Visualizers";
 
 /**
  * @typedef {import("../../../typedefs").JobGraphSetter} JobGraphSetter
  * @typedef {import("../../../typedefs").StringSetter} StringSetter
  * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
+ * @typedef {import("../../../typedefs").SetterCallback} SetterCallback
  */
 
 /**
  * force directed graph component for job/mission level data
- * @param {Object} data raw data JSON object 
+ * @param {object} props raw data JSON object 
+ * @param {JobGraphModel} props.model
+ * @param {SetterCallback} props.setVisualizer
  * @returns 
  */
-export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
+export default function JobVisualizer({ model, setVisualizer }) {
     /** @type {[JobGraphModel, JobGraphSetter]} data */
-    const [data, setData] = useState(new JobGraphModel())
+    const [localModel, setLocalModel] = useState(model);
     /** @type {[string, StringSetter]} data */
     const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
     /** @type {[string[] | undefined, StringListSetter]} data */
@@ -30,9 +33,9 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
     const [playerHighlight, setHighlight] = useState()
 
     useEffect(() => {
-        setData(JobGraphModel.fromRawData(rawData, linkMode))
+        setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, linkMode))
         setPlayerList(null)
-    }, [rawData, linkMode])
+    }, [linkMode])
 
     // useEffect(() => {
     //     console.log(data)
@@ -43,11 +46,11 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
     const showPlayersList = (link) => {
         let players, title
         if (linkMode === 'ActiveJobs') {
-            players = data.nodes.find(n => n.id === link.id).players
+            players = localModel.nodes.find(n => n.id === link.id).players
             title = `${link.id} (${players.length} in progress)`
         }
         else {
-            players = data.links.find(l => l.source === link.source.id && l.target === link.target.id).players
+            players = localModel.links.find(l => l.source === link.source.id && l.target === link.target.id).players
             title = `${link.source.id}\n` + `➔ ${link.target.id}\n` +
                 `(${players.length} ${linkMode === 'TopJobSwitchDestinations' ? 'switched' : 'completed'})`          
         }
@@ -60,19 +63,19 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
     * when user selects a player/session, they will be taken to that player/session's timeline
     */
     const toPlayerTimeline = () => {
-        setViewMode(ViewModes.PLAYER);
+        setVisualizer(Visualizers.PLAYER_TIMELINE);
     };
 
     /**
      * draw the force directed graph on jobs/missions
      */
     const ref = useD3((svg) => {
-        if (data) {
+        if (localModel) {
             /**
                 * utility function that maps average complete time to node radius
             */
             const projectRadius = d3.scaleLinear()
-                .domain([data.meta.minAvgTime, data.meta.maxAvgTime])
+                .domain([localModel.meta.minAvgTime, localModel.meta.maxAvgTime])
                 .range([3, 20])
 
             /**
@@ -87,7 +90,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                     `Standard Deviation: ${parseFloat(d['JobsAttempted-std-dev-per-attempt']).toFixed(2)}`
 
                 let gameSpecific = ''
-                switch (selectedGame) {
+                switch (localModel.Game) {
                     case 'AQUALAB':
                         gameSpecific = '\n' +
                             `Experimentation: ${d['JobsAttempted-job-difficulties'] ? d['JobsAttempted-job-difficulties'].experimentation : 'N/A'}\n` +
@@ -109,7 +112,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                 return "#999"
             }
 
-            const chart = ForceGraph(data, {
+            const chart = ForceGraph(localModel, {
                 nodeId: d => d.id,
                 nodeGroup: d => d['JobsAttempted-num-completes'] / (d['JobsAttempted-num-starts'] === '0' ? 1 : d['JobsAttempted-num-starts']),
                 nodeTitle: d => d.id,
@@ -130,7 +133,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                 showPlayersList
             )
         }
-    }, [data, playerHighlight]) // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
+    }, [localModel, playerHighlight]) // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
 
     // render component
     return (
@@ -140,7 +143,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
             {playersList ?
                 <PlayersList
                     data={playersList}
-                    playerSummary={data.meta.playerSummary}
+                    playerSummary={localModel.meta.playerSummary}
                     redirect={toPlayerTimeline}
                     playerHighlight={playerHighlight}
                     setHighlight={setHighlight}
@@ -156,48 +159,42 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
                 <fieldset className="block">
                     <legend >Show paths of players who</legend>
                     <div className="mt-2">
-                        {JobGraphModel.RequiredExtractors()[selectedGame].includes('TopJobCompletionDestinations') &&
-                            <div>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        className="form-radio"
-                                        type="radio"
-                                        name="radio-direct"
-                                        checked={linkMode === 'TopJobCompletionDestinations'}
-                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
-                                        value="TopJobCompletionDestinations" />
-                                    <span className="ml-2">finished the job</span>
-                                </label>
-                            </div>
-                        }
-                        {JobGraphModel.RequiredExtractors()[selectedGame].includes('TopJobSwitchDestinations') &&
-                            <div>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        className="form-radio"
-                                        type="radio"
-                                        name="radio-direct"
-                                        checked={linkMode === 'TopJobSwitchDestinations'}
-                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
-                                        value="TopJobSwitchDestinations" />
-                                    <span className="ml-2">left the job</span>
-                                </label>
-                            </div>
-                        }
-                        {JobGraphModel.RequiredExtractors()[selectedGame].includes('ActiveJobs') &&
-                            <div>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        className="form-radio"
-                                        type="radio"
-                                        name="radio-direct"
-                                        checked={linkMode === 'ActiveJobs'}
-                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
-                                        value="ActiveJobs" />
-                                    <span className="ml-2">still in progress</span>
-                                </label>
-                            </div>
-                        }
+                        <div>
+                            <label className="inline-flex items-center">
+                                <input
+                                    className="form-radio"
+                                    type="radio"
+                                    name="radio-direct"
+                                    checked={linkMode === 'TopJobCompletionDestinations'}
+                                    onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                    value="TopJobCompletionDestinations" />
+                                <span className="ml-2">finished the job</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label className="inline-flex items-center">
+                                <input
+                                    className="form-radio"
+                                    type="radio"
+                                    name="radio-direct"
+                                    checked={linkMode === 'TopJobSwitchDestinations'}
+                                    onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                    value="TopJobSwitchDestinations" />
+                                <span className="ml-2">left the job</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label className="inline-flex items-center">
+                                <input
+                                    className="form-radio"
+                                    type="radio"
+                                    name="radio-direct"
+                                    checked={linkMode === 'ActiveJobs'}
+                                    onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                    value="ActiveJobs" />
+                                <span className="ml-2">still in progress</span>
+                            </label>
+                        </div>
                     </div>
                 </fieldset>
 
@@ -206,7 +203,7 @@ export default function JobVisualizer({ rawData, setViewMode, selectedGame }) {
             </div>
 
             {/* bottom left section: chart legend */}
-            {data && <JobGraphLegend populationSummary={data.meta.populationSummary} />}
+            {localModel && <JobGraphLegend populationSummary={localModel.meta.populationSummary} />}
 
         </>
 
