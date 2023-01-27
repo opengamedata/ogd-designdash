@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./model/visualizations/JobGraphModel').JobGraphModel} JobGraphModel
  * @typedef {import('./model/enums/ViewModes').ViewModes} ViewModes
+ * @typedef {import('./model/enums/Visualizers').Visualizers} Visualizers
  * @typedef {import('./model/Timedelta').default} Timedelta
  */
 
@@ -63,6 +64,11 @@
 /**
  * @callback ViewModeSetter
  * @param {ViewModes} newVal
+ */
+
+/**
+ * @callback VisualizerSetter
+ * @param {VisualizerSetter} newVal
  */
 
 /**
