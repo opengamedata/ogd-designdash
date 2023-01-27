@@ -46,7 +46,7 @@ export default function EnumPicker({
    useEffect(() => {
       try {
          if (filterItem.Validator({'selected':localSelection})) {
-            updateFilterState(`${filterItem.Name}selected`, localSelection);
+            updateFilterState(`${filterItem.Name}Selected`, localSelection);
          }
       }
       catch (error) {
