@@ -107,6 +107,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
                   <RangePicker
                      adjustMode={adjustMode}
                      filterItem={item}
+                     filterState={localState}
                      updateFilterState={updateFilterState}
                   />
                </div>
@@ -132,6 +133,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
                <EnumPicker
                   adjustMode={adjustMode}
                   filterItem={item}
+                  filterState={localState}
                   updateFilterState={updateFilterState}
                />
             )
