@@ -58,22 +58,12 @@ export default function VizContainer(props) {
       console.log(`pickerState changed to ${pickerState}, setting up new request...`)
       // update the request type.
       const selection = pickerState['selected']
-      switch (selection) {
-         case Visualizers.JOB_GRAPH:
-            setVisualizer(selection);
-         break;
-         case Visualizers.PLAYER_TIMELINE:
-            setVisualizer(selection);
-         break;
-         case Visualizers.INITIAL:
-         default:
-            setVisualizer(selection);
-         break;
-      }
+      updateVisualizer(selection)
    }
 
-   useEffect(() => {
-      console.log(`visualizer changed to ${visualizer.asDisplayString}, setting up new request...`)
+   const updateVisualizer = (value) => {
+      setVisualizer(value);
+      console.log(`visualizer changed to ${visualizer ? visualizer.asDisplayString : visualizer}, setting up new request...`)
       // clear state from last viz.
       setVisualizerRequestState({});
       // update the request type.
@@ -90,7 +80,7 @@ export default function VizContainer(props) {
             setRequest(new InitialVisualizerRequest(updateVisualizerRequestState));
          break;
       }
-   }, [visualizer]);
+   }
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
@@ -156,7 +146,7 @@ export default function VizContainer(props) {
                <ErrorBoundary childName={"JobVisualizer"}>
                   <JobGraph
                      model={request.GetVisualizerModel(visualizerRequestState, rawData)}
-                     setVisualizer={setVisualizer}
+                     setVisualizer={updateVisualizer}
                   />
                </ErrorBoundary>
             )
@@ -165,7 +155,7 @@ export default function VizContainer(props) {
                <ErrorBoundary childName={"PlayerVisualizer"}>
                   <PlayerTimeline
                      model={request.GetVisualizerModel(visualizerRequestState, rawData)}
-                     setVisualizer={setVisualizer}
+                     setVisualizer={updateVisualizer}
                   />
                </ErrorBoundary>
             )
