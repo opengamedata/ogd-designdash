@@ -48,14 +48,11 @@ export default function EnumPicker({
    const [localSelection, setLocalSelection] = useState(defaultSelection)
    console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
 
-   const optionList = () => {
-      console.log(`In EnumPicker, the EnumList is: ${enumType.EnumList()}`)
-      const options = enumType.EnumList().map((k) => {
-         let next_key = `${filterItem.Name}${k.asString}`;
-         return (<option key={next_key} value={k.asString}>{k.asDisplayString}</option>)
-      })
-      return options
-   }
+   console.log(`In EnumPicker, the EnumList is: ${enumType.EnumList()}`)
+   const optionList = enumType.EnumList().map((k) => {
+      let next_key = `${filterItem.Name}${k.asString}`;
+      return (<option key={next_key} value={k.asString}>{k.asDisplayString}</option>)
+   })
 
    const updateSelection = (e) => {
       setLocalSelection(enumType.FromName(e.target.value));
@@ -79,8 +76,8 @@ export default function EnumPicker({
                      className="form-select block w-full"
                      value={localSelection.asString}
                      onChange={updateSelection}>
-                     <option> </option>
-                     {optionList()}
+                     <option key="Empty"> </option>
+                     {optionList}
                   </select>
             </div>
          </div>
