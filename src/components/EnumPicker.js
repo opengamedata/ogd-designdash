@@ -21,7 +21,6 @@ import { useEffect, useState } from 'react';
  * @param {object} props.filterState
  * @param {StateUpdater} props.updateFilterState
  * @param {string} props.key
- * @param {string} props.className
  */
 export default function EnumPicker(props) {
    let {
