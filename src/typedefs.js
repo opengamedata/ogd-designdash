@@ -44,6 +44,12 @@
  */
 
 /**
+ * @callback StateUpdater
+ * @param {string} key
+ * @param {any} value
+ */
+
+/**
  * @callback PropertyCallback
  */
 
