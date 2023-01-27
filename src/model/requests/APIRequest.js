@@ -2,7 +2,10 @@
 
 // local imports
 import { AvailableGames } from "../enums/AvailableGames";
-import RequestModes from "../enums/RequestModes"
+
+/**
+ * @typedef {import('../enums/RequestModes').default} RequestModes
+ */
 
 export class APIRequest {
    /**
