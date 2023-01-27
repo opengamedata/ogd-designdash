@@ -119,7 +119,7 @@ export default function RangePicker({ adjustMode, filterItem, updateFilterState 
          default:
             return (
                <div className={`${classes}`}>
-                  <span>Value Mode not supported: {filterItem.ValueMode.asString}</span>
+                  <span>Value Mode not supported for Range: {filterItem.ValueMode.asString}</span>
                </div>
             )
       }
