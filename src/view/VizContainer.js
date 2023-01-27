@@ -3,6 +3,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 // local imports
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
+import EnumPicker from '../components/EnumPicker';
 
 // model imports
 import { Visualizers } from '../model/enums/Visualizers';
@@ -142,6 +143,12 @@ export default function VizContainer(props) {
    return (
    <div className='flex-auto border-4 border-red-700' style={styling}>
       <div className='container relative flex'>
+         <EnumPicker
+            adjustMode={adjustMode}
+            enumType={ViewModes}
+            selected={ViewModes.INITIAL}
+            setSelected={}
+         />
          <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
                <DataFilter
