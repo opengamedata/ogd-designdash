@@ -102,10 +102,10 @@ export default function VizContainer(props) {
       console.log("Retrieving data...")
       // flush current dataset and start loading animation
       setRawData(null)
-      setLoading(true)
 
       const api_request = request.GetAPIRequest(visualizerRequestState);
       if (api_request != null) {
+         setLoading(true)
          const localData = localStorage.getItem(api_request.LocalStorageKey)
          // console.log(localData)
          if (localData) {
@@ -192,13 +192,14 @@ export default function VizContainer(props) {
    return (
    <div className='flex-auto border-4 border-red-700' style={styling}>
       <div className='container relative flex'>
-         <EnumPicker
-            adjustMode={true}
-            filterItem={dropdownFilterItem}
-            filterState={pickerState}
-            updateFilterState={updatePickerState}
-         />
          <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
+            <EnumPicker
+               adjustMode={true}
+               filterItem={dropdownFilterItem}
+               filterState={pickerState}
+               updateFilterState={updatePickerState}
+               key="VizTypeDropdown"
+            />
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
                <DataFilter
                   filterRequest={request.GetFilterRequest()}
