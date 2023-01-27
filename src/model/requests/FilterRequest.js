@@ -72,4 +72,9 @@ export class FilterItem {
       this.value_mode = value_mode;
       this.start_values = start_values;
    }
+
+   get Name() { return this.name; }
+   get InputMode() { return this.input_mode; }
+   get ValueMode() { return this.value_mode; }
+   get InitialValues() { return this.start_values; }
 }
