@@ -26,10 +26,22 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
    const [localMin, setLocalMin] = useState(filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min']);
    const [localMax, setLocalMax] = useState(filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max']);
 
-   useEffect(() => {
+   const updateLocalMin = (value) => {
+      setLocalMin(value);
       try {
          if (filterItem.Validator({'min':localMin, 'max':localMax})) {
             updateFilterState(`${filterItem.Name}Min`, localMin);
+         }
+      }
+      catch (error) {
+         alert(error);
+         return;
+      }
+   }
+   const updateLocalMax = (value) => {
+      setLocalMax(value);
+      try {
+         if (filterItem.Validator({'min':localMin, 'max':localMax})) {
             updateFilterState(`${filterItem.Name}Max`, localMax);
          }
       }
@@ -37,7 +49,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
          alert(error);
          return;
       }
-   }, [filterItem, localMin, localMax])
+   }
 
    const useMin = (localMin != null)
    const useMax = (localMax != null)
@@ -176,7 +188,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
                         <div className="input-group-prepend">
                            <h4 className="text-sm" >{useMax ? "From" : "Min"}: </h4>
                         </div>
-                        {RenderPicker(localMin, "minValue", setLocalMin)}
+                        {RenderPicker(localMin, "minValue", updateLocalMin)}
                      </div>
                  );
       const to   = useMax &&
@@ -185,7 +197,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
                         <div className="input-group-prepend">
                            <h4 className="text-sm" >{useMin ? "To" : "Max"}: </h4>
                         </div>
-                        {RenderPicker(localMax, "maxValue", setLocalMax)}
+                        {RenderPicker(localMax, "maxValue", updateLocalMax)}
                      </div>
                  );
       return (

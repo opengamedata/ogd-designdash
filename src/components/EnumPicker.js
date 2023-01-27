@@ -40,10 +40,29 @@ export default function EnumPicker({
    updateFilterState
 }) {
    const enumType = filterItem.InitialValues['type']
+   const defaultSelection = enumType != null ? filterState[`${filterItem.Name}Selected`]
+                         || filterItem.InitialValues['selected']
+                         || enumType.EnumList()[0]
+                         : "None";
    /** @type {[EnumType, any]} */
-   const [localSelection, setLocalSelection] = useState(filterState[`${filterItem.Name}Selected`] || filterItem.InitialValues['selected'])
+   const [localSelection, setLocalSelection] = useState(defaultSelection)
+   console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
 
-   useEffect(() => {
+   const optionList = () => {
+      const options = []
+      console.log(`In EnumPicker, the EnumList is: ${enumType.EnumList()}`)
+      enumType.EnumList().forEach((k) => {
+         let next_key = `${filterItem.Name}${k.asString}`;
+         console.log(`In EnumPicker, next key will be ${next_key}`)
+         options.push(
+               <option key={next_key} value={k.asString}>{k.asDisplayString}</option>
+         )
+      })
+      return options
+   }
+
+   const updateSelection = (e) => {
+      setLocalSelection(enumType.FromName(e.target.value));
       try {
          if (filterItem.Validator({'selected':localSelection})) {
             updateFilterState(`${filterItem.Name}Selected`, localSelection);
@@ -53,16 +72,6 @@ export default function EnumPicker({
          alert(error);
          return;
       }
-   })
-
-   const optionList = () => {
-      const options = []
-      enumType.EnumList().forEach((k) => {
-         options.push(
-               <option key={k.asString} value={k.asString}>{k.asDisplayString}</option>
-         )
-      })
-      return options
    }
 
    if (adjustMode) {
@@ -73,7 +82,7 @@ export default function EnumPicker({
                   <select
                      className="form-select block w-full"
                      value={localSelection.asString}
-                     onChange={(e) => setLocalSelection(enumType.FromName(e.target.value))}>
+                     onChange={updateSelection}>
                      <option> </option>
                      {optionList()}
                   </select>
