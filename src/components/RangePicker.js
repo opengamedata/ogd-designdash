@@ -1,41 +1,50 @@
 // global imports
 import React from 'react';
+import { useEffect, useState } from 'react';
 // local imports
-import { InputModes } from '../model/enums/InputModes';
+import { ValueModes } from '../model/requests/FilterRequest';
 import { ISODateFormat, USDateFormat } from '../controller/TimeFormat';
 import Timedelta from '../model/Timedelta';
 import TimedeltaInput from './TimedeltaInput';
 
 /**
  * @typedef {import("../typedefs").SetterCallback} SetterCallback
- */
-
-/**
- * @typedef  {object} RangePickerProps
- * @property {boolean} adjustMode
- * @property {InputModes} inputMode
- * @property {string} rangeName
- * @property {string | number | Date | Timedelta | undefined} minVal
- * @property {string | number | Date | Timedelta | undefined} maxVal
- * @property {SetterCallback | undefined} setMin
- * @property {SetterCallback | undefined} setMax
+ * @typedef {import("../typedefs").StateUpdater} StateUpdater
+ * @typedef {import("../model/requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**
- * @param {RangePickerProps} props
+ * @param {object} props
+ * @param {boolean} props.adjustMode
+ * @param {FilterItem} props.filterItem
+ * @param {StateUpdater} props.updateFilterState
+ * 
  */
-export default function RangePicker({
-      adjustMode, inputMode, rangeName,
-      minVal, maxVal, setMin, setMax
-   }) {
+export default function RangePicker({ adjustMode, filterItem, updateFilterState }) {
 
-   const useMin = (minVal != null && setMin != null)
-   const useMax = (maxVal != null && setMax != null)
+   const [localMin, setLocalMin] = useState(filterItem.InitialValues['min']);
+   const [localMax, setLocalMax] = useState(filterItem.InitialValues['max']);
+
+   useEffect(() => {
+      try {
+         if (filterItem.Validator({'min':localMin, 'max':localMax})) {
+            updateFilterState('min', localMin);
+            updateFilterState('max', localMax);
+         }
+      }
+      catch (error) {
+         alert(error);
+         return;
+      }
+   }, [filterItem, localMin, localMax])
+
+   const useMin = (localMin != null)
+   const useMax = (localMax != null)
 
    const BadType = (value, valName) => {
       return (
          <div>
-            <span><code>typeof {valName}</code> ({value} : {typeof value}) did not match the input mode ({inputMode.asString})</span>
+            <span><code>typeof {valName}</code> ({value} : {typeof value}) did not match the value mode ({filterItem.ValueMode.asString})</span>
          </div>
       )
    }
@@ -49,8 +58,8 @@ export default function RangePicker({
     */
    const RenderPicker = (value, valueID, setter) => {
       const classes = "block w-full font-base"
-      switch (inputMode) {
-         case InputModes.TEXT:
+      switch (filterItem.ValueMode) {
+         case ValueModes.TEXT:
             if (typeof value == 'string') {
                return (
                   <div>
@@ -65,7 +74,7 @@ export default function RangePicker({
                return BadType(value, valueID);
             }
          break;
-         case InputModes.DATE:
+         case ValueModes.DATE:
             if (value instanceof Date) {
                return (
                   <input id={valueID.toString()}
@@ -78,7 +87,7 @@ export default function RangePicker({
                return BadType(value, valueID);
             }
          break;
-         case InputModes.TIME:
+         case ValueModes.TIME:
             if (value instanceof Timedelta) {
                return (
                   <>
@@ -92,7 +101,7 @@ export default function RangePicker({
                return BadType(value, valueID);
             }
          break;
-         case InputModes.NUMBER:
+         case ValueModes.NUMBER:
             if (typeof value == 'number') {
                return (
                   <div>
@@ -110,7 +119,7 @@ export default function RangePicker({
          default:
             return (
                <div className={`${classes}`}>
-                  <span>Input Mode not supported: {inputMode.asString}</span>
+                  <span>Value Mode not supported: {filterItem.ValueMode.asString}</span>
                </div>
             )
       }
@@ -118,9 +127,9 @@ export default function RangePicker({
 
    const RenderChoice = (value, valueID) => {
       const classes = "text-sm"
-      switch (inputMode) {
-         case InputModes.TEXT:
-         case InputModes.NUMBER:
+      switch (filterItem.ValueMode) {
+         case ValueModes.TEXT:
+         case ValueModes.NUMBER:
             if (typeof value == 'string' || typeof value == 'number')
             {
                return(
@@ -131,7 +140,7 @@ export default function RangePicker({
                return BadType(value, valueID);
             }
          break;
-         case InputModes.DATE:
+         case ValueModes.DATE:
             if (value instanceof Date) {
                return (
                   <span className={`${classes}`}>{USDateFormat(value)}</span>
@@ -141,7 +150,7 @@ export default function RangePicker({
                return BadType(value, valueID);
             }
          break;
-         case InputModes.TIME:
+         case ValueModes.TIME:
             if (value instanceof Timedelta) {
                return (
                   <span className={`${classes}`}>{value.asString}</span>
@@ -153,7 +162,7 @@ export default function RangePicker({
          default:
             return (
                <>
-                  <span>Input Mode not supported: {inputMode.asString}</span>
+                  <span>Input Mode not supported: {filterItem.ValueMode.asString}</span>
                </>
             )
       }
@@ -166,7 +175,7 @@ export default function RangePicker({
                         <div className="input-group-prepend">
                            <h4 className="text-sm" >{useMax ? "From" : "Min"}: </h4>
                         </div>
-                        {RenderPicker(minVal, "minValue", setMin)}
+                        {RenderPicker(localMin, "minValue", setLocalMin)}
                      </div>
                  );
       const to   = useMax &&
@@ -175,12 +184,12 @@ export default function RangePicker({
                         <div className="input-group-prepend">
                            <h4 className="text-sm" >{useMin ? "To" : "Max"}: </h4>
                         </div>
-                        {RenderPicker(maxVal, "maxValue", setMax)}
+                        {RenderPicker(localMax, "maxValue", setLocalMax)}
                      </div>
                  );
       return (
          <>
-            <div className="row"><h5 className='text-base font-semibold'>{rangeName}</h5></div>
+            <div className="row"><h5 className='text-base font-semibold'>{filterItem.Name}</h5></div>
             {/* TODO: add checkboxes so user can decide if they want this to be part of filter or not. */}
             <div className="mb-5">
                   {from}
@@ -194,20 +203,20 @@ export default function RangePicker({
                  (
                      <>
                         {useMax ? <></> : <span>Min: </span>}
-                        {RenderChoice(minVal, "minValue")}
+                        {RenderChoice(localMin, "minValue")}
                      </>
                  );
       const to   = useMax &&
                  (
                      <>
                         <span className='text-sm'>{useMin ? " to " : "Max: "}</span>
-                        {RenderChoice(maxVal, "maxValue")}
+                        {RenderChoice(localMax, "maxValue")}
                      </>
                  );
       return (
          <>
             <div className="col mb-2">
-            <div className='text-sm'>{rangeName}: </div>
+            <div className='text-sm'>{filterItem.Name}: </div>
             {from}
             {to}
             </div>
