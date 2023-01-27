@@ -62,7 +62,7 @@ export default function EnumPicker(props) {
          return(
             <div id={`${localSelection.constructor.name}Selector`} className="col">
                <div className="input-group">
-                     <div className='text-base font-semibold mb-2'>Game</div>
+                     <div className='text-base font-semibold mb-2'>{filterItem.Name}</div>
                      <select
                         className="form-select block w-full"
                         value={`${filterItem.Name}${localSelection.asString}`}
