@@ -17,8 +17,8 @@ import { OGDAPI } from '../controller/apis/OGDAPI';
 // view imports
 import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
-import JobVisualizer from './visualizations/JobGraph/JobVisualizer';
-import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
+import JobGraph from './visualizations/JobGraph/JobGraph';
+import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
 import { FilterItem, InputModes, ValueModes } from '../model/requests/FilterRequest';
 
 /**
@@ -137,19 +137,18 @@ export default function VizContainer(props) {
          case Visualizers.JOB_GRAPH:
             return (
                <ErrorBoundary childName={"JobVisualizer"}>
-                  <JobVisualizer
-                     rawData={rawData}
-                     setViewMode={setViewMode}
+                  <JobGraph
+                     model={request.GetVisualizerModel(visualizerRequestState, rawData)}
+                     setVisualizer={setVisualizer}
                   />
                </ErrorBoundary>
             )
          case Visualizers.PLAYER_TIMELINE:
             return (
                <ErrorBoundary childName={"PlayerVisualizer"}>
-                  <PlayerVisualizer
-                     rawData={rawData}
-                     setViewMode={setViewMode}
-                     selectedGame={selectionOptions.game_name}
+                  <PlayerTimeline
+                     model={request.GetVisualizerModel(visualizerRequestState, rawData)}
+                     setVisualizer={setVisualizer}
                   />
                </ErrorBoundary>
             )
