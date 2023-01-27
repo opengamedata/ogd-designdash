@@ -144,10 +144,10 @@ export default function VizContainer(props) {
    <div className='flex-auto border-4 border-red-700' style={styling}>
       <div className='container relative flex'>
          <EnumPicker
-            adjustMode={adjustMode}
-            enumType={ViewModes}
-            selected={ViewModes.INITIAL}
-            setSelected={}
+            adjustMode={true}
+            enumType={Visualizers}
+            selected={visualizer}
+            setSelected={setVisualizer}
          />
          <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
