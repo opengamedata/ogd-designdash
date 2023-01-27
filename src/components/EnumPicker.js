@@ -43,7 +43,7 @@ export default function EnumPicker({
    const defaultSelection = enumType != null ? filterState[`${filterItem.Name}Selected`]
                          || filterItem.InitialValues['selected']
                          || enumType.EnumList()[0]
-                         : "None";
+                         : "Empty";
    /** @type {[EnumType, any]} */
    const [localSelection, setLocalSelection] = useState(defaultSelection)
    console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
@@ -74,7 +74,7 @@ export default function EnumPicker({
                   <div className='text-base font-semibold mb-2'>Game</div>
                   <select
                      className="form-select block w-full"
-                     value={localSelection.asString}
+                     value={`${filterItem.Name}${localSelection.asString}`}
                      onChange={updateSelection}>
                      <option key="Empty"> </option>
                      {optionList}
