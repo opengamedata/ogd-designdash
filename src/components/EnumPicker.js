@@ -49,14 +49,10 @@ export default function EnumPicker({
    console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
 
    const optionList = () => {
-      const options = []
       console.log(`In EnumPicker, the EnumList is: ${enumType.EnumList()}`)
-      enumType.EnumList().forEach((k) => {
+      const options = enumType.EnumList().map((k) => {
          let next_key = `${filterItem.Name}${k.asString}`;
-         console.log(`In EnumPicker, next key will be ${next_key}`)
-         options.push(
-               <option key={next_key} value={k.asString}>{k.asDisplayString}</option>
-         )
+         return (<option key={next_key} value={k.asString}>{k.asDisplayString}</option>)
       })
       return options
    }
