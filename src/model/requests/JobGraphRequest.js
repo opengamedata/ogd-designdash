@@ -18,7 +18,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       super(updateRequesterState);
       this.filter_request = new FilterRequest(this.updateRequesterState);
       this.filter_request.AddItem(
-         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"enum":AvailableGames})
+         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"type":AvailableGames, "selected":AvailableGames.EnumList[0]})
       )
    }
 
