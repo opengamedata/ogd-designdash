@@ -10,6 +10,7 @@ import JobGraphLegend from "./JobGraphLegend";
 import { Visualizers } from "../../../model/enums/Visualizers";
 
 /**
+ * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import("../../../typedefs").JobGraphSetter} JobGraphSetter
  * @typedef {import("../../../typedefs").StringSetter} StringSetter
  * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
@@ -19,12 +20,12 @@ import { Visualizers } from "../../../model/enums/Visualizers";
 /**
  * force directed graph component for job/mission level data
  * @param {object} props raw data JSON object 
- * @param {JobGraphModel} props.model
+ * @param {VisualizerModel} props.model
  * @param {SetterCallback} props.setVisualizer
  * @returns 
  */
 export default function JobGraph({ model, setVisualizer }) {
-    /** @type {[JobGraphModel, JobGraphSetter]} data */
+    /** @type {[VisualizerModel, JobGraphSetter]} data */
     const [localModel, setLocalModel] = useState(model);
     /** @type {[string, StringSetter]} data */
     const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
@@ -136,78 +137,80 @@ export default function JobGraph({ model, setVisualizer }) {
     }, [localModel, playerHighlight]) // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
 
     // render component
-    return (
-        <>
-            <svg ref={ref} className="w-full border-b" />
+    if (model instanceof JobGraphModel) {
+        return (
+            <>
+                <svg ref={ref} className="w-full border-b" />
 
-            {playersList ?
-                <PlayersList
-                    data={playersList}
-                    playerSummary={localModel.meta.playerSummary}
-                    redirect={toPlayerTimeline}
-                    playerHighlight={playerHighlight}
-                    setHighlight={setHighlight}
-                    setPlayerList={setPlayerList}
-                /> :
-                <></>
-            }
+                {playersList ?
+                    <PlayersList
+                        data={playersList}
+                        playerSummary={localModel.meta.playerSummary}
+                        redirect={toPlayerTimeline}
+                        playerHighlight={playerHighlight}
+                        setHighlight={setHighlight}
+                        setPlayerList={setPlayerList}
+                    /> :
+                    <></>
+                }
 
-            {/* bottom right section: path type and player count */}
-            <div className="fixed bottom-3 right-3 font-light text-sm">
+                {/* bottom right section: path type and player count */}
+                <div className="fixed bottom-3 right-3 font-light text-sm">
 
-                {/* path type 3-way selection */}
-                <fieldset className="block">
-                    <legend >Show paths of players who</legend>
-                    <div className="mt-2">
-                        <div>
-                            <label className="inline-flex items-center">
-                                <input
-                                    className="form-radio"
-                                    type="radio"
-                                    name="radio-direct"
-                                    checked={linkMode === 'TopJobCompletionDestinations'}
-                                    onChange={(e) => { setLinkMode(e.currentTarget.value) }}
-                                    value="TopJobCompletionDestinations" />
-                                <span className="ml-2">finished the job</span>
-                            </label>
+                    {/* path type 3-way selection */}
+                    <fieldset className="block">
+                        <legend >Show paths of players who</legend>
+                        <div className="mt-2">
+                            <div>
+                                <label className="inline-flex items-center">
+                                    <input
+                                        className="form-radio"
+                                        type="radio"
+                                        name="radio-direct"
+                                        checked={linkMode === 'TopJobCompletionDestinations'}
+                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                        value="TopJobCompletionDestinations" />
+                                    <span className="ml-2">finished the job</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label className="inline-flex items-center">
+                                    <input
+                                        className="form-radio"
+                                        type="radio"
+                                        name="radio-direct"
+                                        checked={linkMode === 'TopJobSwitchDestinations'}
+                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                        value="TopJobSwitchDestinations" />
+                                    <span className="ml-2">left the job</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label className="inline-flex items-center">
+                                    <input
+                                        className="form-radio"
+                                        type="radio"
+                                        name="radio-direct"
+                                        checked={linkMode === 'ActiveJobs'}
+                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                        value="ActiveJobs" />
+                                    <span className="ml-2">still in progress</span>
+                                </label>
+                            </div>
                         </div>
-                        <div>
-                            <label className="inline-flex items-center">
-                                <input
-                                    className="form-radio"
-                                    type="radio"
-                                    name="radio-direct"
-                                    checked={linkMode === 'TopJobSwitchDestinations'}
-                                    onChange={(e) => { setLinkMode(e.currentTarget.value) }}
-                                    value="TopJobSwitchDestinations" />
-                                <span className="ml-2">left the job</span>
-                            </label>
-                        </div>
-                        <div>
-                            <label className="inline-flex items-center">
-                                <input
-                                    className="form-radio"
-                                    type="radio"
-                                    name="radio-direct"
-                                    checked={linkMode === 'ActiveJobs'}
-                                    onChange={(e) => { setLinkMode(e.currentTarget.value) }}
-                                    value="ActiveJobs" />
-                                <span className="ml-2">still in progress</span>
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
+                    </fieldset>
 
-                {/* <p className="mt-2">Player Count: {data && data.meta.PlayerCount} </p> */}
+                    {/* <p className="mt-2">Player Count: {data && data.meta.PlayerCount} </p> */}
 
-            </div>
+                </div>
 
-            {/* bottom left section: chart legend */}
-            {localModel && <JobGraphLegend populationSummary={localModel.meta.populationSummary} />}
-
-        </>
-
-
-    )
+                {/* bottom left section: chart legend */}
+                {localModel && <JobGraphLegend populationSummary={localModel.meta.populationSummary} />}
+            </>
+        )
+    }
+    else {
+        return <div>Wrong kind of VisualizerModel for JobGraph</div>
+    }
 
 }
