@@ -33,48 +33,13 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
    const updateAdjustMode = (value) => {
       setAdjustMode(value);
       filterRequest.updateRequesterState(localState)
-      console.log(`In DataFilter, adjustMode changed, updated requester's state to ${localState}`)
+      console.log(`In DataFilter, adjustMode changed, updated requester's state to ${JSON.stringify(localState)}`)
    }
 
    // If loading changes to false, we are not adjusting and should return to false (resetting selections/filters)
    useEffect(() => {
       if (!loading) setAdjustMode(false)
    }, [loading])
-
-   // const adjust = () => {
-   //    // if empty fields, prompt user to fill in the blanks & return
-   //    // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
-   //    if (!gameSelected) {
-   //          // prompt user
-   //          alert('make sure a game has been selected!');
-   //          return;
-   //    }
-   //    if (startDate > endDate) {
-   //       alert("The start date must not be later than the end date!")
-   //       return;
-   //    }
-   //    // if end date later than yesterday, raise warnings & return
-   //    const today = new Date();
-   //    const queryEnd = new Date(endDate)
-   //    // console.log(today, queryEnd)
-   //    // console.log(today - queryEnd)
-   //    if (today.getTime() - queryEnd.getTime() <= 1000 * 60 * 60 * 24) {
-   //          alert('select an end date that\'s prior to yesterday')
-   //          return
-   //    }
-   //    if (minAppVersion !== null && maxAppVersion !== null && minAppVersion > maxAppVersion) {
-   //       alert('The minimum App version must be less than the maximum!')
-   //       return
-   //    }
-   //    if (minLogVersion !== null && maxLogVersion !== null && minLogVersion > maxLogVersion) {
-   //       alert('The minimum log version must be less than the maximum!')
-   //       return
-   //    }
-   //    if (minPlaytime !== null && maxPlaytime !== null && minPlaytime > maxPlaytime) {
-   //       alert('The minimum play time must be less than the maximum!')
-   //       return
-   //    }
-   // }
    
    /**
     * 
