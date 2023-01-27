@@ -7,8 +7,6 @@ import LargeButton from '../../components/buttons/LargeButton';
 import RangePicker from '../../components/RangePicker';
 import EnumPicker from '../../components/EnumPicker';
 //    model imports
-import Timedelta from '../../model/Timedelta';
-import { ViewModes } from '../../model/enums/ViewModes';
 import { InputModes, ValueModes } from '../../model/requests/FilterRequest';
 
 /**
