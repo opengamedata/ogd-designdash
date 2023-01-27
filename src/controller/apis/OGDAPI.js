@@ -7,11 +7,11 @@ import RequestModes from '../../model/enums/RequestModes';
  * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
  */
 
-/**
- * @param {APIRequest?} request
- * @returns {Promise<Response>}
- */
 export class OGDAPI {
+   /**
+    * @param {APIRequest?} request
+    * @returns {Promise<Response>}
+    */
    static fetch(request) {
       const no_request = {
          result: "No Data Requested",
