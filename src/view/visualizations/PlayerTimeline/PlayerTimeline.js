@@ -44,14 +44,15 @@ export default function PlayerTimeline({ model, setVisualizer }) {
             if (Object.hasOwn(model.meta.types, type)) initialTypes.add(type)
         });
 
-        setEventTypesDisplayed(initialTypes)
+        updateEventTypesDisplayed(initialTypes)
     }, [])
 
     // re-filter data when user changes the event types to be displayed
-    useEffect(() => {
+    const updateEventTypesDisplayed = (value) => {
+        setEventTypesDisplayed(value);
         if (eventTypesDisplayed instanceof Set)
             setData(filter(model.ConvertedData, eventTypesDisplayed))
-    }, [eventTypesDisplayed])
+    }
 
 
     const eventOnClick = (event) => {
@@ -107,7 +108,7 @@ export default function PlayerTimeline({ model, setVisualizer }) {
             <EventFilterCtrl
                 data={model.ConvertedData}
                 eventTypesDisplayed={eventTypesDisplayed}
-                setEventTypesDisplayed={setEventTypesDisplayed}
+                setEventTypesDisplayed={updateEventTypesDisplayed}
             />
 
             {/* error code event tagging  */}

@@ -33,10 +33,11 @@ export default function JobGraph({ model, setVisualizer }) {
     const [playersList, setPlayerList] = useState()
     const [playerHighlight, setHighlight] = useState()
 
-    useEffect(() => {
+    const updateLinkMode = (value) => {
+        setLinkMode(value);
         setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, linkMode))
         setPlayerList(null)
-    }, [linkMode])
+    }
 
     // useEffect(() => {
     //     console.log(data)
@@ -168,7 +169,7 @@ export default function JobGraph({ model, setVisualizer }) {
                                         type="radio"
                                         name="radio-direct"
                                         checked={linkMode === 'TopJobCompletionDestinations'}
-                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                        onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
                                         value="TopJobCompletionDestinations" />
                                     <span className="ml-2">finished the job</span>
                                 </label>
@@ -180,7 +181,7 @@ export default function JobGraph({ model, setVisualizer }) {
                                         type="radio"
                                         name="radio-direct"
                                         checked={linkMode === 'TopJobSwitchDestinations'}
-                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                        onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
                                         value="TopJobSwitchDestinations" />
                                     <span className="ml-2">left the job</span>
                                 </label>
@@ -192,7 +193,7 @@ export default function JobGraph({ model, setVisualizer }) {
                                         type="radio"
                                         name="radio-direct"
                                         checked={linkMode === 'ActiveJobs'}
-                                        onChange={(e) => { setLinkMode(e.currentTarget.value) }}
+                                        onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
                                         value="ActiveJobs" />
                                     <span className="ml-2">still in progress</span>
                                 </label>

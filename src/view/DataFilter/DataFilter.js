@@ -30,11 +30,11 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
 
-   // If adjustMode changes, reset selections from current container selection
-   useEffect(() => {
+   const updateAdjustMode = (value) => {
+      setAdjustMode(value);
       filterRequest.updateRequesterState(localState)
       console.log(`In DataFilter, adjustMode changed, updated requester's state to ${localState}`)
-   }, [adjustMode])
+   }
 
    // If loading changes to false, we are not adjusting and should return to false (resetting selections/filters)
    useEffect(() => {
@@ -170,7 +170,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
       if (adjustMode) {
          if (!loading) {
             // If in adjustment mode, and not currently loading, then we'll have expanded view so show an X.
-            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(false)} />);
+            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={() => updateAdjustMode(false)} />);
          }
          else {
             return (<></>);
@@ -178,7 +178,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
       }
       else {
          // If not in adjustment mode, show "adjustments" button to expand the filter.
-         return (<AdjustmentsVerticalIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(true)} />);
+         return (<AdjustmentsVerticalIcon className="cursor-pointer h-5 w-5" onClick={() => updateAdjustMode(true)} />);
       }
    }
 
