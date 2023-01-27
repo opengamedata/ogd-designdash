@@ -38,6 +38,12 @@
  */
 
 /**
+ * @callback Validator
+ * @param {any} value
+ * @returns {boolean}
+ */
+
+/**
  * @callback PropertyCallback
  */
 
