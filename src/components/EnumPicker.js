@@ -47,6 +47,7 @@ export default function EnumPicker(props) {
 
       const updateSelection = (e) => {
          setLocalSelection(enumType.FromName(e.target.value));
+         console.log(`Set the local selection to ${localSelection}`)
          try {
             if (filterItem.Validator({'selected':localSelection})) {
                updateFilterState(`${filterItem.Name}Selected`, localSelection);
@@ -67,7 +68,7 @@ export default function EnumPicker(props) {
                         className="form-select block w-full"
                         value={`${localSelection.asString}`}
                         onChange={updateSelection}>
-                        <option key="Empty"> </option>
+                        {/* <option key="Empty"> </option> */}
                         {optionList}
                      </select>
                </div>
