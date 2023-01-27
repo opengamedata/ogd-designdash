@@ -81,4 +81,5 @@ export class FilterItem {
    get InputMode() { return this.input_mode; }
    get ValueMode() { return this.value_mode; }
    get InitialValues() { return this.start_values; }
+   get Validator() { return this.validator; }
 }
