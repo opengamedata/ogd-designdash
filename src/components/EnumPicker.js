@@ -10,17 +10,6 @@ import { useEffect, useState } from 'react';
  */
 
 /**
- * @callback EnumSetter
- * @param {EnumType} newVal
- */
-
-/**
- * @callback EnumGetter
- * @param {string} name
- * @returns {EnumType}
- */
-
-/**
  * @callback EnumList
  * @returns {EnumType[]}
  */
@@ -31,14 +20,16 @@ import { useEffect, useState } from 'react';
  * @param {FilterItem} props.filterItem
  * @param {object} props.filterState
  * @param {StateUpdater} props.updateFilterState
- * 
+ * @param {string} props.key
+ * @param {string} props.className
  */
-export default function EnumPicker({
-   adjustMode,
-   filterItem,
-   filterState,
-   updateFilterState
-}) {
+export default function EnumPicker(props) {
+   let {
+      adjustMode,
+      filterItem,
+      filterState,
+      updateFilterState
+   } = props;
    const enumType = filterItem.InitialValues['type']
    const defaultSelection = enumType != null ? filterState[`${filterItem.Name}Selected`]
                          || filterItem.InitialValues['selected']
@@ -49,7 +40,6 @@ export default function EnumPicker({
 
    if (enumType != undefined) {
       console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
-      console.log(`In EnumPicker, the EnumList is: ${enumType != undefined ? enumType.EnumList() : 'enumType is ' + enumType.toString()}`)
 
       const optionList = enumType.EnumList().map((k) => {
          let next_key = `${filterItem.Name}${k.asString}`;
