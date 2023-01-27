@@ -57,9 +57,10 @@ export default class PlayerTimelineRequest extends VisualizerRequest {
 
    /**
     * @param {object} requesterState
+    * @param {object} rawData
     * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
     */
-   GetVisualizerModel(requesterState) {
-      return new PlayerTimelineModel();
+   GetVisualizerModel(requesterState, rawData) {
+      return new PlayerTimelineModel(requesterState['GameSelected'], rawData);
    }
 }

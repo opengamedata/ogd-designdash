@@ -34,9 +34,10 @@ export default class VisualizerRequest {
 
    /**
     * @param {object} requesterState
+    * @param {object} rawData
     * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
     */
-   GetVisualizerModel(requesterState) {
+   GetVisualizerModel(requesterState, rawData) {
       throw new Error(`Request subclass ${this.constructor.name} failed to implement VisualizerModel getter!`);
    }
 }
