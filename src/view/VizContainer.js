@@ -40,40 +40,57 @@ export default function VizContainer(props) {
    // data loading vars
    const [loading, setLoading] = useState(false);
    const [rawData, setRawData] = useState(null);
-   const [pickerState, setPickerState] = useState({})
    // data view vars
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, setVisualizer] = useState(Visualizers.INITIAL);
    const [visualizerRequestState, setVisualizerRequestState] = useState({});
    const [request, setRequest] = useState(new InitialVisualizerRequest(setVisualizerRequestState));
+   const [pickerState, setPickerState] = useState({})
 
-   useEffect(() => {
+   const updateVisualizerRequestState = (value) => {
+      setVisualizerRequestState(value);
       console.log(`Viz request state changed to ${visualizerRequestState}, calling retrieveData...`)
       retrieveData();
-   }, [visualizerRequestState])
+   }
+
+   const updatePickerState = (value) => {
+      setPickerState(value);
+      console.log(`pickerState changed to ${pickerState}, setting up new request...`)
+      // update the request type.
+      const selection = pickerState['selected']
+      switch (selection) {
+         case Visualizers.JOB_GRAPH:
+            setVisualizer(selection);
+         break;
+         case Visualizers.PLAYER_TIMELINE:
+            setVisualizer(selection);
+         break;
+         case Visualizers.INITIAL:
+         default:
+            setVisualizer(selection);
+         break;
+      }
+   }
 
    useEffect(() => {
-      console.log(`Visualizer changed to ${visualizer.asDisplayString}, setting up new request...`)
+      console.log(`visualizer changed to ${visualizer.asDisplayString}, setting up new request...`)
       // clear state from last viz.
       setVisualizerRequestState({});
       // update the request type.
       const selection = pickerState['selected']
       switch (selection) {
          case Visualizers.JOB_GRAPH:
-            setVisualizer(selection);
-            setRequest(new JobGraphRequest(setVisualizerRequestState))
+            setRequest(new JobGraphRequest(updateVisualizerRequestState))
          break;
          case Visualizers.PLAYER_TIMELINE:
-            setVisualizer(selection);
-            setRequest(new PlayerTimelineRequest(setVisualizerRequestState))
+            setRequest(new PlayerTimelineRequest(updateVisualizerRequestState))
          break;
          case Visualizers.INITIAL:
          default:
-            setVisualizer(selection);
-            setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
+            setRequest(new InitialVisualizerRequest(updateVisualizerRequestState));
          break;
       }
-   }, [pickerState])
+   }, [visualizer]);
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
@@ -179,7 +196,7 @@ export default function VizContainer(props) {
             adjustMode={true}
             filterItem={dropdownFilterItem}
             filterState={pickerState}
-            updateFilterState={setPickerState}
+            updateFilterState={updatePickerState}
          />
          <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
