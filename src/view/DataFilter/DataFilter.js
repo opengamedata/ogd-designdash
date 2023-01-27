@@ -89,7 +89,27 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
     * 
     * @param {FilterItem} item 
     */
+   const RenderRange = (item) => {
+      const key = `${item.Name}Range`;
+      return (
+         <div id={key}>
+            <RangePicker
+               adjustMode={adjustMode}
+               filterItem={item}
+               filterState={localState}
+               updateFilterState={updateFilterState}
+               key={key}
+            />
+         </div>
+      )
+   }
+
+   /**
+    * 
+    * @param {FilterItem} item 
+    */
    const RenderDropdown = (item) => {
+      const key = `${item.Name}Dropdown`
       switch (item.ValueMode) {
          case ValueModes.ENUM:
             return (
@@ -98,6 +118,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
                   filterItem={item}
                   filterState={localState}
                   updateFilterState={updateFilterState}
+                  key={key}
                />
             )
          break;
@@ -116,6 +137,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
     * @param {FilterItem} item 
     */
    const RenderInput = (item) => {
+      const key = `${item.Name}Input`;
       switch (item.ValueMode) {
          case ValueModes.ENUM:
          case ValueModes.DATE:
@@ -123,7 +145,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
          case ValueModes.TEXT:
          case ValueModes.TIME:
          default:
-            return (<div>Value Mode not supported for Input: {item.ValueMode.asString}</div>)
+            return (<div key={key}>Value Mode not supported for Input: {item.ValueMode.asString}</div>)
          break;
       }
    }
@@ -133,6 +155,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
     * @param {FilterItem} item 
     */
    const RenderItem = (item) => {
+      let key;
       switch (item.InputMode) {
          case InputModes.DROPDOWN:
             return RenderDropdown(item);
@@ -141,22 +164,14 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
             return RenderInput(item);
          break;
          case InputModes.RANGE:
-            return (
-               <div id="DateRange">
-                  <RangePicker
-                     adjustMode={adjustMode}
-                     filterItem={item}
-                     filterState={localState}
-                     updateFilterState={updateFilterState}
-                  />
-               </div>
-            )
+            return RenderRange(item)
          break;
          case InputModes.SEPARATOR:
             return ( <hr style={{margin: "10px 0px"}}/> )
          break;
          default:
-            return ( <div>Invalid Input Mode: {item.InputMode.asString}</div> );
+            const key = `${item.Name}Invalid`;
+            return ( <div key={key}>Invalid Input Mode: {item.InputMode.asString}</div> );
          break;
       }
    }
