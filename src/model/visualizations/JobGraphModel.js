@@ -2,55 +2,46 @@ import VisualizerModel from "./VisualizerModel";
 
 export class JobGraphModel extends VisualizerModel {
    /**
-    * @param {Array} nodes 
-    * @param {Array} links 
-    * @param {Object} meta 
+    * @param {string} game_name 
+    * @param {object} raw_data 
+    * @param {*} link_mode 
     */
-   constructor(nodes = [], links = [], meta = null) {
-      super()
-      this.nodes = nodes;
-      this.links = links;
-      this.meta = meta
-   }
+   constructor(game_name, raw_data, link_mode) {
+      super(game_name, raw_data)
 
-   /**
-    * 
-    * @param {*} rawData 
-    * @param {*} linkMode 
-    * @returns {JobGraphModel}
-    */
-   static fromRawData(rawData, linkMode) {
       // console.log('rawData', rawData)
 
       // metadata
       const meta = {
-         playerSummary: JSON.parse(rawData.PlayerSummary.replaceAll('\\', '')),
-         populationSummary: JSON.parse(rawData.PopulationSummary.replaceAll('\\', '').replaceAll('_', ' ')),
+         playerSummary: JSON.parse(raw_data.PlayerSummary.replaceAll('\\', '')),
+         populationSummary: JSON.parse(raw_data.PopulationSummary.replaceAll('\\', '').replaceAll('_', ' ')),
          maxAvgTime: 0,
          minAvgTime: Infinity
       }
 
       // nodes
-      let nodeBuckets = JobGraphModel.genNodeBuckets(rawData, meta);
+      let nodeBuckets = JobGraphModel.genNodeBuckets(raw_data, meta);
 
       // links
-      let l = JobGraphModel.genLinks(rawData, linkMode)
+      let l = JobGraphModel.genLinks(raw_data, link_mode)
 
       // filter out nodes w/ no edges
       const relevantNodes = Object.values(nodeBuckets).filter(
          ({ id }) => l.map(link => link.source).includes(id) || l.map(link => link.target).includes(id)
       );
-      if (linkMode === 'ActiveJobs')
+      if (link_mode === 'ActiveJobs')
          relevantNodes.forEach(n => {
             // console.log(rawLinks)
-            const rawLinks = JSON.parse(rawData[linkMode].replaceAll('\\', ''))
+            const rawLinks = JSON.parse(raw_data[link_mode].replaceAll('\\', ''))
             n.players = rawLinks[n.id]
          }
          );
 
+      this.nodes = relevantNodes;
+      this.links = l;
+      this.meta = meta
       // console.log('relevantNodes', relevantNodes)
       // console.log('links', l)
-      return new JobGraphModel(relevantNodes, l, meta);
    }
 
    static genNodeBuckets(rawData, meta) {

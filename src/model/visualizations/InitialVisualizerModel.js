@@ -6,7 +6,6 @@
 
 export class InitialVisualizerModel extends VisualizerModel {
    constructor() {
-      super();
-      this.val = 0;
+      super("No Game", {});
    }
 }
