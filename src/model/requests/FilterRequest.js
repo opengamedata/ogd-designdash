@@ -9,6 +9,7 @@ export class InputModes extends EnumType {
    static INPUT = new InputModes('INPUT');
    static RANGE = new InputModes('RANGE');
    static DROPDOWN = new InputModes('DROPDOWN');
+   static SEPARATOR = new InputModes('SEPARATOR');
 
    static EnumList() {
       return [InputModes.RANGE, InputModes.DROPDOWN]
