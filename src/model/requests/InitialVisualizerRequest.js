@@ -39,7 +39,7 @@ export default class InitialVisualizerRequest extends VisualizerRequest {
    /**
     * @param {object} requesterState
     * @param {object} rawData
-    * @returns {VisualizerModel?} The API request that gets the visualizer's required data.
+    * @returns {VisualizerModel} A model of the kind expected by the visualizer.
     */
    GetVisualizerModel(requesterState, rawData) {
       return new InitialVisualizerModel();
