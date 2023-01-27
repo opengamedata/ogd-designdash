@@ -6,15 +6,13 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
 
 // model imports
-import { ViewModes } from '../model/enums/ViewModes';
+import { Visualizers } from '../model/enums/Visualizers';
 import { InitialVisualizerModel } from '../model/visualizations/InitialVisualizerModel'
 import { JobGraphModel } from '../model/visualizations/JobGraphModel';
 import { PlayerTimelineModel } from '../model/visualizations/PlayerTimelineModel';
-import Timedelta from '../model/Timedelta';
+import InitialVisualizerRequest from '../model/requests/InitialVisualizerRequest';
 
 // controller imports
-import { PopulationSelectionOptions } from '../controller/SelectionOptions';
-import { FilterOptions } from '../controller/FilterOptions';
 import { OGDAPI } from '../controller/apis/OGDAPI';
 
 // view imports
@@ -24,7 +22,7 @@ import JobVisualizer from './visualizations/JobGraph/JobVisualizer';
 import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
 
 /**
- * @typedef {import('../typedefs').ViewModeSetter} ViewModeSetter
+ * @typedef {import('../typedefs').VisualizerSetter} VisualizerSetter
  * @typedef {import('../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import('../typedefs').FeatureMapSetter} FeatureMapSetter
  * @typedef {import('../typedefs').ElementRenderer} ElementRenderer
@@ -33,142 +31,105 @@ import PlayerVisualizer from './visualizations/PlayerTimeline/PlayerVisualizer';
 
 /**
  * 
- * @param {*} props 
+ * @param {object} props 
+ * @param {number} props.column
+ * @param {number} props.row
  * @returns 
  */
 export default function VizContainer(props) {
-   console.log(`As a test, attempting to retrieve INITIAL from ViewModes yields ${ViewModes.FromName('INITIAL')}`)
    // data loading vars
    const [loading, setLoading] = useState(false);
-   const [viewData, setViewData] = useState(null);
    const [rawData, setRawData] = useState(null);
-   const [filterOptions, setFilterOptions] = useState(new FilterOptions(0, new Timedelta(), new Timedelta(24)));
-   const [selectionOptions, setSelectionOptions] = useState(
-      new PopulationSelectionOptions(
-         vis_games[0],
-         null, null,
-         null, null,
-         new Date(), new Date()
-      )
-   );
    // data view vars
-   /** @type {[ViewModes, ViewModeSetter]} */
-   const [viewMode, setViewMode] = useState(ViewModes.INITIAL);
-   /** @type {[FeaturesMap, FeatureMapSetter]} */
-   const [viewFeatures, setViewFeatures] = useState(InitialVisualizerModel.RequiredExtractors())
+   /** @type {[Visualizers, VisualizerSetter]} */
+   const [visualizer, setVisualizer] = useState(Visualizers.INITIAL);
+   const [visualizerRequestState, setVisualizerRequestState] = useState({});
+   const [request, setRequest] = useState(new InitialVisualizerRequest(setVisualizerRequestState));
 
    useEffect(() => {
-      console.log(`selectionOptions changed to ${selectionOptions.ToLocalStorageKey()}, calling retrieveData...`)
+      console.log(`Viz request state changed to ${visualizerRequestState}, calling retrieveData...`)
       retrieveData();
-   }, [selectionOptions])
+   }, [visualizerRequestState])
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
    //    console.warn("Filtering of data on client side is not yet implemented!");
    //    setViewData(rawData);
    // }, [filterOptions, rawData]);
-   useEffect(() => {
-      console.log(`filterOptions changed to ${filterOptions.asString}, calling setViewData...`)
-      setViewData(rawData);
-   }, [filterOptions]);
-   useEffect(() => {
-      console.log(`rawData changed to ${rawData}, calling setViewData...`)
-      setViewData(rawData);
-   }, [rawData]);
-
-   // When view mode changes, update the list of features to request.
-   useEffect(() => {
-      switch (viewMode) {
-         case ViewModes.POPULATION:
-            setViewFeatures(JobGraphModel.RequiredExtractors());
-         break;
-         case ViewModes.PLAYER:
-            setViewFeatures(PlayerTimelineModel.RequiredExtractors());
-         break;
-         case ViewModes.SESSION:
-            // TODO: once there's something above, need corresponding class here.
-            setViewFeatures(InitialVisualizerModel.RequiredExtractors());
-         break;
-         case ViewModes.INITIAL:
-         default:
-            setViewFeatures(InitialVisualizerModel.RequiredExtractors());
-         break;
-      }
-   }, [viewMode])
 
    const retrieveData = () => {
       console.log("Retrieving data...")
       // flush current dataset and start loading animation
       setRawData(null)
-      setViewData(null)
       setLoading(true)
 
-      const localData = localStorage.getItem(selectionOptions.ToLocalStorageKey())
-      // console.log(localData)
-      if (localData) {
-         try {
-            console.log(`Found ${selectionOptions.ToLocalStorageKey()} in the cache`)
-            // if query found in storage, retreive JSON
-            setRawData(JSON.parse(localData)) 
-         }
-         catch (err) {
-            console.error(`Local data (${localData}) was not valid JSON!\nResulted in error ${err}`)
-         }
-         finally {
-            // stop loading animation
-            setLoading(false)
-         }
-      }
-      // if not found in storage, request dataset
-      else {
-            console.log('fetching:', selectionOptions.ToLocalStorageKey())
-
-            OGDAPI.fetch(viewMode, selectionOptions, viewFeatures)
-            .then(res => res.json())
-            .then(data => {
-               if (data.status !== 'SUCCESS') throw data.msg
-               console.log(data)
-               // store data locally and in the state variable
-               localStorage.setItem(selectionOptions.ToLocalStorageKey(), JSON.stringify(data.val))
-               setRawData(data.val)
+      const api_request = request.GetAPIRequest();
+      if (api_request != null) {
+         const localData = localStorage.getItem(api_request.LocalStorageKey)
+         // console.log(localData)
+         if (localData) {
+            try {
+               console.log(`Found ${api_request.LocalStorageKey} in the cache`)
+               // if query found in storage, retreive JSON
+               setRawData(JSON.parse(localData)) 
+            }
+            catch (err) {
+               console.error(`Local data (${localData}) was not valid JSON!\nResulted in error ${err}`)
+            }
+            finally {
                // stop loading animation
                setLoading(false)
-            })
-            .catch(error => {
-               console.error(error)
-               setLoading(false)
-               alert(error)
-            })
+            }
+         }
+         // if not found in storage, request dataset
+         else {
+               console.log('fetching:', api_request.LocalStorageKey)
+
+               OGDAPI.fetch(api_request)
+               .then(res => res.json())
+               .then(data => {
+                  if (data.status !== 'SUCCESS') throw data.msg
+                  console.log(data)
+                  // store data locally and in the state variable
+                  localStorage.setItem(api_request.LocalStorageKey, JSON.stringify(data.val))
+                  setRawData(data.val)
+                  // stop loading animation
+                  setLoading(false)
+               })
+               .catch(error => {
+                  console.error(error)
+                  setLoading(false)
+                  alert(error)
+               })
+         }
+      }
+      else {
+         console.log(`No API request for ${request}`)
       }
    }
 
    const renderVisualizer = () => {
-      switch (viewMode) {
-         case ViewModes.POPULATION:
+      switch (visualizer) {
+         case Visualizers.JOB_GRAPH:
             return (
                <ErrorBoundary childName={"JobVisualizer"}>
                   <JobVisualizer
-                     rawData={viewData}
+                     rawData={rawData}
                      setViewMode={setViewMode}
                   />
                </ErrorBoundary>
             )
-         case ViewModes.PLAYER:
+         case Visualizers.PLAYER_TIMELINE:
             return (
                <ErrorBoundary childName={"PlayerVisualizer"}>
                   <PlayerVisualizer
-                     rawData={viewData}
+                     rawData={rawData}
                      setViewMode={setViewMode}
                      selectedGame={selectionOptions.game_name}
                   />
                </ErrorBoundary>
             )
-         case ViewModes.SESSION:
-         // TODO: put in something here, maybe it's even the timeline...?
-            return (
-               <div>No Viz for Session View</div>
-            );
-         case ViewModes.INITIAL:
+         case Visualizers.INITIAL:
          default:
             return (
                <ErrorBoundary childName={"InitialVisualizer"}>
