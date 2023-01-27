@@ -2,7 +2,10 @@ import { OGDPopulationAPI } from './OGDPopulationAPI';
 import { OGDPlayerAPI } from './OGDPlayerAPI';
 import { OGDSessionAPI } from './OGDSessionAPI';
 import RequestModes from '../../model/enums/RequestModes';
-import { APIRequest } from '../../model/requests/APIRequest';
+
+/**
+ * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
+ */
 
 /**
  * @param {APIRequest} request

@@ -1,6 +1,10 @@
 import { API_ORIGIN } from '../../config';
 import OGDAPIInterface from './OGDAPIInterface';
-import { APIRequest, PopulationAPIRequest } from '../../model/requests/APIRequest';
+import { PopulationAPIRequest } from '../../model/requests/APIRequest';
+
+/**
+ * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
+ */
 
 export class OGDPopulationAPI extends OGDAPIInterface {
    /**
