@@ -3,6 +3,7 @@ import EnumType from "../enums/EnumType";
 /**
  * @typedef {import("../../typedefs").AnyMap} AnyMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
+ * @typedef {import("../../typedefs").Validator} Validator
  */
 
 export class InputModes extends EnumType {
@@ -61,17 +62,19 @@ export class FilterRequest {
 
 export class FilterItem {
    /**
-    * 
+    * Defines an input item to render for filtering.
     * @param {string} name
     * @param {InputModes} input_mode 
     * @param {ValueModes} value_mode 
     * @param {AnyMap} start_values
+    * @param {Validator} validator
     */
-   constructor(name, input_mode, value_mode, start_values) {
+   constructor(name, input_mode, value_mode, start_values, validator = (value) => true) {
       this.name = name;
       this.input_mode = input_mode;
       this.value_mode = value_mode;
       this.start_values = start_values;
+      this.validator = validator;
    }
 
    get Name() { return this.name; }
