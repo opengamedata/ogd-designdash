@@ -22,6 +22,9 @@ import { InputModes, ValueModes } from '../../model/requests/FilterRequest';
  * @param {function} props.updateData
  */
 export default function DataFilter({ filterRequest, loading, updateData }) {
+   // TODO: in theory, would be more user-friendly if pressing "X" button canceled changes to filter,
+   // and then pressing visualize would end adjust mode and run the selected filter
+
    let yesterday = new Date();
    yesterday.setDate(yesterday.getDate() - 1);
 
@@ -29,14 +32,18 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
 
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
-   const updateAdjustMode = (value) => {
-      setAdjustMode(value);
-      filterRequest.updateRequesterState(localState)
-      console.log(`In DataFilter, adjustMode changed, updated requester's state to ${JSON.stringify(localState)}`)
+   const updateAdjustMode = (in_adjust_mode) => {
+      // If we're turning adjust mode off, then we should update whoever requested a data filter.
+      if (!in_adjust_mode) {
+         console.log(`In DataFilter, adjustMode changed, updating requester's state to ${JSON.stringify(localState)}...`)
+         filterRequest.updateRequesterState(localState)
+      }
+      setAdjustMode(in_adjust_mode);
    }
 
-   // Follow dumb-looking approach from react docs for doing something when a prop changes,
-   // by keeping previous value as a state variable. Seems hacky and dumb, but whatever.
+   /* Follow dumb-looking approach from react docs for doing something when a prop changes,
+   by keeping previous value as a state variable. Seems hacky and dumb, but whatever.
+   If loading changes to false, we are not adjusting and should return to false (resetting selections/filters) */
    const [wasLoading, setWasLoading] = useState(loading);
    if (loading !== wasLoading) {
       if (!loading) {
@@ -44,10 +51,6 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
       }
       setWasLoading(loading);
    }
-   // If loading changes to false, we are not adjusting and should return to false (resetting selections/filters)
-   // useEffect(() => {
-   //    if (!loading) setAdjustMode(false)
-   // }, [loading])
    
    /**
     * 
