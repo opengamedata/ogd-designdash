@@ -1,14 +1,15 @@
 // global imports
 import React from 'react';
 import { useState, useEffect } from 'react';
-// local imports
-import LargeButton from "../../../components/buttons/LargeButton";
-import { initial_timeline_filter_options } from '../../../config';
 import { useD3 } from "../../../controller/hooks/useD3";
-import { Visualizers } from '../../../model/enums/Visualizers';
+// local imports
+import { initial_timeline_filter_options } from '../../../config';
+import LargeButton from "../../../components/buttons/LargeButton";
 import CodeForm from './CodeForm';
 import EventFilterCtrl from './EventFilterCtrl';
 import timeline from "./timeline";
+//    model imports
+import { Visualizers } from '../../../model/enums/Visualizers';
 import { PlayerTimelineModel } from '../../../model/visualizations/PlayerTimelineModel';
 
 /**
