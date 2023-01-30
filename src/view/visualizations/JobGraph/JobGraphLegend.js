@@ -1,5 +1,5 @@
-import { React, useState } from "react";
-import { QuestionMarkCircleIcon, CursorClickIcon, ViewBoardsIcon, ColorSwatchIcon, CloudIcon } from '@heroicons/react/solid'
+import React, { useState } from "react";
+import { QuestionMarkCircleIcon, CursorArrowRaysIcon, ViewColumnsIcon, SwatchIcon, CloudIcon } from '@heroicons/react/24/solid'
 
 export default function JobGraphLegend({ populationSummary }) {
     const [showLegend, setShowLegend] = useState(false)
@@ -13,17 +13,17 @@ export default function JobGraphLegend({ populationSummary }) {
                         Each <span className="font-semibold">node</span> represents a <span className="font-semibold">job</span>, and the <span className="font-semibold">links</span> between nodes denote <span className="font-semibold">player progression</span>.
                     </p>
                     <p>
-                        The <ColorSwatchIcon className="w-5 h-5 inline mr-1" /><span className="font-semibold">node color</span> signifies the <span className="font-semibold">% percentage of job completion</span>.
+                        The <SwatchIcon className="w-5 h-5 inline mr-1" /><span className="font-semibold">node color</span> signifies the <span className="font-semibold">% percentage of job completion</span>.
                     </p>
                     <p>
-                        The <ViewBoardsIcon className="w-5 h-5 inline mr-1" /><span className="font-semibold">link width</span> signifies the <span className="font-semibold"># number of players taking a path</span>. Use the radio buttons on the right to change the link type.
+                        The <ViewColumnsIcon className="w-5 h-5 inline mr-1" /><span className="font-semibold">link width</span> signifies the <span className="font-semibold"># number of players taking a path</span>. Use the radio buttons on the right to change the link type.
                     </p>
                     <p>
                         <CloudIcon className="w-5 h-5 inline mr-1" />
                         <span className="font-semibold">Hover</span> over nodes and links to reveal more details.
                     </p>
                     <p>
-                        <CursorClickIcon className="w-5 h-5 inline mr-1" />
+                        <CursorArrowRaysIcon className="w-5 h-5 inline mr-1" />
                         <span className="font-semibold">Click on a link</span> to see the list of players who took this path.
                     </p>
                 </div>
