@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QuestionMarkCircleIcon, CursorArrowRaysIcon, ViewColumnsIcon, SwatchIcon, CloudIcon } from '@heroicons/react/24/solid'
+import { QuestionMarkCircleIcon, CursorArrowRaysIcon, ViewColumnsIcon, SwatchIcon, CloudIcon } from '@heroicons/react/20/solid'
 
 export default function JobGraphLegend({ populationSummary }) {
     const [showLegend, setShowLegend] = useState(false)
