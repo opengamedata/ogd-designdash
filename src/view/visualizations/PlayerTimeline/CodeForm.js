@@ -1,5 +1,5 @@
-import { React, useState, useEffect } from 'react';
-import { XIcon } from '@heroicons/react/solid'
+import React, { useState, useEffect } from 'react';
+import { XMarkIcon } from '@heroicons/react/20/solid'
 import LongButton from '../../../components/buttons/LongButton';
 import { API_ORIGIN } from '../../../config';
 
@@ -78,7 +78,7 @@ export default function CodeForm({ event, setFormVisible, selectedGame, selected
 
             <div className="flex justify-between">
                 <h3 className='text-md'>Detector Tagging</h3>
-                <XIcon className="cursor-pointer h-5 w-5" onClick={() => setFormVisible(false)} />
+                <XMarkIcon className="cursor-pointer h-5 w-5" onClick={() => setFormVisible(false)} />
             </div>
 
             <div>

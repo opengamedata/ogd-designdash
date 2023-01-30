@@ -1,5 +1,5 @@
 import React from 'react'
-import { EyeIcon, XIcon } from "@heroicons/react/solid"
+import { EyeIcon, XMarkIcon } from "@heroicons/react/20/solid"
 
 export default function PlayersList({ data, redirect, playerHighlight, setHighlight, setPlayerList, playerSummary }) {
 
@@ -8,7 +8,7 @@ export default function PlayersList({ data, redirect, playerHighlight, setHighli
         <div className="fixed top-14 right-3 w-auto">
             <div className="p-2 flex items-center space-x-2 justify-between">
                 <div className='font-bold text-lg underline'>{data.title}</div>
-                <XIcon className="w-6 h-6 cursor-pointer" onClick={() => { setPlayerList(null) }} />
+                <XMarkIcon className="w-6 h-6 cursor-pointer" onClick={() => { setPlayerList(null) }} />
             </div>
 
             <div className="max-h-96 overflow-y-auto">

@@ -1,5 +1,5 @@
-import { React, useState } from 'react'
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid'
+import React, { useState } from 'react'
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 
 
 export default function EventFilterCtrl({ data, eventTypesDisplayed, setEventTypesDisplayed }) {
