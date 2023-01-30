@@ -36,7 +36,7 @@ export default function JobGraph({ model, setVisualizer }) {
     const updateLinkMode = (value) => {
         setLinkMode(value);
         setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, linkMode))
-        setPlayerList(null)
+        setPlayerList([])
     }
 
     // useEffect(() => {
@@ -48,11 +48,11 @@ export default function JobGraph({ model, setVisualizer }) {
     const showPlayersList = (link) => {
         let players, title
         if (linkMode === 'ActiveJobs') {
-            players = localModel.nodes.find(n => n.id === link.id).players
+            players = localModel.Nodes.find(n => n.id === link.id).players
             title = `${link.id} (${players.length} in progress)`
         }
         else {
-            players = localModel.links.find(l => l.source === link.source.id && l.target === link.target.id).players
+            players = localModel.Links.find(l => l.source === link.source.id && l.target === link.target.id).players
             title = `${link.source.id}\n` + `➔ ${link.target.id}\n` +
                 `(${players.length} ${linkMode === 'TopJobSwitchDestinations' ? 'switched' : 'completed'})`          
         }
@@ -146,7 +146,7 @@ export default function JobGraph({ model, setVisualizer }) {
                 {playersList ?
                     <PlayersList
                         data={playersList}
-                        playerSummary={localModel.meta.playerSummary}
+                        playerSummary={localModel.Meta.playerSummary}
                         redirect={toPlayerTimeline}
                         playerHighlight={playerHighlight}
                         setHighlight={setHighlight}
@@ -206,7 +206,7 @@ export default function JobGraph({ model, setVisualizer }) {
                 </div>
 
                 {/* bottom left section: chart legend */}
-                {localModel && <JobGraphLegend populationSummary={localModel.meta.populationSummary} />}
+                {localModel && <JobGraphLegend populationSummary={localModel.Meta.populationSummary} />}
             </>
         )
     }

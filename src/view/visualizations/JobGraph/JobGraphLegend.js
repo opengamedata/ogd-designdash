@@ -37,7 +37,7 @@ export default function JobGraphLegend({ populationSummary }) {
                 />
             </div>
             {
-                Object.entries(populationSummary).map(([key, value]) =>
+                Object.entries(populationSummary || {}).map(([key, value]) =>
                     <p key={key} className="font-light">
                         {key}: <span className="font-bold">{value}</span>
                     </p>)
