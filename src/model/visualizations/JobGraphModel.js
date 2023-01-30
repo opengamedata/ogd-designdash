@@ -2,6 +2,14 @@ import VisualizerModel from "./VisualizerModel";
 
 export class JobGraphModel extends VisualizerModel {
    /**
+    * @typedef {object} JobGraphMeta
+    * @property {object} playerSummary
+    * @property {object} populationSummary
+    * @property {number} maxAvgTime
+    * @property {number} minAvgTime
+    */
+
+   /**
     * @param {string?} game_name 
     * @param {object?} raw_data 
     * @param {*} link_mode 
@@ -11,7 +19,13 @@ export class JobGraphModel extends VisualizerModel {
       super(game_name || "UNKNOWN GAME", raw_data)
       this.nodes = {};
       this.links = [];
-      this.meta = {}
+      /** @type JobGraphMeta */
+      this.meta = {
+         playerSummary: {},
+         populationSummary: {},
+         maxAvgTime: 0,
+         minAvgTime: Infinity
+      }
       if (raw_data != null) {
          this.initializeFromRawData(raw_data, link_mode);
       }
@@ -26,6 +40,7 @@ export class JobGraphModel extends VisualizerModel {
       // console.log('rawData', rawData)
 
       // metadata
+      /** @type JobGraphMeta */
       const meta = {
          playerSummary: JSON.parse(raw_data.PlayerSummary.replaceAll('\\', '')),
          populationSummary: JSON.parse(raw_data.PopulationSummary.replaceAll('\\', '').replaceAll('_', ' ')),

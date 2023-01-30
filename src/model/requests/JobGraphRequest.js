@@ -20,7 +20,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       super(updateRequesterState);
       this.filter_request = new FilterRequest(this.updateRequesterState);
       this.filter_request.AddItem(
-         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"type":AvailableGames, "selected":AvailableGames.EnumList[0]})
+         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"type":AvailableGames, "selected":AvailableGames.EnumList()[0]})
       )
       let startDate = new Date();
       let endDate = new Date();
@@ -37,7 +37,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       this.filter_request.AddItem(
          new FilterItem("MinimumJobs", InputModes.RANGE, ValueModes.NUMBER, {'min':0, 'max':null}, JobGraphRequest.MinJobsValidator)
       )
-      this.viz_model = new JobGraphModel(AvailableGames.EnumList[0].asString, null, null)
+      this.viz_model = new JobGraphModel(AvailableGames.EnumList()[0].asString, null, null)
    }
 
    /**
