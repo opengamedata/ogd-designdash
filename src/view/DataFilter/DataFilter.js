@@ -29,17 +29,25 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
 
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
-
    const updateAdjustMode = (value) => {
       setAdjustMode(value);
       filterRequest.updateRequesterState(localState)
       console.log(`In DataFilter, adjustMode changed, updated requester's state to ${JSON.stringify(localState)}`)
    }
 
+   // Follow dumb-looking approach from react docs for doing something when a prop changes,
+   // by keeping previous value as a state variable. Seems hacky and dumb, but whatever.
+   const [wasLoading, setWasLoading] = useState(loading);
+   if (loading !== wasLoading) {
+      if (!loading) {
+         setAdjustMode(false);
+      }
+      setWasLoading(loading);
+   }
    // If loading changes to false, we are not adjusting and should return to false (resetting selections/filters)
-   useEffect(() => {
-      if (!loading) setAdjustMode(false)
-   }, [loading])
+   // useEffect(() => {
+   //    if (!loading) setAdjustMode(false)
+   // }, [loading])
    
    /**
     * 
@@ -82,7 +90,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
                   adjustMode={adjustMode}
                   filterItem={item}
                   filterState={localState}
-                  updateFilterState={updateFilterState}
+                  updateContainerState={updateFilterState}
                   key={key}
                />
             )
@@ -120,7 +128,6 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
     * @param {FilterItem} item 
     */
    const RenderItem = (item) => {
-      let key;
       switch (item.InputMode) {
          case InputModes.DROPDOWN:
             return RenderDropdown(item);

@@ -2,13 +2,27 @@ import VisualizerModel from "./VisualizerModel";
 
 export class JobGraphModel extends VisualizerModel {
    /**
-    * @param {string} game_name 
-    * @param {object} raw_data 
+    * @param {string?} game_name 
+    * @param {object?} raw_data 
     * @param {*} link_mode 
     */
    constructor(game_name, raw_data, link_mode) {
-      super(game_name, raw_data)
+      console.log(`In JobGraphModel, got game name of ${game_name} and raw_data of ${JSON.stringify(raw_data)}`)
+      super(game_name || "UNKNOWN GAME", raw_data)
+      this.nodes = {};
+      this.links = [];
+      this.meta = {}
+      if (raw_data != null) {
+         this.initializeFromRawData(raw_data, link_mode);
+      }
+   }
 
+   /**
+    * 
+    * @param {object} raw_data 
+    * @param {string} link_mode 
+    */
+   initializeFromRawData(raw_data, link_mode) {
       // console.log('rawData', rawData)
 
       // metadata
@@ -29,7 +43,7 @@ export class JobGraphModel extends VisualizerModel {
       const relevantNodes = Object.values(nodeBuckets).filter(
          ({ id }) => l.map(link => link.source).includes(id) || l.map(link => link.target).includes(id)
       );
-      if (link_mode === 'ActiveJobs')
+      if (link_mode === 'ActiveJobs') {
          relevantNodes.forEach(n => {
             // console.log(rawLinks)
             const rawLinks = JSON.parse(raw_data[link_mode].replaceAll('\\', ''))
@@ -42,8 +56,15 @@ export class JobGraphModel extends VisualizerModel {
       this.meta = meta
       // console.log('relevantNodes', relevantNodes)
       // console.log('links', l)
+      }
    }
 
+   /**
+    * 
+    * @param {object} rawData 
+    * @param {object} meta 
+    * @returns {object}
+    */
    static genNodeBuckets(rawData, meta) {
       let nodeBuckets = {}
       for (const [key, value] of Object.entries(rawData)) {
@@ -70,6 +91,12 @@ export class JobGraphModel extends VisualizerModel {
       return nodeBuckets;
    }
 
+   /**
+    * 
+    * @param {object} rawData 
+    * @param {string} linkMode 
+    * @returns {object[]}
+    */
    static genLinks(rawData, linkMode) {
       let l = []
       const rawLinks = JSON.parse(rawData[linkMode].replaceAll('\\', ''))
@@ -122,5 +149,24 @@ export class JobGraphModel extends VisualizerModel {
             break;
       }
       return l;
+   }
+
+   /**
+    * @returns {object}
+    */
+   get Nodes() {
+      return this.nodes;
+   }
+   /**
+    * @returns {object[]}
+    */
+   get Links() {
+      return this.links;
+   }
+   /**
+    * @returns {object}
+    */
+   get Meta() {
+      return this.meta;
    }
 }

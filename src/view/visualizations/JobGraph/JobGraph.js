@@ -25,8 +25,8 @@ import { Visualizers } from "../../../model/enums/Visualizers";
  * @returns 
  */
 export default function JobGraph({ model, setVisualizer }) {
-    /** @type {[VisualizerModel, JobGraphSetter]} data */
-    const [localModel, setLocalModel] = useState(model);
+    /** @type {[JobGraphModel, JobGraphSetter]} data */
+    const [localModel, setLocalModel] = useState(model instanceof JobGraphModel ? model : new JobGraphModel(null, null, null));
     /** @type {[string, StringSetter]} data */
     const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
     /** @type {[string[] | undefined, StringListSetter]} data */
@@ -77,7 +77,7 @@ export default function JobGraph({ model, setVisualizer }) {
                 * utility function that maps average complete time to node radius
             */
             const projectRadius = d3.scaleLinear()
-                .domain([localModel.meta.minAvgTime, localModel.meta.maxAvgTime])
+                .domain([localModel.Meta.minAvgTime, localModel.Meta.maxAvgTime])
                 .range([3, 20])
 
             /**

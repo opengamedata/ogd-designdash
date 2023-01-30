@@ -2,12 +2,13 @@ import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../enums/AvailableGames";
 import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
 import { JobGraphModel } from "../visualizations/JobGraphModel";
+import { APIRequest } from "./APIRequest";
+import RequestModes from "../enums/RequestModes";
 
 /**
  * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
- * @typedef {import("./APIRequest").APIRequest} APIRequest
  * @typedef {import("../../typedefs").Validator} Validator
  */
 
@@ -36,6 +37,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       this.filter_request.AddItem(
          new FilterItem("MinimumJobs", InputModes.RANGE, ValueModes.NUMBER, {'min':0, 'max':null}, JobGraphRequest.MinJobsValidator)
       )
+      this.viz_model = new JobGraphModel(AvailableGames.EnumList[0].asString, null, null)
    }
 
    /**
@@ -117,10 +119,11 @@ export default class JobGraphRequest extends VisualizerRequest {
    }
 
    /**
-    * @returns {FeaturesMap}
+    * @param {object} requesterState
+    * @returns {APIRequest?} The API request that gets the visualizer's required data.
     */
-   static RequiredExtractors() {
-      return {
+   GetAPIRequest(requesterState) {
+      const RequiredExtractors = {
          "AQUALAB": [
             'ActiveJobs',
             'JobsAttempted-avg-time-per-attempt',
@@ -138,14 +141,11 @@ export default class JobGraphRequest extends VisualizerRequest {
             'PopulationSummary'
          ]
       };
-   }
-
-   /**
-    * @param {object} requesterState
-    * @returns {APIRequest?} The API request that gets the visualizer's required data.
-    */
-   GetAPIRequest(requesterState) {
-      return null;
+      const game = requesterState['GameSelected']
+      return new APIRequest(RequestModes.POPULATION, RequiredExtractors[game], game,
+                                   requesterState['AppVersionRangeMin'], requesterState['AppVersionRangeMax'],
+                                   requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax']
+      )
    }
 
    /**
@@ -161,6 +161,9 @@ export default class JobGraphRequest extends VisualizerRequest {
     * @returns {VisualizerModel} A model of the kind expected by the visualizer.
     */
    GetVisualizerModel(requesterState, rawData) {
-      return new JobGraphModel(requesterState['GameSelected'], rawData, 'TopJobCompletionDestinations');
+      if (this.viz_model.dataNotEqual(rawData)) {
+         this.viz_model = new JobGraphModel(requesterState['GameSelected'], rawData, 'TopJobCompletionDestinations');
+      }
+      return this.viz_model;
    }
 }

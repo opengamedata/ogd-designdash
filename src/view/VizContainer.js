@@ -45,42 +45,30 @@ export default function VizContainer(props) {
    const [visualizer, setVisualizer] = useState(Visualizers.INITIAL);
    const [visualizerRequestState, setVisualizerRequestState] = useState({});
    const [request, setRequest] = useState(new InitialVisualizerRequest(setVisualizerRequestState));
-   const [pickerState, setPickerState] = useState({})
 
-   const updateVisualizerRequestState = (value) => {
-      setVisualizerRequestState(value);
-      console.log(`Viz request state changed to ${visualizerRequestState}, calling retrieveData...`)
-      retrieveData();
-   }
-
-   const updatePickerState = (value) => {
-      setPickerState(value);
-      console.log(`pickerState changed to ${pickerState}, setting up new request...`)
-      // update the request type.
-      const selection = pickerState['selected']
-      updateVisualizer(selection)
-   }
-
-   const updateVisualizer = (value) => {
-      setVisualizer(value);
-      console.log(`visualizer changed to ${visualizer ? visualizer.asDisplayString : visualizer}, setting up new request...`)
+   const updateVisualizer = (new_visualizer) => {
       // clear state from last viz.
       setVisualizerRequestState({});
       // update the request type.
-      const selection = pickerState['selected']
-      switch (selection) {
+      switch (new_visualizer) {
          case Visualizers.JOB_GRAPH:
-            setRequest(new JobGraphRequest(updateVisualizerRequestState))
+            setRequest(new JobGraphRequest(setVisualizerRequestState))
          break;
          case Visualizers.PLAYER_TIMELINE:
-            setRequest(new PlayerTimelineRequest(updateVisualizerRequestState))
+            setRequest(new PlayerTimelineRequest(setVisualizerRequestState))
          break;
          case Visualizers.INITIAL:
          default:
-            setRequest(new InitialVisualizerRequest(updateVisualizerRequestState));
+            setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
          break;
       }
+      setVisualizer(new_visualizer)
    }
+
+   useEffect(() => {
+      console.log(`Viz request state changing to ${JSON.stringify(visualizerRequestState)}, first calling retrieveData...`)
+      retrieveData();
+   }, [visualizerRequestState])
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
@@ -108,14 +96,12 @@ export default function VizContainer(props) {
                console.error(`Local data (${localData}) was not valid JSON!\nResulted in error ${err}`)
             }
             finally {
-               // stop loading animation
                setLoading(false)
             }
          }
          // if not found in storage, request dataset
          else {
                console.log('fetching:', api_request.LocalStorageKey)
-
                OGDAPI.fetch(api_request)
                .then(res => res.json())
                .then(data => {
@@ -124,7 +110,6 @@ export default function VizContainer(props) {
                   // store data locally and in the state variable
                   localStorage.setItem(api_request.LocalStorageKey, JSON.stringify(data.val))
                   setRawData(data.val)
-                  // stop loading animation
                   setLoading(false)
                })
                .catch(error => {
@@ -186,8 +171,8 @@ export default function VizContainer(props) {
             <EnumPicker
                adjustMode={true}
                filterItem={dropdownFilterItem}
-               filterState={pickerState}
-               updateFilterState={updatePickerState}
+               filterState={{"selected":visualizer}}
+               updateContainerState={(key, val) => {updateVisualizer(val)}}
                key="VizTypeDropdown"
             />
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>

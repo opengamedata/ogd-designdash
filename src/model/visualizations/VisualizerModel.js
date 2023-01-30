@@ -9,6 +9,12 @@ export default class VisualizerModel {
       this.raw_data = raw_data
    }
 
+   dataNotEqual(raw_data) {
+      // TODO: implement this.
+      console.log("dataNotEqual not implemented yet, in the future this will compare hashes on raw_data.")
+      return true;
+   }
+
    get Game() {
       return this.game_name;
    }
