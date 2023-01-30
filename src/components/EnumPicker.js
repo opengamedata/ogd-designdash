@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
  * @param {object} props.filterState
- * @param {StateUpdater} props.updateFilterState
+ * @param {StateUpdater} props.updateContainerState
  * @param {string} props.key
  */
 export default function EnumPicker(props) {
@@ -27,7 +27,7 @@ export default function EnumPicker(props) {
       adjustMode,
       filterItem,
       filterState,
-      updateFilterState
+      updateContainerState
    } = props;
    const enumType = filterItem.InitialValues['type']
    const defaultSelection = enumType != null ? filterState[`${filterItem.Name}Selected`]
@@ -36,30 +36,25 @@ export default function EnumPicker(props) {
                          : "Empty";
    /** @type {[EnumType, any]} */
    const [localSelection, setLocalSelection] = useState(defaultSelection)
+   // console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
+   const updateSelection = (e) => {
+      const newSelection = enumType.FromName(e.target.value)
+      setLocalSelection(newSelection);
+      if (filterItem.Validator({'selected':newSelection})) {
+         console.log(`Validated new selection for ${filterItem.Name}, about to call the updateContainerState with ${newSelection}`)
+         updateContainerState(`${filterItem.Name}Selected`, newSelection);
+      }
+   }
 
    if (enumType != undefined) {
-      console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
-
-      const optionList = enumType.EnumList().map((k) => {
-         let next_key = `${filterItem.Name}${k.asString}`;
-         return (<option key={next_key} value={k.asString}>{k.asDisplayString}</option>)
-      })
-
-      const updateSelection = (e) => {
-         setLocalSelection(enumType.FromName(e.target.value));
-         console.log(`Set the local selection to ${localSelection}`)
-         try {
-            if (filterItem.Validator({'selected':localSelection})) {
-               updateFilterState(`${filterItem.Name}Selected`, localSelection);
-            }
-         }
-         catch (error) {
-            alert(error);
-            return;
-         }
-      }
-
       if (adjustMode) {
+         const optionList = enumType.EnumList().map((k) => {
+            return (
+               <option key={`${filterItem.Name}${k.asString}`} value={k.asString}>
+                  {k.asDisplayString}
+               </option>)
+         })
+
          return(
             <div id={`${localSelection.constructor.name}Selector`} className="col">
                <div className="input-group">
