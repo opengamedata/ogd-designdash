@@ -31,7 +31,11 @@ import { FilterItem, InputModes, ValueModes } from '../model/requests/FilterRequ
  */
 
 /**
- * 
+ * VizContainer holds two pieces: A `Data Filter` and a `Visualizer`.
+ * To communicate between the two, the Data Filter places key-value pairs into a state object.
+ * This object is then used to generate an API request, to retrieve raw data.
+ * The raw data and state are then passed into the Visualizer, which may take filtering hints from the state,
+ * and will take what is needed from the raw data.
  * @param {object} props 
  * @param {number} props.column
  * @param {number} props.row
