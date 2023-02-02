@@ -1,9 +1,9 @@
 import { API_ORIGIN } from '../../config';
 import OGDAPIInterface from './OGDAPIInterface';
-import { PlayerAPIRequest } from '../../model/requests/APIRequest';
+import { PlayerAPIRequest } from '../requests/APIRequest';
 
 /**
- * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
+ * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  */
 
 export class OGDPlayerAPI extends OGDAPIInterface {

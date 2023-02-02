@@ -1,12 +1,12 @@
 import VisualizerRequest from "./VisualizerRequest";
-import { AvailableGames } from "../enums/AvailableGames";
+import { AvailableGames } from "../../model/enums/AvailableGames";
 import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
-import { JobGraphModel } from "../visualizations/JobGraphModel";
+import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
 import { APIRequest, PopulationAPIRequest } from "./APIRequest";
-import RequestModes from "../enums/RequestModes";
+import RequestModes from "../../model/enums/RequestModes";
 
 /**
- * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("../../typedefs").Validator} Validator

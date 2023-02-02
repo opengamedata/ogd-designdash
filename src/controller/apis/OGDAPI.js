@@ -4,7 +4,7 @@ import { OGDSessionAPI } from './OGDSessionAPI';
 import RequestModes from '../../model/enums/RequestModes';
 
 /**
- * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
+ * @typedef {import('..//requests/APIRequest').APIRequest} APIRequest
  */
 
 export class OGDAPI {

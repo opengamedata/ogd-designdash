@@ -1,7 +1,7 @@
 /**
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
- * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import("./FilterRequest").FilterRequest} FilterRequest
  */
 

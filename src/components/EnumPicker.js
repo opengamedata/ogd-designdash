@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 /**
  * @typedef {import("../model/enums/EnumType").default} EnumType
  * @typedef {import("../typedefs").StateUpdater} StateUpdater
- * @typedef {import("../model/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../controller/requests/FilterRequest").FilterItem} FilterItem
  */
 
 /**

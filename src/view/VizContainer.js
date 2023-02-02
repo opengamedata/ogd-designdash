@@ -8,9 +8,9 @@ import EnumPicker from '../components/EnumPicker';
 
 // model imports
 import { Visualizers } from '../model/enums/Visualizers';
-import InitialVisualizerRequest from '../model/requests/InitialVisualizerRequest';
-import JobGraphRequest from '../model/requests/JobGraphRequest';
-import PlayerTimelineRequest from '../model/requests/PlayerTimelineRequest';
+import InitialVisualizerRequest from '../controller/requests/InitialVisualizerRequest';
+import JobGraphRequest from '../controller/requests/JobGraphRequest';
+import PlayerTimelineRequest from '../controller/requests/PlayerTimelineRequest';
 
 // controller imports
 import { OGDAPI } from '../controller/apis/OGDAPI';
@@ -20,7 +20,7 @@ import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobGraph from './visualizations/JobGraph/JobGraph';
 import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
-import { FilterItem, InputModes, ValueModes } from '../model/requests/FilterRequest';
+import { FilterItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
 
 /**
  * @typedef {import('../typedefs').VisualizerSetter} VisualizerSetter

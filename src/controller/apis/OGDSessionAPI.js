@@ -1,9 +1,9 @@
 import { API_ORIGIN } from '../../config';
 import OGDAPIInterface from './OGDAPIInterface';
-import { SessionAPIRequest } from '../../model/requests/APIRequest';
+import { SessionAPIRequest } from '../requests/APIRequest';
 
 /**
- * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
+ * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  */
 
 export class OGDSessionAPI extends OGDAPIInterface {

@@ -1,10 +1,10 @@
 // global imports
 
 // local imports
-import { AvailableGames } from "../enums/AvailableGames";
+import { AvailableGames } from "../../model/enums/AvailableGames";
 
 /**
- * @typedef {import('../enums/RequestModes').default} RequestModes
+ * @typedef {import('../../model/enums/RequestModes').default} RequestModes
  */
 
 export class APIRequest {

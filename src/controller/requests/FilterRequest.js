@@ -1,4 +1,4 @@
-import EnumType from "../enums/EnumType";
+import EnumType from "../../model/enums/EnumType";
 
 /**
  * @typedef {import("../../typedefs").AnyMap} AnyMap

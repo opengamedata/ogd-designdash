@@ -1,5 +1,5 @@
 /**
- * @typedef {import('../../model/requests/APIRequest').APIRequest} APIRequest
+ * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  */
 
 export default class OGDAPIInterface {

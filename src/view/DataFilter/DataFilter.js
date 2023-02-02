@@ -7,12 +7,12 @@ import LargeButton from '../../components/buttons/LargeButton';
 import RangePicker from '../../components/RangePicker';
 import EnumPicker from '../../components/EnumPicker';
 //    model imports
-import { InputModes, ValueModes } from '../../model/requests/FilterRequest';
+import { InputModes, ValueModes } from '../../controller/requests/FilterRequest';
 
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
- * @typedef {import("../../model/requests/FilterRequest").FilterRequest} FilterRequest
- * @typedef {import("../../model/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../../controller/requests/FilterRequest").FilterRequest} FilterRequest
+ * @typedef {import("../../controller/requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**

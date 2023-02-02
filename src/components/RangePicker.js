@@ -2,7 +2,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 // local imports
-import { ValueModes } from '../model/requests/FilterRequest';
+import { ValueModes } from '../controller/requests/FilterRequest';
 import { ISODateFormat, USDateFormat } from '../controller/TimeFormat';
 import Timedelta from '../model/Timedelta';
 import TimedeltaInput from './TimedeltaInput';
@@ -10,7 +10,7 @@ import TimedeltaInput from './TimedeltaInput';
 /**
  * @typedef {import("../typedefs").SetterCallback} SetterCallback
  * @typedef {import("../typedefs").StateUpdater} StateUpdater
- * @typedef {import("../model/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../controller/requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**

@@ -1,10 +1,10 @@
 import VisualizerRequest from "./VisualizerRequest";
-import { AvailableGames } from "../enums/AvailableGames";
+import { AvailableGames } from "../../model/enums/AvailableGames";
 import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
-import { InitialVisualizerModel } from "../visualizations/InitialVisualizerModel";
+import { InitialVisualizerModel } from "../../model/visualizations/InitialVisualizerModel";
 
 /**
- * @typedef {import("../visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
  */
