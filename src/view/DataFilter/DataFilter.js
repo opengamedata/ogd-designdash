@@ -54,7 +54,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
     * @param {string} key 
     * @param {any} val 
     */
-   const updateFilterState = (key, val) => {
+   const mergeFilterState = (key, val) => {
       let localCopy = localState; localCopy[key] = val; setLocalState(localCopy);
    }
 
@@ -70,7 +70,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
                adjustMode={adjustMode}
                filterItem={item}
                filterState={localState}
-               updateFilterState={updateFilterState}
+               mergeContainerState={mergeFilterState}
                key={key}
             />
          </div>
@@ -90,7 +90,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
                   adjustMode={adjustMode}
                   filterItem={item}
                   filterState={localState}
-                  updateContainerState={updateFilterState}
+                  mergeContainerState={mergeFilterState}
                   key={key}
                />
             )

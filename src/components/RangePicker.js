@@ -18,10 +18,10 @@ import TimedeltaInput from './TimedeltaInput';
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
  * @param {object} props.filterState
- * @param {StateUpdater} props.updateFilterState
+ * @param {StateUpdater} props.mergeContainerState
  * 
  */
-export default function RangePicker({ adjustMode, filterItem, filterState, updateFilterState }) {
+export default function RangePicker({ adjustMode, filterItem, filterState, mergeContainerState }) {
 
    const initialMin = filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min'];
    const initialMax = filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max'];
@@ -31,7 +31,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
    const updateLocalMin = (value) => {
       try {
          if (filterItem.Validator({'min':value, 'max':localMax})) {
-            updateFilterState(`${filterItem.Name}Min`, value);
+            mergeContainerState(`${filterItem.Name}Min`, value);
             setLocalMin(value);
          }
       }
@@ -43,7 +43,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
    const updateLocalMax = (value) => {
       try {
          if (filterItem.Validator({'min':localMin, 'max':value})) {
-            updateFilterState(`${filterItem.Name}Max`, value);
+            mergeContainerState(`${filterItem.Name}Max`, value);
             setLocalMax(value);
          }
       }

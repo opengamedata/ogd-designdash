@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
  * @param {object} props.filterState
- * @param {StateUpdater} props.updateContainerState
+ * @param {StateUpdater} props.mergeContainerState
  * @param {string} props.key
  */
 export default function EnumPicker(props) {
@@ -27,7 +27,7 @@ export default function EnumPicker(props) {
       adjustMode,
       filterItem,
       filterState,
-      updateContainerState
+      mergeContainerState
    } = props;
    const enumType = filterItem.InitialValues['type']
    const defaultSelection = enumType != null ? filterState[`${filterItem.Name}Selected`]
@@ -43,7 +43,7 @@ export default function EnumPicker(props) {
       setLocalSelection(newSelection);
       if (filterItem.Validator({'selected':newSelection})) {
          console.log(`Validated new selection for ${filterItem.Name}, about to call the updateContainerState with ${newSelection}`)
-         updateContainerState(`${filterItem.Name}Selected`, newSelection);
+         mergeContainerState(`${filterItem.Name}Selected`, newSelection);
       }
    }
 
