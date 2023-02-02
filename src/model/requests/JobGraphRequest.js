@@ -2,7 +2,7 @@ import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../enums/AvailableGames";
 import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
 import { JobGraphModel } from "../visualizations/JobGraphModel";
-import { APIRequest } from "./APIRequest";
+import { APIRequest, PopulationAPIRequest } from "./APIRequest";
 import RequestModes from "../enums/RequestModes";
 
 /**
@@ -22,8 +22,10 @@ export default class JobGraphRequest extends VisualizerRequest {
       this.filter_request.AddItem(
          new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"type":AvailableGames, "selected":AvailableGames.EnumList()[0]})
       )
-      let startDate = new Date();
-      let endDate = new Date();
+      let two_days_ago = new Date();
+      two_days_ago.setDate(two_days_ago.getDate() - 2);
+      let startDate = two_days_ago;
+      let endDate = two_days_ago;
       /** @type {Validator} */
       this.filter_request.AddItem(
          new FilterItem("DateRange", InputModes.RANGE, ValueModes.DATE, {'min':startDate, 'max':endDate}, JobGraphRequest.DateValidator)
@@ -142,9 +144,10 @@ export default class JobGraphRequest extends VisualizerRequest {
          ]
       };
       const game = requesterState['GameSelected']
-      return new APIRequest(RequestModes.POPULATION, RequiredExtractors[game], game,
+      return new PopulationAPIRequest(RequestModes.POPULATION, RequiredExtractors[game], game,
                                    requesterState['AppVersionRangeMin'], requesterState['AppVersionRangeMax'],
-                                   requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax']
+                                   requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax'],
+                                   requesterState['DateRangeMin'], requesterState['DateRangeMax']
       )
    }
 

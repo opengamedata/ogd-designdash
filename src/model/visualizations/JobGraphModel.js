@@ -17,8 +17,8 @@ export class JobGraphModel extends VisualizerModel {
    constructor(game_name, raw_data, link_mode) {
       console.log(`In JobGraphModel, got game name of ${game_name} and raw_data of ${JSON.stringify(raw_data)}`)
       super(game_name || "UNKNOWN GAME", raw_data)
-      /** @type {object} */
-      this.nodes = {};
+      /** @type {object[]} */
+      this.nodes = [];
       /** @type {object[]} */
       this.links = [];
       /** @type JobGraphMeta */
@@ -169,7 +169,7 @@ export class JobGraphModel extends VisualizerModel {
    }
 
    /**
-    * @returns {object}
+    * @returns {object[]}
     */
    get Nodes() {
       return this.nodes;
