@@ -29,6 +29,10 @@ export class APIRequest {
       this.max_log_version = max_log_version;
    }
 
+   genLocalStorageKey() {
+      return [this.request_mode.name, this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
+   }
+
    get RequestMode() {
       return this.request_mode;
    }
@@ -40,7 +44,7 @@ export class APIRequest {
    }
 
    get LocalStorageKey() {
-      return [this.request_mode.name, this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
+      return this.genLocalStorageKey();
    }
 }
 
@@ -66,6 +70,10 @@ export class PopulationAPIRequest extends APIRequest {
       this.start_date = start_date;
       this.end_date = end_date;
    }
+
+   genLocalStorageKey() {
+      return [this.request_mode.name, "POPULATION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version, this.start_date, this.end_date].join("/")
+   }
 }
 
 export class PlayerAPIRequest extends APIRequest {
@@ -88,6 +96,10 @@ export class PlayerAPIRequest extends APIRequest {
             min_log_version, max_log_version);
       this.player_ids = player_ids;
    }
+
+   genLocalStorageKey() {
+      return [this.request_mode.name, "PLAYER", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
+   }
 }
 
 export class SessionAPIRequest extends APIRequest {
@@ -109,5 +121,9 @@ export class SessionAPIRequest extends APIRequest {
             min_app_version, max_app_version,
             min_log_version, max_log_version);
       this.session_ids = session_ids;
+   }
+
+   genLocalStorageKey() {
+      return [this.request_mode.name, "SESSION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
    }
 }
