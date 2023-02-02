@@ -1,6 +1,6 @@
 // global imports
 import React from 'react';
-import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
+import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/react/20/solid';
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
@@ -24,9 +24,6 @@ import { InputModes, ValueModes } from '../../model/requests/FilterRequest';
 export default function DataFilter({ filterRequest, loading, updateData }) {
    // TODO: in theory, would be more user-friendly if pressing "X" button canceled changes to filter,
    // and then pressing visualize would end adjust mode and run the selected filter
-
-   let yesterday = new Date();
-   yesterday.setDate(yesterday.getDate() - 1);
 
    const [localState, setLocalState] = useState({});
 
@@ -181,7 +178,10 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
          {filterElements}
          <div className='flex space-x-2 items-center'>
             {loading ?
-               <><Cog6ToothIcon className='animate-spin h-8 w-8' /> &nbsp;Please wait...</>
+               <><Cog6ToothIcon className='animate-spin h-2 w-2' /> &nbsp;Please wait...</>
+               :
+               adjustMode ? 
+               <LargeButton label='save' onClick={(e) => {updateAdjustMode(false)}} selected="false"/>
                :
                <LargeButton label='visualize' onClick={updateData} selected="false"/>
             }

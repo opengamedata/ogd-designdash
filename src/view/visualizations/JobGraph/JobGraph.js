@@ -8,6 +8,7 @@ import PlayersList from "./PlayersList";
 import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
 import { Visualizers } from "../../../model/enums/Visualizers";
+import ModePicker from "./ModePicker";
 
 /**
  * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
@@ -114,7 +115,12 @@ export default function JobGraph({ model, setVisualizer }) {
                 return "#999"
             }
 
-            const chart = ForceGraph(localModel, {
+            const fGraphModel = {
+                nodes: localModel.Nodes,
+                links: localModel.Links
+            };
+            console.log(`About to create a forceGraph with model ${JSON.stringify(fGraphModel)}`);
+            const fGraphAttribs = {
                 nodeId: d => d.id,
                 nodeGroup: d => d['JobsAttempted-num-completes'] / (d['JobsAttempted-num-starts'] === '0' ? 1 : d['JobsAttempted-num-starts']),
                 nodeTitle: d => d.id,
@@ -131,17 +137,21 @@ export default function JobGraph({ model, setVisualizer }) {
                 outLinkDetail: linkMode === 'ActiveJobs' ? d => `${d.players.length} players in progress` : null,
                 parent: svg,
                 nodeClick: ''
-            },
-                showPlayersList
-            )
+            }
+            const chart = ForceGraph( fGraphModel, fGraphAttribs, showPlayersList )
         }
     }, [localModel, playerHighlight]) // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
 
+    const pickerItems = [
+        { "name" : "TopJobCompletionDestinations", "readable" : "finished the job"  },
+        { "name" : "TopJobSwitchDestinations",     "readable" : "left the job"      },
+        { "name" : "ActiveJobs",                   "readable" : "still in progress" }
+    ];
     // render component
     if (model instanceof JobGraphModel) {
         return (
             <>
-                <svg ref={ref} className="w-full border-b" />
+                <svg ref={ref} className="border-b border border-green-700" />
 
                 {playersList ?
                     <PlayersList
@@ -156,53 +166,17 @@ export default function JobGraph({ model, setVisualizer }) {
                 }
 
                 {/* bottom right section: path type and player count */}
-                <div className="fixed bottom-3 right-3 font-light text-sm">
-
+                <div className=" bottom-3 right-3 font-light text-sm">
                     {/* path type 3-way selection */}
                     <fieldset className="block">
                         <legend >Show paths of players who</legend>
-                        <div className="mt-2">
-                            <div>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        className="form-radio"
-                                        type="radio"
-                                        name="radio-direct"
-                                        checked={linkMode === 'TopJobCompletionDestinations'}
-                                        onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
-                                        value="TopJobCompletionDestinations" />
-                                    <span className="ml-2">finished the job</span>
-                                </label>
-                            </div>
-                            <div>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        className="form-radio"
-                                        type="radio"
-                                        name="radio-direct"
-                                        checked={linkMode === 'TopJobSwitchDestinations'}
-                                        onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
-                                        value="TopJobSwitchDestinations" />
-                                    <span className="ml-2">left the job</span>
-                                </label>
-                            </div>
-                            <div>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        className="form-radio"
-                                        type="radio"
-                                        name="radio-direct"
-                                        checked={linkMode === 'ActiveJobs'}
-                                        onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
-                                        value="ActiveJobs" />
-                                    <span className="ml-2">still in progress</span>
-                                </label>
-                            </div>
-                        </div>
+                        <ModePicker
+                            items={pickerItems}
+                            linkMode={linkMode}
+                            updateLinkMode={updateLinkMode}
+                        />
                     </fieldset>
-
                     {/* <p className="mt-2">Player Count: {data && data.meta.PlayerCount} </p> */}
-
                 </div>
 
                 {/* bottom left section: chart legend */}

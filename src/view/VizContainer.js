@@ -1,5 +1,6 @@
 // global imports
 import React, { useState, useEffect, useReducer } from 'react';
+import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 // local imports
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
@@ -44,7 +45,8 @@ export default function VizContainer(props) {
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, setVisualizer] = useState(Visualizers.INITIAL);
    const [visualizerRequestState, setVisualizerRequestState] = useState({});
-   const [request, setRequest] = useState(new InitialVisualizerRequest(setVisualizerRequestState));
+   const updateVisualizerRequestState = (new_state) => { console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(new_state)}`); setVisualizerRequestState(new_state); };
+   const [request, setRequest] = useState(new InitialVisualizerRequest(updateVisualizerRequestState));
 
    const updateVisualizer = (new_visualizer) => {
       // clear state from last viz.
@@ -52,23 +54,18 @@ export default function VizContainer(props) {
       // update the request type.
       switch (new_visualizer) {
          case Visualizers.JOB_GRAPH:
-            setRequest(new JobGraphRequest(setVisualizerRequestState))
+            setRequest(new JobGraphRequest(updateVisualizerRequestState))
          break;
          case Visualizers.PLAYER_TIMELINE:
-            setRequest(new PlayerTimelineRequest(setVisualizerRequestState))
+            setRequest(new PlayerTimelineRequest(updateVisualizerRequestState))
          break;
          case Visualizers.INITIAL:
          default:
-            setRequest(new InitialVisualizerRequest(setVisualizerRequestState));
+            setRequest(new InitialVisualizerRequest(updateVisualizerRequestState));
          break;
       }
       setVisualizer(new_visualizer)
    }
-
-   useEffect(() => {
-      console.log(`Viz request state changing to ${JSON.stringify(visualizerRequestState)}, first calling retrieveData...`)
-      retrieveData();
-   }, [visualizerRequestState])
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
@@ -101,7 +98,7 @@ export default function VizContainer(props) {
          }
          // if not found in storage, request dataset
          else {
-               console.log('fetching:', api_request.LocalStorageKey)
+               console.log(`fetching into ${api_request.LocalStorageKey}`)
                OGDAPI.fetch(api_request)
                .then(res => res.json())
                .then(data => {
@@ -125,32 +122,41 @@ export default function VizContainer(props) {
    }
 
    const renderVisualizer = () => {
-      switch (visualizer) {
-         case Visualizers.JOB_GRAPH:
-            return (
-               <ErrorBoundary childName={"JobVisualizer"}>
-                  <JobGraph
-                     model={request.GetVisualizerModel(visualizerRequestState, rawData)}
-                     setVisualizer={updateVisualizer}
-                  />
-               </ErrorBoundary>
-            )
-         case Visualizers.PLAYER_TIMELINE:
-            return (
-               <ErrorBoundary childName={"PlayerVisualizer"}>
-                  <PlayerTimeline
-                     model={request.GetVisualizerModel(visualizerRequestState, rawData)}
-                     setVisualizer={updateVisualizer}
-                  />
-               </ErrorBoundary>
-            )
-         case Visualizers.INITIAL:
-         default:
-            return (
-               <ErrorBoundary childName={"InitialVisualizer"}>
-                  <InitialVisualizer/>
-               </ErrorBoundary>
-            );
+      if (!loading) {
+         switch (visualizer) {
+            case Visualizers.JOB_GRAPH:
+               return (
+                  <ErrorBoundary childName={"JobVisualizer"}>
+                     <JobGraph
+                        model={request.GetVisualizerModel(visualizerRequestState, rawData)}
+                        setVisualizer={updateVisualizer}
+                     />
+                  </ErrorBoundary>
+               )
+            case Visualizers.PLAYER_TIMELINE:
+               return (
+                  <ErrorBoundary childName={"PlayerVisualizer"}>
+                     <PlayerTimeline
+                        model={request.GetVisualizerModel(visualizerRequestState, rawData)}
+                        setVisualizer={updateVisualizer}
+                     />
+                  </ErrorBoundary>
+               )
+            case Visualizers.INITIAL:
+            default:
+               return (
+                  <ErrorBoundary childName={"InitialVisualizer"}>
+                     <InitialVisualizer/>
+                  </ErrorBoundary>
+               );
+         }
+      }
+      else {
+         return (
+            <div>
+               <Cog6ToothIcon className='animate-spin h-8 w-8' /> &nbsp;Please wait...
+            </div>
+         )
       }
    }
 
@@ -166,8 +172,9 @@ export default function VizContainer(props) {
    }
    return (
    <div className='flex-auto border-4 border-red-700' style={styling}>
+      <LoadingBlur loading={loading} height={8} width={8}/>
       <div className='container relative flex'>
-         <div className="absolute left-0 max-w-96 max-h-full overflow-y-auto">
+         <div className="absolute left-0 max-w-72 max-h-full overflow-y-auto">
             <EnumPicker
                adjustMode={true}
                filterItem={dropdownFilterItem}
@@ -181,7 +188,6 @@ export default function VizContainer(props) {
                   loading={loading}
                   updateData={retrieveData}
                />
-               <LoadingBlur loading={loading} height={10} width={10}/>
             </ErrorBoundary>
          </div>
          <div className='container relative left-72 border shadow-sm'>

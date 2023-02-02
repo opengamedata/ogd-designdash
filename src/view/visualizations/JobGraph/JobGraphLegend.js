@@ -5,7 +5,7 @@ export default function JobGraphLegend({ populationSummary }) {
     const [showLegend, setShowLegend] = useState(false)
 
     return (
-        <div className="fixed bottom-5 left-8 font-light">
+        <div className="static bottom-5 left-8 font-light">
             {showLegend &&
                 <div className="pb-5 pr-5 backdrop-blur">
                     <p className="font-bold">Understanding the Graph</p>
@@ -37,7 +37,7 @@ export default function JobGraphLegend({ populationSummary }) {
                 />
             </div>
             {
-                Object.entries(populationSummary || {}).map(([key, value]) =>
+                Object.entries(populationSummary).map(([key, value]) =>
                     <p key={key} className="font-light">
                         {key}: <span className="font-bold">{value}</span>
                     </p>)
