@@ -23,14 +23,16 @@ import TimedeltaInput from './TimedeltaInput';
  */
 export default function RangePicker({ adjustMode, filterItem, filterState, updateFilterState }) {
 
-   const [localMin, setLocalMin] = useState(filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min']);
-   const [localMax, setLocalMax] = useState(filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max']);
+   const initialMin = filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min'];
+   const initialMax = filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max'];
+   const [localMin, setLocalMin] = useState(initialMin);
+   const [localMax, setLocalMax] = useState(initialMax);
 
    const updateLocalMin = (value) => {
-      setLocalMin(value);
       try {
-         if (filterItem.Validator({'min':localMin, 'max':localMax})) {
-            updateFilterState(`${filterItem.Name}Min`, localMin);
+         if (filterItem.Validator({'min':value, 'max':localMax})) {
+            updateFilterState(`${filterItem.Name}Min`, value);
+            setLocalMin(value);
          }
       }
       catch (error) {
@@ -39,10 +41,10 @@ export default function RangePicker({ adjustMode, filterItem, filterState, updat
       }
    }
    const updateLocalMax = (value) => {
-      setLocalMax(value);
       try {
-         if (filterItem.Validator({'min':localMin, 'max':localMax})) {
-            updateFilterState(`${filterItem.Name}Max`, localMax);
+         if (filterItem.Validator({'min':localMin, 'max':value})) {
+            updateFilterState(`${filterItem.Name}Max`, value);
+            setLocalMax(value);
          }
       }
       catch (error) {
