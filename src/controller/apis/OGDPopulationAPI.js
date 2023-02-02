@@ -30,7 +30,7 @@ export class OGDPopulationAPI extends OGDAPIInterface {
 
          // fetch by url
          const url = new URL(`${urlPath}?${searchParams.toString()}`, API_ORIGIN)
-         console.log(`ODPopulationAPI is making a request to ${url}`)
+         console.log(`OGDPopulationAPI is making a request to ${url}`)
          return fetch(url);
       }
       else {

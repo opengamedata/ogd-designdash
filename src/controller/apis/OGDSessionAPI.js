@@ -27,6 +27,8 @@ export class OGDSessionAPI extends OGDAPIInterface {
          });
 
          // fetch by url
+         const url = new URL(`${urlPath}?${searchParams.toString()}`, API_ORIGIN)
+         console.log(`OGDSessionAPI is making a request to ${url}`)
          return fetch(new URL(`${urlPath}?${searchParams.toString()}`, API_ORIGIN));
       }
       else {

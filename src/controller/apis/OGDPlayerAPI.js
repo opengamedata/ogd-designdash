@@ -27,7 +27,9 @@ export class OGDPlayerAPI extends OGDAPIInterface {
          });
 
          // fetch by url
-         return fetch(new URL(`${urlPath}?${searchParams.toString()}`, API_ORIGIN))
+         const url = new URL(`${urlPath}?${searchParams.toString()}`, API_ORIGIN)
+         console.log(`OGDPlayerAPI is making a request to ${url}`)
+         return fetch(url)
       }
       else {
          throw new TypeError("Sent wrong type of selection options to Player API!");
