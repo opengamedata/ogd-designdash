@@ -36,9 +36,10 @@ export default function EnumPicker(props) {
                          : "Empty";
    /** @type {[EnumType, any]} */
    const [localSelection, setLocalSelection] = useState(defaultSelection)
+
    // console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
-   const updateSelection = (e) => {
-      const newSelection = enumType.FromName(e.target.value)
+   const updateSelection = (value) => {
+      const newSelection = enumType.FromName(value)
       setLocalSelection(newSelection);
       if (filterItem.Validator({'selected':newSelection})) {
          console.log(`Validated new selection for ${filterItem.Name}, about to call the updateContainerState with ${newSelection}`)
@@ -62,7 +63,7 @@ export default function EnumPicker(props) {
                      <select
                         className="form-select block w-full"
                         value={`${localSelection.asString}`}
-                        onChange={updateSelection}>
+                        onChange={(e) => {updateSelection(e.target.value)}}>
                         {/* <option key="Empty"> </option> */}
                         {optionList}
                      </select>
