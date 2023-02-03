@@ -27,8 +27,26 @@ export default function RangePicker(props) {
       mergeContainerState
    } = props;
 
-   const initialMin = filterItem.InitialValues['min'];
-   const initialMax = filterItem.InitialValues['max'];
+   const getDefaultValue = () => {
+      switch (filterItem.ValueMode) {
+         case ValueModes.TEXT:
+            return "*";
+         break;
+         case ValueModes.DATE:
+            return new Date();
+         break;
+         case ValueModes.TIME:
+            return new Timedelta(0)
+         break;
+         case ValueModes.NUMBER:
+         default:
+            return 0;
+         break;
+      }
+   }
+
+   const initialMin = filterItem.InitialValues['min'] || getDefaultValue();
+   const initialMax = filterItem.InitialValues['max'] || getDefaultValue();
 
    const [localMin, setLocalMin] = useState(initialMin);
    const [localMax, setLocalMax] = useState(initialMax);

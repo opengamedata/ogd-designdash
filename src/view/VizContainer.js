@@ -193,7 +193,6 @@ export default function VizContainer(props) {
             <EnumPicker
                adjustMode={true}
                filterItem={dropdownFilterItem}
-               filterState={{"selected":visualizer}}
                mergeContainerState={(new_state) => {setVisualizer(new_state[`${dropdownFilterItem.Name}Selected`])}}
                key="VizTypeDropdown"
             />
