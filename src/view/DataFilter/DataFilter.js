@@ -62,7 +62,6 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
             <RangePicker
                adjustMode={adjustMode}
                filterItem={item}
-               filterState={localState}
                mergeContainerState={mergeContainerState}
                key={key}
             />
@@ -82,7 +81,6 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
                <EnumPicker
                   adjustMode={adjustMode}
                   filterItem={item}
-                  filterState={localState}
                   mergeContainerState={mergeContainerState}
                   key={key}
                />

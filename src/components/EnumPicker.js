@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
  * @param {object} props
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
- * @param {object} props.filterState
  * @param {MapSetter} props.mergeContainerState
  * @param {string} props.key
  */
@@ -26,17 +25,15 @@ export default function EnumPicker(props) {
    let {
       adjustMode,
       filterItem,
-      filterState,
       mergeContainerState
    } = props;
    const enumType = filterItem.InitialValues['type']
 
-   const defaultSelection = filterState[`${filterItem.Name}Selected`]
-                         || filterItem.InitialValues['selected']
+   const initialSelection = filterItem.InitialValues['selected']
                          || (enumType != null ? enumType.EnumList()[0] : "Empty");
 
    /** @type {[EnumType, any]} */
-   const [localSelection, setLocalSelection] = useState(defaultSelection)
+   const [localSelection, setLocalSelection] = useState(initialSelection)
    const setSelection = (value) => {
       const newSelection = enumType.FromName(value)
       setLocalSelection(newSelection);

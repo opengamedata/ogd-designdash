@@ -17,7 +17,6 @@ import TimedeltaInput from './TimedeltaInput';
  * @param {object} props
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
- * @param {object} props.filterState
  * @param {MapSetter} props.mergeContainerState
  * @param {string} props.key
  */
@@ -25,14 +24,17 @@ export default function RangePicker(props) {
    let {
       adjustMode,
       filterItem,
-      filterState,
       mergeContainerState
    } = props;
 
-   const initialMin = filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min'];
-   const initialMax = filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max'];
+   const initialMin = filterItem.InitialValues['min'];
+   const initialMax = filterItem.InitialValues['max'];
 
    const [localMin, setLocalMin] = useState(initialMin);
+   const [localMax, setLocalMax] = useState(initialMax);
+   mergeContainerState({[`${filterItem.Name}Min`] : initialMin});
+   mergeContainerState({[`${filterItem.Name}Max`] : initialMax});
+
    const setMin = (value) => {
       try {
          if (filterItem.Validator({'min':value, 'max':localMax})) {
@@ -45,8 +47,6 @@ export default function RangePicker(props) {
          return;
       }
    }
-
-   const [localMax, setLocalMax] = useState(initialMax);
    const setMax = (value) => {
       try {
          if (filterItem.Validator({'min':localMin, 'max':value})) {
@@ -59,9 +59,6 @@ export default function RangePicker(props) {
          return;
       }
    }
-
-   const useMin = (localMin != null)
-   const useMax = (localMax != null)
 
    const BadType = (value, valName) => {
       return (
@@ -190,6 +187,9 @@ export default function RangePicker(props) {
       }
    }
 
+
+   const useMin = (localMin != null)
+   const useMax = (localMax != null)
    if (adjustMode) {
       const from = useMin &&
                  (
