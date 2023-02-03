@@ -57,16 +57,27 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
     */
    const RenderRange = (item) => {
       const key = `${item.Name}Range`;
-      return (
-         <div id={key}>
-            <RangePicker
-               adjustMode={adjustMode}
-               filterItem={item}
-               mergeContainerState={mergeContainerState}
-               key={key}
-            />
-         </div>
-      )
+      switch (item.ValueMode) {
+         case ValueModes.DATE:
+         case ValueModes.NUMBER:
+         case ValueModes.TEXT:
+         case ValueModes.TIME:
+            return (
+               <div id={key}>
+                  <RangePicker
+                     adjustMode={adjustMode}
+                     filterItem={item}
+                     mergeContainerState={mergeContainerState}
+                     key={key}
+                  />
+               </div>
+            );
+         break;
+         case ValueModes.ENUM:
+         default:
+            return (<div key={key}>Value Mode not supported for Range: {item.ValueMode.asString}</div>);
+         break;
+      }
    }
 
    /**
@@ -91,7 +102,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
          case ValueModes.TEXT:
          case ValueModes.TIME:
          default:
-            return (<div>Value Mode not supported for Dropdown: {item.ValueMode.asString}</div>)
+            return (<div key={key}>Value Mode not supported for Dropdown: {item.ValueMode.asString}</div>)
          break;
       }
    }
