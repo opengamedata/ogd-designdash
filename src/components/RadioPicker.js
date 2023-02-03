@@ -1,20 +1,13 @@
 // global imports
-import * as d3 from "d3";
-import React, { useEffect, useState } from "react";
+import React from "react";
 // local imports
-import { useD3 } from "../../../controller/hooks/useD3";
-import { JobGraphModel } from "../../../model/visualizations/JobGraphModel";
-import PlayersList from "./PlayersList";
-import ForceGraph from './forceGraph'
-import JobGraphLegend from "./JobGraphLegend";
-import { Visualizers } from "../../../model/enums/Visualizers";
 
 /**
- * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("../../../typedefs").JobGraphSetter} JobGraphSetter
- * @typedef {import("../../../typedefs").StringSetter} StringSetter
- * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
- * @typedef {import("../../../typedefs").SetterCallback} SetterCallback
+ * @typedef {import("../model/visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../typedefs").JobGraphSetter} JobGraphSetter
+ * @typedef {import("../typedefs").StringSetter} StringSetter
+ * @typedef {import("../typedefs").StringListSetter} StringListSetter
+ * @typedef {import("../typedefs").SetterCallback} SetterCallback
  */
 
 /**
@@ -25,7 +18,7 @@ import { Visualizers } from "../../../model/enums/Visualizers";
  * @param {StringSetter} props.updateLinkMode
  * @returns 
  */
-export default function ModePicker({ items, linkMode, updateLinkMode }) {
+export default function RadioPicker({ items, linkMode, updateLinkMode }) {
 
    /* manipulate raw data to a format to be used by the vis views */
    const radioList = items.map((item) => {

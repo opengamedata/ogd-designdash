@@ -8,7 +8,7 @@ import PlayersList from "./PlayersList";
 import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
 import { Visualizers } from "../../../model/enums/Visualizers";
-import ModePicker from "./ModePicker";
+import RadioPicker from "../../../components/RadioPicker";
 
 /**
  * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
@@ -170,7 +170,7 @@ export default function JobGraph({ model, setVisualizer }) {
                     {/* path type 3-way selection */}
                     <fieldset className="block">
                         <legend >Show paths of players who</legend>
-                        <ModePicker
+                        <RadioPicker
                             items={pickerItems}
                             linkMode={linkMode}
                             updateLinkMode={updateLinkMode}
