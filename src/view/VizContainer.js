@@ -59,7 +59,7 @@ export default function VizContainer(props) {
       setVisualizerRequestState(merged_state);
    };
 
-   const [request, setRequest] = useState(new InitialVisualizerRequest(mergeVisualizerRequestState));
+   const [request, setRequest] = useState(new InitialVisualizerRequest());
 
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
@@ -69,14 +69,14 @@ export default function VizContainer(props) {
       // update the request type.
       switch (new_visualizer) {
          case Visualizers.JOB_GRAPH:
-            setRequest(new JobGraphRequest(mergeVisualizerRequestState))
+            setRequest(new JobGraphRequest())
          break;
          case Visualizers.PLAYER_TIMELINE:
-            setRequest(new PlayerTimelineRequest(mergeVisualizerRequestState))
+            setRequest(new PlayerTimelineRequest())
          break;
          case Visualizers.INITIAL:
          default:
-            setRequest(new InitialVisualizerRequest(mergeVisualizerRequestState));
+            setRequest(new InitialVisualizerRequest());
          break;
       }
       _setVisualizer(new_visualizer)
@@ -201,6 +201,7 @@ export default function VizContainer(props) {
                <DataFilter
                   filterRequest={request.GetFilterRequest()}
                   loading={loading}
+                  mergeContainerState={mergeVisualizerRequestState}
                   updateData={retrieveData}
                />
             </ErrorBoundary>

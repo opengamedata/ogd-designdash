@@ -20,10 +20,10 @@ import { InputModes, ValueModes } from '../../controller/requests/FilterRequest'
  * @param {object} props
  * @param {FilterRequest} props.filterRequest
  * @param {boolean}       props.loading
- * @param {MapSetter}     props.mergeRequesterState
+ * @param {MapSetter}     props.mergeContainerState
  * @param {function}      props.updateData
  */
-export default function DataFilter({ filterRequest, loading, mergeRequesterState, updateData }) {
+export default function DataFilter({ filterRequest, loading, mergeContainerState, updateData }) {
    // TODO: in theory, would be more user-friendly if pressing "X" button canceled changes to filter,
    // and then pressing visualize would end adjust mode and run the selected filter
 
@@ -35,7 +35,7 @@ export default function DataFilter({ filterRequest, loading, mergeRequesterState
       // If we're turning adjust mode off, then we should update whoever requested a data filter.
       if (!in_adjust_mode) {
          console.log(`In DataFilter, adjustMode changed, updating requester's state to ${JSON.stringify(localState)}...`)
-         mergeRequesterState(localState)
+         mergeContainerState(localState)
       }
       setAdjustMode(in_adjust_mode);
    }
@@ -63,7 +63,7 @@ export default function DataFilter({ filterRequest, loading, mergeRequesterState
                adjustMode={adjustMode}
                filterItem={item}
                filterState={localState}
-               mergeContainerState={mergeFilterState}
+               mergeContainerState={mergeContainerState}
                key={key}
             />
          </div>
@@ -83,7 +83,7 @@ export default function DataFilter({ filterRequest, loading, mergeRequesterState
                   adjustMode={adjustMode}
                   filterItem={item}
                   filterState={localState}
-                  mergeContainerState={mergeFilterState}
+                  mergeContainerState={mergeContainerState}
                   key={key}
                />
             )
