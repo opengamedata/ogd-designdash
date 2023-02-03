@@ -19,16 +19,21 @@ import TimedeltaInput from './TimedeltaInput';
  * @param {FilterItem} props.filterItem
  * @param {object} props.filterState
  * @param {MapSetter} props.mergeContainerState
- * 
+ * @param {string} props.key
  */
-export default function RangePicker({ adjustMode, filterItem, filterState, mergeContainerState }) {
+export default function RangePicker(props) {
+   let {
+      adjustMode,
+      filterItem,
+      filterState,
+      mergeContainerState
+   } = props;
 
    const initialMin = filterState[`${filterItem.Name}Min`] || filterItem.InitialValues['min'];
    const initialMax = filterState[`${filterItem.Name}Max`] || filterItem.InitialValues['max'];
-   const [localMin, setLocalMin] = useState(initialMin);
-   const [localMax, setLocalMax] = useState(initialMax);
 
-   const updateLocalMin = (value) => {
+   const [localMin, setLocalMin] = useState(initialMin);
+   const setMin = (value) => {
       try {
          if (filterItem.Validator({'min':value, 'max':localMax})) {
             mergeContainerState({[`${filterItem.Name}Min`] : value});
@@ -40,7 +45,9 @@ export default function RangePicker({ adjustMode, filterItem, filterState, merge
          return;
       }
    }
-   const updateLocalMax = (value) => {
+
+   const [localMax, setLocalMax] = useState(initialMax);
+   const setMax = (value) => {
       try {
          if (filterItem.Validator({'min':localMin, 'max':value})) {
             mergeContainerState({[`${filterItem.Name}Max`] : value});
@@ -190,7 +197,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, merge
                         <div className="input-group-prepend">
                            <h4 className="text-sm" >{useMax ? "From" : "Min"}: </h4>
                         </div>
-                        {RenderPicker(localMin, "minValue", updateLocalMin)}
+                        {RenderPicker(localMin, "minValue", setMin)}
                      </div>
                  );
       const to   = useMax &&
@@ -199,7 +206,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, merge
                         <div className="input-group-prepend">
                            <h4 className="text-sm" >{useMin ? "To" : "Max"}: </h4>
                         </div>
-                        {RenderPicker(localMax, "maxValue", updateLocalMax)}
+                        {RenderPicker(localMax, "maxValue", setMax)}
                      </div>
                  );
       return (
