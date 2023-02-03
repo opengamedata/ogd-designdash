@@ -141,7 +141,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
             return RenderRange(item)
          break;
          case InputModes.SEPARATOR:
-            return ( <hr style={{margin: "10px 0px"}}/> )
+            return ( <hr key={`${item.Name}Separator`} style={{margin: "10px 0px"}}/> )
          break;
          default:
             const key = `${item.Name}Invalid`;
@@ -149,11 +149,6 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
          break;
       }
    }
-
-
-   const filterElements = filterRequest.Items.map(
-      (item) => RenderItem(item)
-   )
 
    const renderToggleButton = () => {
       if (adjustMode) {
@@ -177,7 +172,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
          <div className='flex justify-between mb-2'>
             { renderToggleButton() }
          </div>
-         {filterElements}
+         { filterRequest.Items.map((item) => RenderItem(item)) }
          <div className='flex space-x-2 items-center'>
             {loading ?
                <><Cog6ToothIcon className='animate-spin h-2 w-2' /> &nbsp;Please wait...</>
