@@ -30,15 +30,14 @@ export default function EnumPicker(props) {
       mergeContainerState
    } = props;
    const enumType = filterItem.InitialValues['type']
-   const defaultSelection = enumType != null ? filterState[`${filterItem.Name}Selected`]
+
+   const defaultSelection = filterState[`${filterItem.Name}Selected`]
                          || filterItem.InitialValues['selected']
-                         || enumType.EnumList()[0]
-                         : "Empty";
+                         || (enumType != null ? enumType.EnumList()[0] : "Empty");
+
    /** @type {[EnumType, any]} */
    const [localSelection, setLocalSelection] = useState(defaultSelection)
-
-   // console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
-   const updateSelection = (value) => {
+   const setSelection = (value) => {
       const newSelection = enumType.FromName(value)
       setLocalSelection(newSelection);
       if (filterItem.Validator({'selected':newSelection})) {
@@ -46,6 +45,7 @@ export default function EnumPicker(props) {
          mergeContainerState({ [`${filterItem.Name}Selected`] : newSelection });
       }
    }
+   // console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
 
    if (enumType != undefined) {
       if (adjustMode) {
@@ -63,7 +63,7 @@ export default function EnumPicker(props) {
                      <select
                         className="form-select block w-full"
                         value={`${localSelection.asString}`}
-                        onChange={(e) => {updateSelection(e.target.value)}}>
+                        onChange={(e) => {setSelection(e.target.value)}}>
                         {/* <option key="Empty"> </option> */}
                         {optionList}
                      </select>
