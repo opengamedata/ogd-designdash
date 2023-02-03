@@ -13,12 +13,9 @@ import RequestModes from "../../model/enums/RequestModes";
  */
 
 export default class JobGraphRequest extends VisualizerRequest {
-   /**
-    * @param {MapSetter} updateRequesterState
-    */
-   constructor(updateRequesterState) {
-      super(updateRequesterState);
-      this.filter_request = new FilterRequest(this.updateRequesterState);
+   constructor() {
+      super();
+      this.filter_request = new FilterRequest();
       this.filter_request.AddItem(
          new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"type":AvailableGames, "selected":AvailableGames.EnumList()[0]})
       )

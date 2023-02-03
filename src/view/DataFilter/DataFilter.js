@@ -10,6 +10,7 @@ import EnumPicker from '../../components/EnumPicker';
 import { InputModes, ValueModes } from '../../controller/requests/FilterRequest';
 
 /**
+ * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  * @typedef {import("../../controller/requests/FilterRequest").FilterRequest} FilterRequest
  * @typedef {import("../../controller/requests/FilterRequest").FilterItem} FilterItem
@@ -18,10 +19,11 @@ import { InputModes, ValueModes } from '../../controller/requests/FilterRequest'
  /**
  * @param {object} props
  * @param {FilterRequest} props.filterRequest
- * @param {boolean} props.loading
- * @param {function} props.updateData
+ * @param {boolean}       props.loading
+ * @param {MapSetter}     props.mergeRequesterState
+ * @param {function}      props.updateData
  */
-export default function DataFilter({ filterRequest, loading, updateData }) {
+export default function DataFilter({ filterRequest, loading, mergeRequesterState, updateData }) {
    // TODO: in theory, would be more user-friendly if pressing "X" button canceled changes to filter,
    // and then pressing visualize would end adjust mode and run the selected filter
 
@@ -33,7 +35,7 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
       // If we're turning adjust mode off, then we should update whoever requested a data filter.
       if (!in_adjust_mode) {
          console.log(`In DataFilter, adjustMode changed, updating requester's state to ${JSON.stringify(localState)}...`)
-         filterRequest.updateRequesterState(localState)
+         mergeRequesterState(localState)
       }
       setAdjustMode(in_adjust_mode);
    }
@@ -47,15 +49,6 @@ export default function DataFilter({ filterRequest, loading, updateData }) {
          setAdjustMode(false);
       }
       setWasLoading(loading);
-   }
-   
-   /**
-    * 
-    * @param {string} key 
-    * @param {any} val 
-    */
-   const mergeFilterState = (key, val) => {
-      let localCopy = localState; localCopy[key] = val; setLocalState(localCopy);
    }
 
    /**

@@ -9,7 +9,7 @@ import TimedeltaInput from './TimedeltaInput';
 
 /**
  * @typedef {import("../typedefs").SetterCallback} SetterCallback
- * @typedef {import("../typedefs").StateUpdater} StateUpdater
+ * @typedef {import("../typedefs").MapSetter} MapSetter
  * @typedef {import("../controller/requests/FilterRequest").FilterItem} FilterItem
  */
 
@@ -18,7 +18,7 @@ import TimedeltaInput from './TimedeltaInput';
  * @param {boolean} props.adjustMode
  * @param {FilterItem} props.filterItem
  * @param {object} props.filterState
- * @param {StateUpdater} props.mergeContainerState
+ * @param {MapSetter} props.mergeContainerState
  * 
  */
 export default function RangePicker({ adjustMode, filterItem, filterState, mergeContainerState }) {
@@ -31,7 +31,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, merge
    const updateLocalMin = (value) => {
       try {
          if (filterItem.Validator({'min':value, 'max':localMax})) {
-            mergeContainerState(`${filterItem.Name}Min`, value);
+            mergeContainerState({[`${filterItem.Name}Min`] : value});
             setLocalMin(value);
          }
       }
@@ -43,7 +43,7 @@ export default function RangePicker({ adjustMode, filterItem, filterState, merge
    const updateLocalMax = (value) => {
       try {
          if (filterItem.Validator({'min':localMin, 'max':value})) {
-            mergeContainerState(`${filterItem.Name}Max`, value);
+            mergeContainerState({[`${filterItem.Name}Max`] : value});
             setLocalMax(value);
          }
       }

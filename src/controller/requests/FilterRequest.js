@@ -2,7 +2,6 @@ import EnumType from "../../model/enums/EnumType";
 
 /**
  * @typedef {import("../../typedefs").AnyMap} AnyMap
- * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("../../typedefs").Validator} Validator
  */
 
@@ -38,11 +37,7 @@ export class ValueModes extends EnumType {
 }
 
 export class FilterRequest {
-   /**
-    * @param {MapSetter} updateRequesterState
-    */
-   constructor(updateRequesterState) {
-      this.updateRequesterState = updateRequesterState;
+   constructor() {
       /** @type {FilterItem[]} */
       this.items = []
    }

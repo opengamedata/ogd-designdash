@@ -11,12 +11,9 @@ import { PlayerTimelineModel } from "../../model/visualizations/PlayerTimelineMo
  */
 
 export default class PlayerTimelineRequest extends VisualizerRequest {
-   /**
-    * @param {MapSetter} updateRequesterState
-    */
-   constructor(updateRequesterState) {
-      super(updateRequesterState);
-      this.filter_request = new FilterRequest(this.updateRequesterState);
+   constructor() {
+      super();
+      this.filter_request = new FilterRequest();
       this.filter_request.AddItem(
          new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"enum":AvailableGames})
       )

@@ -5,17 +5,13 @@ import { InitialVisualizerModel } from "../../model/visualizations/InitialVisual
 
 /**
  * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("./APIRequest").APIRequest} APIRequest
  */
 
 export default class InitialVisualizerRequest extends VisualizerRequest {
-   /**
-    * @param {MapSetter} updateRequesterState
-    */
-   constructor(updateRequesterState) {
-      super(updateRequesterState);
-      this.filter_request = new FilterRequest(this.updateRequesterState);
+   constructor() {
+      super();
+      this.filter_request = new FilterRequest();
       this.filter_request.AddItem(
          new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {'type':AvailableGames, 'selected':AvailableGames.EnumList[0]})
       )

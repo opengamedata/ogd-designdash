@@ -6,13 +6,6 @@
  */
 
 export default class VisualizerRequest {
-   /**
-    * @param {MapSetter} updateRequesterState
-    */
-   constructor(updateRequesterState) {
-      this.updateRequesterState = updateRequesterState;
-   }
-
    toString() {
       return `${this.constructor.name} Instance`;
    }

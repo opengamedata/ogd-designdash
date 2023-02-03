@@ -23,6 +23,8 @@ import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
 import { FilterItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
 
 /**
+ * @typedef {import('../typedefs').AnyMap} AnyMap
+ * @typedef {import('../typedefs').MapSetter} MapSetter
  * @typedef {import('../typedefs').VisualizerSetter} VisualizerSetter
  * @typedef {import('../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import('../typedefs').FeatureMapSetter} FeatureMapSetter
@@ -44,31 +46,40 @@ import { FilterItem, InputModes, ValueModes } from '../controller/requests/Filte
 export default function VizContainer(props) {
    // data loading vars
    const [loading, setLoading] = useState(false);
-   const [rawData, setRawData] = useState(null);
-   // data view vars
-   /** @type {[Visualizers, VisualizerSetter]} */
-   const [visualizer, setVisualizer] = useState(Visualizers.INITIAL);
-   const [visualizerRequestState, setVisualizerRequestState] = useState({});
-   const updateVisualizerRequestState = (new_state) => { console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(new_state)}`); setVisualizerRequestState(new_state); };
-   const [request, setRequest] = useState(new InitialVisualizerRequest(updateVisualizerRequestState));
 
-   const updateVisualizer = (new_visualizer) => {
+   const [rawData, setRawData] = useState(null);
+
+   // data view vars
+
+   /** @type {[AnyMap, MapSetter]} */
+   const [visualizerRequestState, setVisualizerRequestState] = useState({});
+   const mergeVisualizerRequestState = (new_state) => {
+      const merged_state = Object.assign({}, visualizerRequestState, new_state);
+      console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
+      setVisualizerRequestState(merged_state);
+   };
+
+   const [request, setRequest] = useState(new InitialVisualizerRequest(mergeVisualizerRequestState));
+
+   /** @type {[Visualizers, VisualizerSetter]} */
+   const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
+   const setVisualizer = (new_visualizer) => {
       // clear state from last viz.
       setVisualizerRequestState({});
       // update the request type.
       switch (new_visualizer) {
          case Visualizers.JOB_GRAPH:
-            setRequest(new JobGraphRequest(updateVisualizerRequestState))
+            setRequest(new JobGraphRequest(mergeVisualizerRequestState))
          break;
          case Visualizers.PLAYER_TIMELINE:
-            setRequest(new PlayerTimelineRequest(updateVisualizerRequestState))
+            setRequest(new PlayerTimelineRequest(mergeVisualizerRequestState))
          break;
          case Visualizers.INITIAL:
          default:
-            setRequest(new InitialVisualizerRequest(updateVisualizerRequestState));
+            setRequest(new InitialVisualizerRequest(mergeVisualizerRequestState));
          break;
       }
-      setVisualizer(new_visualizer)
+      _setVisualizer(new_visualizer)
    }
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
@@ -133,7 +144,7 @@ export default function VizContainer(props) {
                   <ErrorBoundary childName={"JobVisualizer"}>
                      <JobGraph
                         model={request.GetVisualizerModel(visualizerRequestState, rawData)}
-                        setVisualizer={updateVisualizer}
+                        setVisualizer={setVisualizer}
                      />
                   </ErrorBoundary>
                )
@@ -142,7 +153,7 @@ export default function VizContainer(props) {
                   <ErrorBoundary childName={"PlayerVisualizer"}>
                      <PlayerTimeline
                         model={request.GetVisualizerModel(visualizerRequestState, rawData)}
-                        setVisualizer={updateVisualizer}
+                        setVisualizer={setVisualizer}
                      />
                   </ErrorBoundary>
                )
@@ -183,7 +194,7 @@ export default function VizContainer(props) {
                adjustMode={true}
                filterItem={dropdownFilterItem}
                filterState={{"selected":visualizer}}
-               updateContainerState={(key, val) => {updateVisualizer(val)}}
+               mergeContainerState={(new_state) => {setVisualizer(new_state[`${dropdownFilterItem.Name}Selected`])}}
                key="VizTypeDropdown"
             />
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
