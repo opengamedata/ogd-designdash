@@ -23,22 +23,24 @@ import { InputModes, ValueModes } from '../../controller/requests/FilterRequest'
  * @param {MapSetter}     props.mergeContainerState
  * @param {function}      props.updateData
  */
-export default function DataFilter({ filterRequest, loading, mergeContainerState, updateData }) {
-   // TODO: in theory, would be more user-friendly if pressing "X" button canceled changes to filter,
-   // and then pressing visualize would end adjust mode and run the selected filter
+export default function DataFilter(props) {
+   const {
+      filterRequest,
+      loading,
+      mergeContainerState,
+      updateData
+   } = props;
 
    const [localState, setLocalState] = useState({});
+   const mergeLocalState = (new_state) => {
+      const merged_state = Object.assign({}, localState, new_state);
+      console.log(`Caller updated DataFilter's localState to ${JSON.stringify(merged_state)}`);
+      setLocalState(merged_state);
+   };
+
 
    // adjustMode indicates whether the filtering box is expanded to make selections, or not.
    const [adjustMode, setAdjustMode] = useState(false);
-   const updateAdjustMode = (in_adjust_mode) => {
-      // If we're turning adjust mode off, then we should update whoever requested a data filter.
-      if (!in_adjust_mode) {
-         console.log(`In DataFilter, adjustMode changed, updating requester's state to ${JSON.stringify(localState)}...`)
-         mergeContainerState(localState)
-      }
-      setAdjustMode(in_adjust_mode);
-   }
 
    /* Follow dumb-looking approach from react docs for doing something when a prop changes,
    by keeping previous value as a state variable. Seems hacky and dumb, but whatever.
@@ -67,7 +69,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
                   <RangePicker
                      adjustMode={adjustMode}
                      filterItem={item}
-                     mergeContainerState={mergeContainerState}
+                     mergeContainerState={mergeLocalState}
                      key={key}
                   />
                </div>
@@ -92,7 +94,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
                <EnumPicker
                   adjustMode={adjustMode}
                   filterItem={item}
-                  mergeContainerState={mergeContainerState}
+                  mergeContainerState={mergeLocalState}
                   key={key}
                />
             )
@@ -154,7 +156,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
       if (adjustMode) {
          if (!loading) {
             // If in adjustment mode, and not currently loading, then we'll have expanded view so show an X.
-            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={() => updateAdjustMode(false)} />);
+            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={ () => {setLocalState({}); setAdjustMode(false)} } />);
          }
          else {
             return (<></>);
@@ -162,7 +164,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
       }
       else {
          // If not in adjustment mode, show "adjustments" button to expand the filter.
-         return (<AdjustmentsVerticalIcon className="cursor-pointer h-5 w-5" onClick={() => updateAdjustMode(true)} />);
+         return (<AdjustmentsVerticalIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(true) } />);
       }
    }
 
@@ -178,7 +180,7 @@ export default function DataFilter({ filterRequest, loading, mergeContainerState
                <><Cog6ToothIcon className='animate-spin h-2 w-2' /> &nbsp;Please wait...</>
                :
                adjustMode ? 
-               <LargeButton label='save' onClick={(e) => {updateAdjustMode(false)}} selected="false"/>
+               <LargeButton label='save' onClick={ (e) => {mergeContainerState(localState); setAdjustMode(false)} } selected="false"/>
                :
                <LargeButton label='visualize' onClick={updateData} selected="false"/>
             }
