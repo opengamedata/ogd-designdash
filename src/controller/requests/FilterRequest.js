@@ -53,6 +53,9 @@ export class FilterRequest {
    get Items() {
       return this.items;
    }
+   get Name() {
+      return this.name;
+   }
 
    /**
     * 

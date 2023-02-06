@@ -58,7 +58,7 @@ export default function DataFilter(props) {
     * @param {FilterItem} item 
     */
    const RenderRange = (item) => {
-      const key = `${item.Name}Range`;
+      const key = `$${filterRequest.Name}${item.Name}Range`;
       switch (item.ValueMode) {
          case ValueModes.DATE:
          case ValueModes.NUMBER:
@@ -87,7 +87,7 @@ export default function DataFilter(props) {
     * @param {FilterItem} item 
     */
    const RenderDropdown = (item) => {
-      const key = `${item.Name}Dropdown`
+      const key = `${filterRequest.Name}${item.Name}Dropdown`
       switch (item.ValueMode) {
          case ValueModes.ENUM:
             return (
@@ -114,7 +114,7 @@ export default function DataFilter(props) {
     * @param {FilterItem} item 
     */
    const RenderInput = (item) => {
-      const key = `${item.Name}Input`;
+      const key = `${filterRequest.Name}${item.Name}Input`;
       switch (item.ValueMode) {
          case ValueModes.ENUM:
          case ValueModes.DATE:
@@ -146,7 +146,7 @@ export default function DataFilter(props) {
             return ( <hr key={`${item.Name}Separator`} style={{margin: "10px 0px"}}/> )
          break;
          default:
-            const key = `${item.Name}Invalid`;
+            const key = `${filterRequest.Name}${item.Name}Invalid`;
             return ( <div key={key}>Invalid Input Mode: {item.InputMode.asString}</div> );
          break;
       }
