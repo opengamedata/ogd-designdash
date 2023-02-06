@@ -122,8 +122,8 @@ export default function VizContainer(props) {
                console.log(`Fetching into ${api_request.LocalStorageKey}`)
                OGDAPI.fetch(api_request)
                .then(response => response.json())
-               .then(json => {
-                  const result = new APIResult(json);
+               .then(json => new APIResult(json))
+               .then(result => {
                   if (result.Status !== ResultStatus.SUCCESS) throw result.Message
                   console.log(result.asDict)
                   // store data locally and in the state variable
