@@ -13,7 +13,7 @@ import { PlayerTimelineModel } from "../../model/visualizations/PlayerTimelineMo
 export default class PlayerTimelineRequest extends VisualizerRequest {
    constructor() {
       super();
-      this.filter_request = new FilterRequest();
+      this.filter_request = new FilterRequest("PlayerTimeline");
       this.filter_request.AddItem(
          new DropdownItem("Game", ValueModes.ENUM, AvailableGames)
       )

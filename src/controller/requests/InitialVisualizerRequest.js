@@ -11,7 +11,7 @@ import { InitialVisualizerModel } from "../../model/visualizations/InitialVisual
 export default class InitialVisualizerRequest extends VisualizerRequest {
    constructor() {
       super();
-      this.filter_request = new FilterRequest();
+      this.filter_request = new FilterRequest("InitialVisualizer");
       this.filter_request.AddItem(
          new DropdownItem("Game", ValueModes.ENUM, AvailableGames, AvailableGames.EnumList()[0])
       )

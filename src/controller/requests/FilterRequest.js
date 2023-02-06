@@ -40,7 +40,12 @@ export class ValueModes extends EnumType {
 }
 
 export class FilterRequest {
-   constructor() {
+   /**
+    * 
+    * @param {string} name 
+    */
+   constructor(name="") {
+      this.name = name;
       /** @type {FilterItem[]} */
       this.items = []
    }
@@ -142,7 +147,7 @@ export class DropdownItem extends FilterItem {
       super(name, value_mode);
       this.input_mode = InputModes.DROPDOWN;
       this.initial_values[`${name}Type`] = type;
-      this.initial_values[`${name}Selection`] = selection || DropdownItem.DefaultValue(value_mode, type);
+      this.initial_values[`${name}Selected`] = selection || DropdownItem.DefaultValue(value_mode, type);
    }
 
    /**

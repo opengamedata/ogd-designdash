@@ -15,7 +15,7 @@ import RequestModes from "../../model/enums/RequestModes";
 export default class JobGraphRequest extends VisualizerRequest {
    constructor() {
       super();
-      this.filter_request = new FilterRequest();
+      this.filter_request = new FilterRequest("JobGraph");
       this.filter_request.AddItem(
          new DropdownItem("Game", ValueModes.ENUM, AvailableGames, AvailableGames.FromName("AQUALAB"))
       )
