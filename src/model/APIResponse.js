@@ -66,4 +66,12 @@ export default class APIResponse {
    get Values() {
       return this.values_dict;
    }
+   get asDict() {
+      return {
+         msg: this.message,
+         status: this.status,
+         type: this.req_type,
+         val: this.values_dict
+      }
+   }
 }
