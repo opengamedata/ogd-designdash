@@ -68,8 +68,6 @@ export default function VizContainer(props) {
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
    const setVisualizer = (new_visualizer) => {
-      // clear state from last viz.
-      setVisualizerRequestState({});
       // update the request type.
       switch (new_visualizer) {
          case Visualizers.JOB_GRAPH:
@@ -83,6 +81,10 @@ export default function VizContainer(props) {
             setRequest(new InitialVisualizerRequest());
          break;
       }
+      // clear state from last viz.
+      let init_state = {};
+      request.GetFilterRequest().Items.forEach((elem) => Object.assign(init_state, elem.InitialValues))
+      setVisualizerRequestState(init_state);
       _setVisualizer(new_visualizer)
    }
 
@@ -94,7 +96,6 @@ export default function VizContainer(props) {
    // }, [filterOptions, rawData]);
 
    const retrieveData = () => {
-      console.log("Retrieving data...")
       // flush current dataset and start loading animation
       setRawData(null)
 
@@ -118,7 +119,7 @@ export default function VizContainer(props) {
          }
          // if not found in storage, request dataset
          else {
-               console.log(`fetching into ${api_request.LocalStorageKey}`)
+               console.log(`Fetching into ${api_request.LocalStorageKey}`)
                OGDAPI.fetch(api_request)
                .then(res => res.json())
                .then(data => {
