@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react';
  * @param {string} props.key
  */
 export default function EnumPicker(props) {
-   let {
+   const {
       adjustMode,
       filterItem,
       mergeContainerState

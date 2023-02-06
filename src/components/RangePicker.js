@@ -21,7 +21,7 @@ import TimedeltaInput from './TimedeltaInput';
  * @param {string} props.key
  */
 export default function RangePicker(props) {
-   let {
+   const {
       adjustMode,
       filterItem,
       mergeContainerState
