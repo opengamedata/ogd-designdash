@@ -21,6 +21,7 @@ import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobGraph from './visualizations/JobGraph/JobGraph';
 import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
 import { DropdownItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
+import APIResponse, { ResultStatus, RESTType } from '../model/APIResponse';
 
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
@@ -51,13 +52,16 @@ export default function VizContainer(props) {
 
    // data view vars
 
-   const [request, setRequest] = useState(new InitialVisualizerRequest());
-
-   let init_state = {};
-   request.GetFilterRequest().Items.forEach((elem) => Object.assign(init_state, elem.InitialValues))
+   const [request, _setRequest] = useState(new InitialVisualizerRequest());
+   const setRequest = (request) => {
+      // clear state from last viz.
+      setVisualizerRequestState(request.GetFilterRequest().State);
+      console.log(`Just attempted to set the viz request state, now it's ${JSON.stringify(visualizerRequestState)}`)
+      _setRequest(request);
+   }
 
    /** @type {[AnyMap, MapSetter]} */
-   const [visualizerRequestState, setVisualizerRequestState] = useState(init_state);
+   const [visualizerRequestState, setVisualizerRequestState] = useState(request.GetFilterRequest().State);
    const mergeVisualizerRequestState = (new_state) => {
       const merged_state = Object.assign({}, visualizerRequestState, new_state);
       console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
@@ -81,10 +85,6 @@ export default function VizContainer(props) {
             setRequest(new InitialVisualizerRequest());
          break;
       }
-      // clear state from last viz.
-      let init_state = {};
-      request.GetFilterRequest().Items.forEach((elem) => Object.assign(init_state, elem.InitialValues))
-      setVisualizerRequestState(init_state);
       _setVisualizer(new_visualizer)
    }
 
@@ -121,13 +121,14 @@ export default function VizContainer(props) {
          else {
                console.log(`Fetching into ${api_request.LocalStorageKey}`)
                OGDAPI.fetch(api_request)
-               .then(res => res.json())
-               .then(data => {
-                  if (data.status !== 'SUCCESS') throw data.msg
-                  console.log(data)
+               .then(response => response.json())
+               .then(json => {
+                  const result = new APIResponse(json);
+                  if (result.Status !== ResultStatus.SUCCESS) throw result.Message
+                  console.log(result.asDict)
                   // store data locally and in the state variable
-                  localStorage.setItem(api_request.LocalStorageKey, JSON.stringify(data.val))
-                  setRawData(data.val)
+                  localStorage.setItem(api_request.LocalStorageKey, JSON.stringify(result.Values))
+                  setRawData(result.Values)
                   setLoading(false)
                })
                .catch(error => {
