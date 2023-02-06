@@ -23,7 +23,7 @@ export default function RadioPicker({ items, linkMode, updateLinkMode }) {
    /* manipulate raw data to a format to be used by the vis views */
    const radioList = items.map((item) => {
       return (
-         <div>
+         <div key={`'${item['name']}Radio'`}>
             <label className="inline-flex items-center">
                <input
                      className="form-radio"
@@ -31,7 +31,8 @@ export default function RadioPicker({ items, linkMode, updateLinkMode }) {
                      name="radio-direct"
                      checked={linkMode === item['name']}
                      onChange={(e) => { updateLinkMode(e.currentTarget.value) }}
-                     value={item['name']} />
+                     value={item['name']}
+               />
                <span className="ml-2">{item['readable']}</span>
             </label>
          </div>

@@ -1,6 +1,6 @@
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../../model/enums/AvailableGames";
-import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
+import { FilterRequest, RangeItem, DropdownItem, SeparatorItem, ValueModes } from "./FilterRequest";
 import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
 import { APIRequest, PopulationAPIRequest } from "./APIRequest";
 import RequestModes from "../../model/enums/RequestModes";
@@ -17,7 +17,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       super();
       this.filter_request = new FilterRequest();
       this.filter_request.AddItem(
-         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"type":AvailableGames, "selected":AvailableGames.EnumList()[0]})
+         new DropdownItem("Game", ValueModes.ENUM, AvailableGames, AvailableGames.FromName("AQUALAB"))
       )
       let two_days_ago = new Date();
       two_days_ago.setDate(two_days_ago.getDate() - 2);
@@ -25,16 +25,19 @@ export default class JobGraphRequest extends VisualizerRequest {
       let endDate = two_days_ago;
       /** @type {Validator} */
       this.filter_request.AddItem(
-         new FilterItem("DateRange", InputModes.RANGE, ValueModes.DATE, {'min':startDate, 'max':endDate}, JobGraphRequest.DateValidator)
+         new RangeItem("DateRange", ValueModes.DATE, startDate, endDate, JobGraphRequest.DateValidator)
       )
       this.filter_request.AddItem(
-         new FilterItem("AppVersionRange", InputModes.RANGE, ValueModes.TEXT, {'min':"*", 'max':"*"}, JobGraphRequest.VersionValidator("App"))
+         new RangeItem("AppVersionRange", ValueModes.TEXT, "*", "*", JobGraphRequest.VersionValidator("App"))
       )
       this.filter_request.AddItem(
-         new FilterItem("LogVersionRange", InputModes.RANGE, ValueModes.TEXT, {'min':"*", 'max':"*"}, JobGraphRequest.VersionValidator("Log"))
+         new RangeItem("LogVersionRange", ValueModes.TEXT, "*", "*", JobGraphRequest.VersionValidator("Log"))
       )
       this.filter_request.AddItem(
-         new FilterItem("MinimumJobs", InputModes.RANGE, ValueModes.NUMBER, {'min':0, 'max':null}, JobGraphRequest.MinJobsValidator)
+         new SeparatorItem("JobFilterSeparator")
+      )
+      this.filter_request.AddItem(
+         new RangeItem("MinimumJobs", ValueModes.NUMBER, 0, null, JobGraphRequest.MinJobsValidator)
       )
       this.viz_model = new JobGraphModel(AvailableGames.EnumList()[0].asString, null, null)
    }

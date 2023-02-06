@@ -1,6 +1,6 @@
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../../model/enums/AvailableGames";
-import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
+import { FilterRequest, DropdownItem, InputModes, ValueModes } from "./FilterRequest";
 import { PlayerTimelineModel } from "../../model/visualizations/PlayerTimelineModel";
 
 /**
@@ -15,7 +15,7 @@ export default class PlayerTimelineRequest extends VisualizerRequest {
       super();
       this.filter_request = new FilterRequest();
       this.filter_request.AddItem(
-         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {"enum":AvailableGames})
+         new DropdownItem("Game", ValueModes.ENUM, AvailableGames)
       )
    }
 

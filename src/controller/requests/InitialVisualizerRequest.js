@@ -1,6 +1,6 @@
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../../model/enums/AvailableGames";
-import { FilterRequest, FilterItem, InputModes, ValueModes } from "./FilterRequest";
+import { FilterRequest, DropdownItem, InputModes, ValueModes } from "./FilterRequest";
 import { InitialVisualizerModel } from "../../model/visualizations/InitialVisualizerModel";
 
 /**
@@ -13,7 +13,7 @@ export default class InitialVisualizerRequest extends VisualizerRequest {
       super();
       this.filter_request = new FilterRequest();
       this.filter_request.AddItem(
-         new FilterItem("Game", InputModes.DROPDOWN, ValueModes.ENUM, {'type':AvailableGames, 'selected':AvailableGames.EnumList[0]})
+         new DropdownItem("Game", ValueModes.ENUM, AvailableGames, AvailableGames.EnumList()[0])
       )
    }
 

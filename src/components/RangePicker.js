@@ -45,18 +45,18 @@ export default function RangePicker(props) {
       }
    }
 
-   const initialMin = filterItem.InitialValues['min'] || getDefaultValue();
-   const initialMax = filterItem.InitialValues['max'] || getDefaultValue();
+   const min_key = `${filterItem.Name}Min`;
+   const max_key = `${filterItem.Name}Max`;
 
-   const [localMin, setLocalMin] = useState(initialMin);
-   const [localMax, setLocalMax] = useState(initialMax);
-   mergeContainerState({[`${filterItem.Name}Min`] : initialMin});
-   mergeContainerState({[`${filterItem.Name}Max`] : initialMax});
+   const [localMin, setLocalMin] = useState(filterItem.InitialValues[min_key] || getDefaultValue());
+   const [localMax, setLocalMax] = useState(filterItem.InitialValues[max_key] || getDefaultValue());
+   // mergeContainerState({[`${filterItem.Name}Min`] : initialMin});
+   // mergeContainerState({[`${filterItem.Name}Max`] : initialMax});
 
    const setMin = (value) => {
       try {
-         if (filterItem.Validator({'min':value, 'max':localMax})) {
-            mergeContainerState({[`${filterItem.Name}Min`] : value});
+         if (filterItem.Validator({[min_key]:value, max_key:localMax})) {
+            mergeContainerState({[min_key] : value});
             setLocalMin(value);
          }
       }
@@ -67,8 +67,8 @@ export default function RangePicker(props) {
    }
    const setMax = (value) => {
       try {
-         if (filterItem.Validator({'min':localMin, 'max':value})) {
-            mergeContainerState({[`${filterItem.Name}Max`] : value});
+         if (filterItem.Validator({[min_key]:localMin, [max_key]:value})) {
+            mergeContainerState({[max_key] : value});
             setLocalMax(value);
          }
       }

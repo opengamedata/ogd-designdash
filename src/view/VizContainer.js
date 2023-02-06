@@ -20,7 +20,7 @@ import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobGraph from './visualizations/JobGraph/JobGraph';
 import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
-import { FilterItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
+import { DropdownItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
 
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
@@ -51,6 +51,11 @@ export default function VizContainer(props) {
 
    // data view vars
 
+   const [request, setRequest] = useState(new InitialVisualizerRequest());
+
+   let init_state = {};
+   request.GetFilterRequest().Items.forEach((elem) => Object.assign(init_state, elem.InitialValues))
+
    /** @type {[AnyMap, MapSetter]} */
    const [visualizerRequestState, setVisualizerRequestState] = useState({});
    const mergeVisualizerRequestState = (new_state) => {
@@ -58,8 +63,6 @@ export default function VizContainer(props) {
       console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
       setVisualizerRequestState(merged_state);
    };
-
-   const [request, setRequest] = useState(new InitialVisualizerRequest());
 
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
@@ -81,6 +84,7 @@ export default function VizContainer(props) {
       }
       _setVisualizer(new_visualizer)
    }
+
 
    // TODO: Whenever there's a change in filtering or underlying data, refresh the view data.
    // useEffect(() => {
@@ -175,12 +179,7 @@ export default function VizContainer(props) {
       }
    }
 
-   const dropdownFilterItem = new FilterItem(
-      "VizPicker",
-      InputModes.DROPDOWN,
-      ValueModes.ENUM,
-      {'type':Visualizers, 'selected':visualizer}
-   )
+   const dropdownFilterItem = new DropdownItem("VizPicker", ValueModes.ENUM, Visualizers, visualizer)
    const styling = {
       gridColumn: props.column,
       gridRow: props.row

@@ -27,9 +27,13 @@ export default function EnumPicker(props) {
       filterItem,
       mergeContainerState
    } = props;
-   const enumType = filterItem.InitialValues['type']
+   const select_key = `${filterItem.Name}Selected`;
+   const type_key = `${filterItem.Name}Type`
 
-   const initialSelection = filterItem.InitialValues['selected']
+   const enumType = filterItem.InitialValues[type_key]
+   console.log(`In EnumPicker, initial values are: ${JSON.stringify(filterItem.InitialValues)}`)
+
+   const initialSelection = filterItem.InitialValues[select_key]
                          || (enumType != null ? enumType.EnumList()[0] : "Empty");
 
    /** @type {[EnumType, any]} */
