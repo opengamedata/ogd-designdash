@@ -57,12 +57,13 @@ export default function VizContainer(props) {
    request.GetFilterRequest().Items.forEach((elem) => Object.assign(init_state, elem.InitialValues))
 
    /** @type {[AnyMap, MapSetter]} */
-   const [visualizerRequestState, setVisualizerRequestState] = useState({});
+   const [visualizerRequestState, setVisualizerRequestState] = useState(init_state);
    const mergeVisualizerRequestState = (new_state) => {
       const merged_state = Object.assign({}, visualizerRequestState, new_state);
       console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
       setVisualizerRequestState(merged_state);
    };
+   console.log(`In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`)
 
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
