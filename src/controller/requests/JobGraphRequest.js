@@ -143,7 +143,7 @@ export default class JobGraphRequest extends VisualizerRequest {
             'PopulationSummary'
          ]
       };
-      const game = requesterState['GameSelected']
+      const game = requesterState['GameSelected'].NAME;
       return new PopulationAPIRequest(RequestModes.POPULATION, RequiredExtractors[game], game,
                                    requesterState['AppVersionRangeMin'], requesterState['AppVersionRangeMax'],
                                    requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax'],

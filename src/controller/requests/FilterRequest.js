@@ -57,6 +57,16 @@ export class FilterRequest {
       return this.name;
    }
 
+   get State() {
+      let init_state = {};
+      this.Items.forEach(
+         (elem) => {
+            Object.assign(init_state, elem.InitialValues);
+         }
+      )
+      return init_state;
+   }
+
    /**
     * 
     * @param {FilterItem} new_item 

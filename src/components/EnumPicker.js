@@ -41,7 +41,6 @@ export default function EnumPicker(props) {
       const newSelection = enumType.FromName(value)
       setLocalSelection(newSelection);
       if (filterItem.Validator({'selected':newSelection})) {
-         console.log(`Validated new selection for ${filterItem.Name}, about to call the updateContainerState with ${newSelection}`)
          mergeContainerState({ [`${filterItem.Name}Selected`] : newSelection });
       }
    }

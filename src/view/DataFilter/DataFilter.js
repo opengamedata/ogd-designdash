@@ -65,14 +65,12 @@ export default function DataFilter(props) {
          case ValueModes.TEXT:
          case ValueModes.TIME:
             return (
-               <div id={key}>
-                  <RangePicker
-                     adjustMode={adjustMode}
-                     filterItem={item}
-                     mergeContainerState={mergeLocalState}
-                     key={key}
-                  />
-               </div>
+               <RangePicker
+                  adjustMode={adjustMode}
+                  filterItem={item}
+                  mergeContainerState={mergeLocalState}
+                  key={key}
+               />
             );
          break;
          case ValueModes.ENUM:
