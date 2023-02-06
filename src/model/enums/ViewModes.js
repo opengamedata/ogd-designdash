@@ -7,7 +7,7 @@ export class ViewModes extends EnumType {
    static INITIAL = new ViewModes('INITIAL', 'Initial');
 
    static EnumList() {
-      return [ViewModes.POPULATION, ViewModes.PLAYER, ViewModes.SESSION, ViewModes.INITIAL]
+      return [ViewModes.POPULATION, ViewModes.PLAYER, ViewModes.SESSION, ViewModes.INITIAL];
    }
 
    constructor(name, readable=name) {
