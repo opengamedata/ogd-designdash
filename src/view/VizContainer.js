@@ -21,7 +21,7 @@ import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobGraph from './visualizations/JobGraph/JobGraph';
 import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
 import { DropdownItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
-import APIResponse, { ResultStatus, RESTType } from '../model/APIResponse';
+import APIResult, { ResultStatus, RESTType } from '../model/APIResult';
 
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
@@ -123,7 +123,7 @@ export default function VizContainer(props) {
                OGDAPI.fetch(api_request)
                .then(response => response.json())
                .then(json => {
-                  const result = new APIResponse(json);
+                  const result = new APIResult(json);
                   if (result.Status !== ResultStatus.SUCCESS) throw result.Message
                   console.log(result.asDict)
                   // store data locally and in the state variable

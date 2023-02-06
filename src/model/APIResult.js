@@ -30,7 +30,7 @@ export class RESTType extends EnumType {
    }
 }
 
-export default class APIResponse {
+export default class APIResult {
    /**
     * 
     * @param {object?} response_object 
