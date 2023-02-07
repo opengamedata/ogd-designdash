@@ -38,6 +38,7 @@ export default function EnumPicker(props) {
    /** @type {[EnumType, any]} */
    const [localSelection, setLocalSelection] = useState(initialSelection)
    const setSelection = (value) => {
+      /** @type {EnumType} */
       const newSelection = enumType.FromName(value)
       setLocalSelection(newSelection);
       if (filterItem.Validator({'selected':newSelection})) {
