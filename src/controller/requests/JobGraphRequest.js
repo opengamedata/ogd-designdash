@@ -4,6 +4,7 @@ import { FilterRequest, RangeItem, DropdownItem, SeparatorItem, ValueModes } fro
 import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
 import { APIRequest, PopulationAPIRequest } from "./APIRequest";
 import RequestModes from "../../model/enums/RequestModes";
+import { selectAll } from "@testing-library/user-event/dist/types/event";
 
 /**
  * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
@@ -143,9 +144,10 @@ export default class JobGraphRequest extends VisualizerRequest {
             'PopulationSummary'
          ]
       };
-      const game = AvailableGames.FromDict(requesterState['GameSelected'] || {}).Name;
-      console.log(`In JobGraphRequest, the game name selected is ${game}`)
-      return new PopulationAPIRequest(RequestModes.POPULATION, RequiredExtractors[game], game,
+      const selected_dict = requesterState['GameSelected'];
+      const game = AvailableGames.FromDict(selected_dict) || AvailableGames.Default();
+      console.log(`In JobGraphRequest, the game name selected is ${game.asString}`)
+      return new PopulationAPIRequest(RequestModes.POPULATION, RequiredExtractors[game.asString], game,
                                    requesterState['AppVersionRangeMin'], requesterState['AppVersionRangeMax'],
                                    requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax'],
                                    requesterState['DateRangeMin'], requesterState['DateRangeMax']
