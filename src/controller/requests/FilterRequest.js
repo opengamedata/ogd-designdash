@@ -17,6 +17,10 @@ export class InputModes extends EnumType {
       return [InputModes.NONE, InputModes.INPUT, InputModes.RANGE, InputModes.DROPDOWN, InputModes.SEPARATOR]
    }
 
+   static Default() {
+      return this.NONE;
+   }
+
    constructor(name, readable=name) {
       super(name, readable);
    }
@@ -32,6 +36,10 @@ export class ValueModes extends EnumType {
 
    static EnumList() {
       return [ValueModes.NUMBER, ValueModes.TEXT, ValueModes.DATE, ValueModes.TIME, ValueModes.ENUM]
+   }
+
+   static Default() {
+      return this.NONE;
    }
 
    constructor(name, readable=name) {
