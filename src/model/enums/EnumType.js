@@ -8,6 +8,11 @@ export default class EnumType {
       this.readable = readable
    }
 
+   static Default() {
+      throw new Error("Tried to call Default on an EnumType that did not implement it!")
+      return new EnumType("DEFAULT");
+   }
+
    /**
     * Get the list of all objects for the Enum type.
     * @returns {EnumType[]}
@@ -23,6 +28,17 @@ export default class EnumType {
     */
    static FromName(name) {
       return this.EnumList().find((elem) => {return elem.asString === name})
+   }
+
+   /**
+    * 
+    * @param {object} enum_dict 
+    * @param {string} enum_dict.name
+    * @param {string} enum_dict.readable
+    * @returns 
+    */
+   static FromDict(enum_dict) {
+      return this.EnumList().find((elem) => elem.asString === enum_dict.name)
    }
 
    /**

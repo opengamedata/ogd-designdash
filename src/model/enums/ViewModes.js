@@ -10,6 +10,10 @@ export class ViewModes extends EnumType {
       return [ViewModes.POPULATION, ViewModes.PLAYER, ViewModes.SESSION, ViewModes.INITIAL];
    }
 
+   static Default() {
+      return this.INITIAL;
+   }
+
    constructor(name, readable=name) {
       super(name, readable);
    }

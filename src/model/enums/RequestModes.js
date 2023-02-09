@@ -9,6 +9,10 @@ export default class RequestModes extends EnumType {
       return [RequestModes.POPULATION, RequestModes.PLAYER, RequestModes.SESSION]
    }
 
+   static Default() {
+      return this.POPULATION;
+   }
+
    constructor(name, readable=name) {
       super(name, readable);
    }
