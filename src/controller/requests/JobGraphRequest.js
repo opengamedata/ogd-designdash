@@ -4,7 +4,6 @@ import { FilterRequest, RangeItem, DropdownItem, SeparatorItem, ValueModes } fro
 import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
 import { APIRequest, PopulationAPIRequest } from "./APIRequest";
 import RequestModes from "../../model/enums/RequestModes";
-import { selectAll } from "@testing-library/user-event/dist/types/event";
 
 /**
  * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
