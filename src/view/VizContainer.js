@@ -22,6 +22,7 @@ import JobGraph from './visualizations/JobGraph/JobGraph';
 import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
 import { DropdownItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
 import APIResult, { ResultStatus, RESTType } from '../model/APIResult';
+import VisualizerRequest from '../controller/requests/VisualizerRequest';
 
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
@@ -52,22 +53,23 @@ export default function VizContainer(props) {
 
    // data view vars
 
+   /** @type {[VisualizerRequest, any]} */
    const [request, _setRequest] = useState(new InitialVisualizerRequest());
+   /** @type {[AnyMap, MapSetter]} */
+   const [visualizerRequestState, setVisualizerRequestState] = useState(request.GetFilterRequest().State);
+   console.log(`In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`)
+
    const setRequest = (request) => {
       // clear state from last viz.
       setVisualizerRequestState(request.GetFilterRequest().State);
       console.log(`Just attempted to set the viz request state, now it's ${JSON.stringify(visualizerRequestState)}`)
       _setRequest(request);
    }
-
-   /** @type {[AnyMap, MapSetter]} */
-   const [visualizerRequestState, setVisualizerRequestState] = useState(request.GetFilterRequest().State);
    const mergeVisualizerRequestState = (new_state) => {
       const merged_state = Object.assign({}, visualizerRequestState, new_state);
       console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
       setVisualizerRequestState(merged_state);
    };
-   console.log(`In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`)
 
    /** @type {[Visualizers, VisualizerSetter]} */
    const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
