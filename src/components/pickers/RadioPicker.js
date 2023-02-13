@@ -16,7 +16,7 @@ import React from "react";
  * @param {object[]} props.items
  * @param {string} props.linkMode
  * @param {StringSetter} props.updateLinkMode
- * @returns 
+ * @returns {React.ReactElement}
  */
 export default function RadioPicker({ items, linkMode, updateLinkMode }) {
 

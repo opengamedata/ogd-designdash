@@ -1,6 +1,5 @@
 // global imports
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 // local imports
 import { ValueModes } from '../../controller/requests/FilterRequest';
 import { ISODateFormat, USDateFormat } from '../../controller/TimeFormat';
@@ -19,29 +18,26 @@ import TimedeltaInput from '../TimedeltaInput';
  * @param {FilterItem} props.filterItem
  * @param {MapSetter} props.mergeContainerState
  * @param {string} props.key
+ * @returns {React.ReactElement}
  */
 export default function RangePicker(props) {
-   const {
-      adjustMode,
-      filterItem,
-      mergeContainerState
-   } = props;
+   const { adjustMode, filterItem, mergeContainerState } = props;
 
    const getDefaultValue = () => {
       switch (filterItem.ValueMode) {
          case ValueModes.TEXT:
             return "*";
-         break;
+         // break;
          case ValueModes.DATE:
             return new Date();
-         break;
+         // break;
          case ValueModes.TIME:
             return new Timedelta(0)
-         break;
+         // break;
          case ValueModes.NUMBER:
          default:
             return 0;
-         break;
+         // break;
       }
    }
 
@@ -50,8 +46,6 @@ export default function RangePicker(props) {
 
    const [localMin, setLocalMin] = useState(filterItem.InitialValues[min_key] || getDefaultValue());
    const [localMax, setLocalMax] = useState(filterItem.InitialValues[max_key] || getDefaultValue());
-   // mergeContainerState({[`${filterItem.Name}Min`] : initialMin});
-   // mergeContainerState({[`${filterItem.Name}Max`] : initialMax});
 
    const setMin = (value) => {
       try {
@@ -91,14 +85,16 @@ export default function RangePicker(props) {
     * @param {*} value 
     * @param {string} valueID 
     * @param {SetterCallback} setter 
-    * @returns 
+    * @returns {React.ReactElement}
     */
    const RenderPicker = (value, valueID, setter) => {
+      let ret_val;
+
       const classes = "block w-full font-base"
       switch (filterItem.ValueMode) {
          case ValueModes.TEXT:
             if (typeof value == 'string') {
-               return (
+               ret_val = (
                   <div>
                      <input id={valueID.toString()}
                         type='text' className={classes} value={value || "Any"}
@@ -108,12 +104,12 @@ export default function RangePicker(props) {
                )
             }
             else {
-               return BadType(value, valueID);
+               ret_val = BadType(value, valueID)
             }
          break;
          case ValueModes.DATE:
             if (value instanceof Date) {
-               return (
+               ret_val = (
                   <input id={valueID.toString()}
                      type='date' className={`${classes}`} value={ISODateFormat(value)}
                      onChange={(e) => setter(new Date(e.target.value + 'T00:00'))}
@@ -121,12 +117,12 @@ export default function RangePicker(props) {
                )
             }
             else {
-               return BadType(value, valueID);
+               ret_val = BadType(value, valueID);
             }
          break;
          case ValueModes.TIME:
             if (value instanceof Timedelta) {
-               return (
+               ret_val = (
                   <>
                      <div id={valueID.toString()} className={`${classes}`} >
                         <TimedeltaInput value={value} setValue={setter} />
@@ -135,12 +131,12 @@ export default function RangePicker(props) {
                )
             }
             else {
-               return BadType(value, valueID);
+               ret_val = BadType(value, valueID);
             }
          break;
          case ValueModes.NUMBER:
             if (typeof value == 'number') {
-               return (
+               ret_val = (
                   <div>
                      <input id={valueID.toString()}
                         type='number' className={`${classes}`} value={value || 0}
@@ -150,59 +146,43 @@ export default function RangePicker(props) {
                )
             }
             else {
-               return BadType(value, valueID);
+               ret_val = BadType(value, valueID);
             }
          break;
          default:
-            return (
+            ret_val = (
                <div className={`${classes}`}>
                   <span>Value Mode not supported for Range: {filterItem.ValueMode.asString}</span>
                </div>
             )
       }
+      return ret_val;
    }
 
    const RenderChoice = (value, valueID) => {
+      let ret_val;
       const classes = "text-sm"
       switch (filterItem.ValueMode) {
          case ValueModes.TEXT:
          case ValueModes.NUMBER:
-            if (typeof value == 'string' || typeof value == 'number')
-            {
-               return(
-                  <span className={`${classes}`}> {value || "Any"}</span>
-               )
-            }
-            else {
-               return BadType(value, valueID);
-            }
+            ret_val = (typeof value == 'string' || typeof value == 'number') ?
+                      <span className={`${classes}`}> {value || "Any"}</span> :
+                      <BadType value={value} valName={valueID}/>;
          break;
          case ValueModes.DATE:
-            if (value instanceof Date) {
-               return (
-                  <span className={`${classes}`}>{USDateFormat(value)}</span>
-               );
-            }
-            else {
-               return BadType(value, valueID);
-            }
+            ret_val = (value instanceof Date) ?
+                      <span className={`${classes}`}>{USDateFormat(value)}</span> :
+                      <BadType value={value} valName={valueID}/>;
          break;
          case ValueModes.TIME:
-            if (value instanceof Timedelta) {
-               return (
-                  <span className={`${classes}`}>{value.asString}</span>
-               )
-            }
-            else {
-               return BadType(value, valueID);
-            }
+            ret_val = (value instanceof Timedelta) ?
+                      <span className={`${classes}`}>{value.asString}</span> :
+                      <BadType value={value} valName={valueID}/>;
+         break;
          default:
-            return (
-               <>
-                  <span>Input Mode not supported: {filterItem.ValueMode.asString}</span>
-               </>
-            )
+            ret_val = <span>Input Mode not supported: {filterItem.ValueMode.asString}</span>;
       }
+      return ret_val;
    }
 
 

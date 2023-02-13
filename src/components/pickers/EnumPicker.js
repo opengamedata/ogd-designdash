@@ -12,6 +12,7 @@ import React, { useState } from 'react';
  * @param {boolean}    props.adjustMode
  * @param {FilterItem} props.filterItem
  * @param {MapSetter}  props.mergeContainerState
+ * @returns {React.ReactElement}
  */
 export default function EnumPicker(props) {
    const { adjustMode, filterItem, mergeContainerState } = props;
