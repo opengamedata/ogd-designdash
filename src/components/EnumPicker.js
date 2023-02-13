@@ -1,7 +1,5 @@
 // global imports
-import React from 'react';
-import { useEffect, useState } from 'react';
-// local imports
+import React, { useState } from 'react';
 
 /**
  * @typedef {import("../model/enums/EnumType").default} EnumType
@@ -9,53 +7,46 @@ import { useEffect, useState } from 'react';
  * @typedef {import("../controller/requests/FilterRequest").FilterItem} FilterItem
  */
 
-/**
- * @callback EnumList
- * @returns {EnumType[]}
- */
-
  /**
- * @param {object} props
- * @param {boolean} props.adjustMode
+ * @param {object}     props
+ * @param {boolean}    props.adjustMode
  * @param {FilterItem} props.filterItem
- * @param {MapSetter} props.mergeContainerState
- * @param {string} props.key
+ * @param {MapSetter}  props.mergeContainerState
  */
 export default function EnumPicker(props) {
-   const {
-      adjustMode,
-      filterItem,
-      mergeContainerState
-   } = props;
+   const { adjustMode, filterItem, mergeContainerState } = props;
+
    const select_key = `${filterItem.Name}Selected`;
    const type_key = `${filterItem.Name}Type`
 
-   const enumType = filterItem.InitialValues[type_key]
-
+   const enumType         = filterItem.InitialValues[type_key]
    const initialSelection = filterItem.InitialValues[select_key]
-                         || (enumType != null ? enumType.EnumList()[0] : "Empty");
+                         || (enumType != null ? enumType.Default() : "Empty");
 
    /** @type {[EnumType, any]} */
    const [localSelection, setLocalSelection] = useState(initialSelection)
    const setSelection = (value) => {
       /** @type {EnumType} */
       const newSelection = enumType.FromName(value)
-      setLocalSelection(newSelection);
+      // console.log(`In EnumPicker, the new selection is ${newSelection}, derived from value ${JSON.stringify(value)}`)
       if (filterItem.Validator({'selected':newSelection})) {
+         setLocalSelection(newSelection);
          mergeContainerState({ [`${filterItem.Name}Selected`] : newSelection });
       }
    }
-   // console.log(`To start off, EnumPicker for filterItem ${filterItem.Name} has localSelection of ${localSelection}`)
 
-   if (enumType != undefined) {
-      if (adjustMode) {
-         const optionList = enumType.EnumList().map((k) => {
+   const _renderPicker = () => {
+         /**
+          * @callback genOption
+          * @param {EnumType} enum_item 
+          * @returns 
+          */
+         const genOption = (enum_item) => {
             return (
-               <option key={`${filterItem.Name}${k.asString}`} value={k.asString}>
-                  {k.asDisplayString}
+               <option key={`${filterItem.Name}${enum_item.asString}`} value={enum_item.asString}>
+                  {enum_item.asDisplayString}
                </option>)
-         })
-
+         }
          return(
             <div id={`${localSelection.constructor.name}Selector`} className="col">
                <div className="input-group">
@@ -64,20 +55,26 @@ export default function EnumPicker(props) {
                         className="form-select block w-full"
                         value={`${localSelection.asString}`}
                         onChange={(e) => {setSelection(e.target.value)}}>
-                        {/* <option key="Empty"> </option> */}
-                        {optionList}
+                        {enumType.EnumList().map(genOption)}
                      </select>
                </div>
             </div>
          )
+   }
+
+   const _renderChoice = () => {
+      return (
+         <div id={`${localSelection.constructor.name}Choice`} className="col">
+            <span className='font-medium '>{localSelection.asDisplayString}&nbsp;</span>
+         </div>
+   )}
+
+   if (enumType != undefined) {
+      if (adjustMode) {
+         return _renderPicker();
       }
       else {
-         return(
-            <div>
-               <span className='font-medium '>{localSelection.asDisplayString}&nbsp;</span>
-            </div>
-         )
-         // return <div>SelectionChoices</div>
+         return _renderChoice();
       }
    }
    else {
