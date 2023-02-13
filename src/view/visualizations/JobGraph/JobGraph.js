@@ -8,7 +8,7 @@ import PlayersList from "./PlayersList";
 import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
 import { Visualizers } from "../../../model/enums/Visualizers";
-import RadioPicker from "../../../components/RadioPicker";
+import RadioPicker from "../../../components/pickers/RadioPicker";
 
 /**
  * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel

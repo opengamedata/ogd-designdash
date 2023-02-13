@@ -2,15 +2,15 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 // local imports
-import { ValueModes } from '../controller/requests/FilterRequest';
-import { ISODateFormat, USDateFormat } from '../controller/TimeFormat';
-import Timedelta from '../model/Timedelta';
-import TimedeltaInput from './TimedeltaInput';
+import { ValueModes } from '../../controller/requests/FilterRequest';
+import { ISODateFormat, USDateFormat } from '../../controller/TimeFormat';
+import Timedelta from '../../model/Timedelta';
+import TimedeltaInput from '../TimedeltaInput';
 
 /**
- * @typedef {import("../typedefs").SetterCallback} SetterCallback
- * @typedef {import("../typedefs").MapSetter} MapSetter
- * @typedef {import("../controller/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
+ * @typedef {import("../../typedefs").MapSetter} MapSetter
+ * @typedef {import("../../controller/requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**

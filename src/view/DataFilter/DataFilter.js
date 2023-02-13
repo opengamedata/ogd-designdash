@@ -4,8 +4,8 @@ import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/re
 import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
-import RangePicker from '../../components/RangePicker';
-import EnumPicker from '../../components/EnumPicker';
+import RangePicker from '../../components/pickers/RangePicker';
+import EnumPicker from '../../components/pickers/EnumPicker';
 //    model imports
 import { InputModes, ValueModes } from '../../controller/requests/FilterRequest';
 

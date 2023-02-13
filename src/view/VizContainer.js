@@ -4,7 +4,7 @@ import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 // local imports
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
-import EnumPicker from '../components/EnumPicker';
+import EnumPicker from '../components/pickers/EnumPicker';
 
 // model imports
 import { Visualizers } from '../model/enums/Visualizers';

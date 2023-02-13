@@ -3,11 +3,11 @@ import React from "react";
 // local imports
 
 /**
- * @typedef {import("../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("../typedefs").JobGraphSetter} JobGraphSetter
- * @typedef {import("../typedefs").StringSetter} StringSetter
- * @typedef {import("../typedefs").StringListSetter} StringListSetter
- * @typedef {import("../typedefs").SetterCallback} SetterCallback
+ * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../typedefs").JobGraphSetter} JobGraphSetter
+ * @typedef {import("../../typedefs").StringSetter} StringSetter
+ * @typedef {import("../../typedefs").StringListSetter} StringListSetter
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
 
 /**
