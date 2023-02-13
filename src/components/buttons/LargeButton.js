@@ -1,6 +1,15 @@
 import React from 'react';
 
-export default function LargeButton({ selected, onClick, label }) {
+/**
+ * @param {object}  props 
+ * @param {boolean} props.selected
+ * @param {React.MouseEventHandler} props.onClick
+ * @param {string}  props.label
+ * @returns 
+ */
+export default function LargeButton(props) {
+    const { selected, onClick, label } = props;
+
     const spacing      = "px-7 py-2 my-3";
     const border       = "border border-slate-800 rounded-md";
     const font         = "font-medium text-xl text-sm";

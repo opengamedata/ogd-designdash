@@ -1,6 +1,15 @@
 import React from 'react';
 
-export default function LongButton({ selected, onClick, label }) {
+/**
+ * @param {object}  props 
+ * @param {boolean} props.selected
+ * @param {React.MouseEventHandler} props.onClick
+ * @param {string}  props.label
+ * @returns 
+ */
+export default function LongButton(props) {
+    const { selected, onClick, label } = props;
+
     const spacing      = "w-full px-2 py-1 mr-2 my-1";
     const border       = "border border-stone-300 rounded-sm shadow-sm";
     const font         = "font-medium text-sm";
