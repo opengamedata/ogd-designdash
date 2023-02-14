@@ -13,7 +13,7 @@ import Timedelta from '../model/Timedelta';
  * @param {Timedelta}       props.value
  * @param {TimedeltaSetter} props.setValue
  */
-export default function TimedeltaInput(props) {
+export default function TimedeltaPicker(props) {
    const {value, setValue} = props;
 
    const [hours, setHours] = useState(value.Hours);

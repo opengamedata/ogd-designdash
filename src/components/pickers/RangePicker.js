@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ValueModes } from '../../controller/requests/FilterRequest';
 import { ISODateFormat, USDateFormat } from '../../controller/TimeFormat';
 import Timedelta from '../../model/Timedelta';
-import TimedeltaInput from '../TimedeltaInput';
+import TimedeltaPicker from '../pickers/TimedeltaPicker';
 
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
@@ -125,7 +125,7 @@ export default function RangePicker(props) {
                ret_val = (
                   <>
                      <div id={valueID.toString()} className={`${classes}`} >
-                        <TimedeltaInput value={value} setValue={setter} />
+                        <TimedeltaPicker value={value} setValue={setter} />
                      </div>
                   </>
                )
