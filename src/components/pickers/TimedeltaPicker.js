@@ -2,10 +2,10 @@
 // global imports
 import React, { useState, useEffect } from 'react';
 // local imports
-import Timedelta from '../model/Timedelta';
+import Timedelta from '../../model/Timedelta';
 
 /**
- * @typedef {import('../typedefs').TimedeltaSetter} TimedeltaSetter
+ * @typedef {import('../../typedefs').TimedeltaSetter} TimedeltaSetter
  */
 
  /**
