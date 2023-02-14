@@ -1,7 +1,6 @@
 // global imports
-import React from 'react';
+import React, { useState } from 'react';
 import { AdjustmentsVerticalIcon, XMarkIcon, Cog6ToothIcon } from '@heroicons/react/20/solid';
-import { useEffect, useState } from 'react';
 // local imports
 import LargeButton from '../../components/buttons/LargeButton';
 import RangePicker from '../../components/pickers/RangePicker';
@@ -178,9 +177,9 @@ export default function DataFilter(props) {
                <><Cog6ToothIcon className='animate-spin h-2 w-2' /> &nbsp;Please wait...</>
                :
                adjustMode ? 
-               <LargeButton label='save' onClick={ (e) => {mergeContainerState(localState); setAdjustMode(false)} } selected="false"/>
+               <LargeButton label='save' onClick={ (e) => {mergeContainerState(localState); setAdjustMode(false)} } selected={false}/>
                :
-               <LargeButton label='visualize' onClick={updateData} selected="false"/>
+               <LargeButton label='visualize' onClick={updateData} selected={false}/>
             }
          </div>
       </div>
