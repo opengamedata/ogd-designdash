@@ -8,16 +8,14 @@ import Timedelta from '../model/Timedelta';
  * @typedef {import('../typedefs').TimedeltaSetter} TimedeltaSetter
  */
 
-/**
- * @typedef  {object} TimedeltaInputProps
- * @property {Timedelta} value
- * @property {TimedeltaSetter} setValue
- */
-
  /**
- * @param {TimedeltaInputProps} props
+ * @param {object}          props
+ * @param {Timedelta}       props.value
+ * @param {TimedeltaSetter} props.setValue
  */
-export default function TimedeltaInput({value, setValue}) {
+export default function TimedeltaInput(props) {
+   const {value, setValue} = props;
+
    const [hours, setHours] = useState(value.Hours);
    const [minutes, setMinutes] = useState(value.Minutes);
    const [seconds, setSeconds] = useState(value.Seconds);
