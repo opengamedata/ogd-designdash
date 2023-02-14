@@ -3,22 +3,19 @@ import React from "react";
 // local imports
 
 /**
- * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("../../typedefs").JobGraphSetter} JobGraphSetter
  * @typedef {import("../../typedefs").StringSetter} StringSetter
- * @typedef {import("../../typedefs").StringListSetter} StringListSetter
- * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
 
 /**
- * force directed graph component for job/mission level data
- * @param {object} props raw data JSON object 
- * @param {object[]} props.items
- * @param {string} props.linkMode
+ * Item picker that displays all options as radio buttons.
+ * @param {object}       props raw data JSON object 
+ * @param {object[]}     props.items
+ * @param {string}       props.linkMode
  * @param {StringSetter} props.updateLinkMode
  * @returns {React.ReactElement}
  */
-export default function RadioPicker({ items, linkMode, updateLinkMode }) {
+export default function RadioPicker(props) {
+   const { items, linkMode, updateLinkMode } = props;
 
    /* manipulate raw data to a format to be used by the vis views */
    const radioList = items.map((item) => {
