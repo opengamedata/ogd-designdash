@@ -13,6 +13,7 @@ export default function InfoCard({ game }) {
                     {data_readmes[game] ?
                         <a href={data_readmes[game]}
                             target="_blank"
+                            rel="noreferrer"
                             className='text-yellow-500 block hover:underline'>
                             about the data
                         </a> : <></>
@@ -20,6 +21,7 @@ export default function InfoCard({ game }) {
                     {feature_readmes[game] ?
                         <a href={feature_readmes[game]}
                             target="_blank"
+                            rel="noreferrer"
                             className='text-yellow-500 block hover:underline'>
                             about features
                         </a> : <></>
@@ -27,6 +29,7 @@ export default function InfoCard({ game }) {
                     {game_links[game] ?
                         <a href={game_links[game]}
                             target="_blank"
+                            rel="noreferrer"
                             className='text-yellow-500 block'>
                             play {game.toLowerCase()}
                         </a> : <></>

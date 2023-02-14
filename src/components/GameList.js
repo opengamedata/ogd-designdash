@@ -1,19 +1,32 @@
 import React from 'react';
 import SmallButton from "./buttons/SmallButton"
 
-export default function GameList({gameList, game, setGame}) {
+ /**
+  * @typedef {import("../typedefs").StringSetter} StringSetter
+  */
 
-    const games = []
-    Object.keys(gameList).forEach(key => {
-        games.push(
+/**
+ * 
+ * @param {object}   props raw data JSON object 
+ * @param {string[]} props.gameList
+ * @param {string}   props.current_game
+ * @param {StringSetter} props.setGame
+ * @returns {React.ReactElement}
+ */
+export default function GameList(props) {
+    const {gameList, current_game, setGame} = props;
+
+    const games = Object.keys(gameList).map(key => {
+        return (
             <SmallButton
-                key={key}
-                selected={game === key}
+                key={`To${key}`}
+                selected={current_game === key}
                 label={key.replace('_', ' ')} 
-                action={() => setGame(key)}/>
+                onClick={() => setGame(key)}
+            />
         )
 
-    })
+    });
     return (
         <div className="flex-wrap ">
             {games}
