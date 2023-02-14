@@ -40,10 +40,10 @@ export default function TimedeltaPicker(props) {
    /**
     * @param {React.ChangeEvent<HTMLInputElement>} e 
     */
-   const updateMillisecond = (e) => {
-      const component_val = parseInt(e.target.value);
-      setValue(new Timedelta(value.Hours, value.Minutes, value.Seconds, component_val));
-   }
+   // const updateMillisecond = (e) => {
+   //    const component_val = parseInt(e.target.value);
+   //    setValue(new Timedelta(value.Hours, value.Minutes, value.Seconds, component_val));
+   // }
 
    // const ms = (<input id="milliseconds" type='number' className='inline w-16 col-span-1' value={value.Milliseconds} onChange={(e) => setMilliseconds(parseInt(e.target.value))}></input>)
    return (
@@ -52,6 +52,7 @@ export default function TimedeltaPicker(props) {
             <input id="hours"        type='number' className='inline w-16 col-span-1' value={value.Hours}         onChange={updateHour}/> hr
             <input id="minutes"      type='number' className='inline w-16 col-span-1' value={value.Minutes}       onChange={updateMinute}/> min
             <input id="seconds"      type='number' className='inline w-16 col-span-1' value={value.Seconds}       onChange={updateSecond}/> s
+            {/* <input id="milliseconds" type='number' className='inline w-16 col-span-1' value={value.Milliseconds}  onChange={updateMillisecond}/> ms */}
          </div>
       </div>
    )
