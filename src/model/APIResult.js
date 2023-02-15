@@ -40,9 +40,9 @@ export default class APIResult {
          /** @type {string} */
          this.message     = response_object.msg;
          /** @type {ResultStatus} */
-         this.status      = ResultStatus.FromName(response_object.status) || ResultStatus.NONE;
+         this.status      = ResultStatus.FromName(response_object.status) ?? ResultStatus.NONE;
          /** @type {RESTType} */
-         this.req_type    = RESTType.FromName(response_object.type) || RESTType.NONE;
+         this.req_type    = RESTType.FromName(response_object.type) ?? RESTType.NONE;
          /** @type {object} */
          this.values_dict = response_object.val;
       }

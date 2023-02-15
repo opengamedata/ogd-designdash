@@ -44,8 +44,8 @@ export default function RangePicker(props) {
    const min_key = `${filterItem.Name}Min`;
    const max_key = `${filterItem.Name}Max`;
 
-   const [localMin, setLocalMin] = useState(filterItem.InitialValues[min_key] || getDefaultValue());
-   const [localMax, setLocalMax] = useState(filterItem.InitialValues[max_key] || getDefaultValue());
+   const [localMin, setLocalMin] = useState(filterItem.InitialValues[min_key] ?? getDefaultValue());
+   const [localMax, setLocalMax] = useState(filterItem.InitialValues[max_key] ?? getDefaultValue());
 
    const setMin = (value) => {
       try {
@@ -139,7 +139,7 @@ export default function RangePicker(props) {
                ret_val = (
                   <div>
                      <input id={valueID.toString()}
-                        type='number' className={`${classes}`} value={value || 0}
+                        type='number' className={`${classes}`} value={value ?? 0}
                         onChange={(e) => setter(parseInt(e.target.value))}
                      />
                   </div>

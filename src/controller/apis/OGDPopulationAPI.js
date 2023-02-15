@@ -20,8 +20,8 @@ export class OGDPopulationAPI extends OGDAPIInterface {
             console.warn("selection_options.end_date was null! Defaulting to today.")
          }
          const urlPath = `game/${request.Game}/metrics`;
-         let start_date = request.start_date || new Date();
-         let end_date   = request.end_date || new Date();
+         let start_date = request.start_date ?? new Date();
+         let end_date   = request.end_date   ?? new Date();
          const searchParams = new URLSearchParams({
             start_datetime: encodeURIComponent(start_date.toISOString().split('T')[0]) + 'T00:00',
             end_datetime:   encodeURIComponent(  end_date.toISOString().split('T')[0]) + 'T23:59',

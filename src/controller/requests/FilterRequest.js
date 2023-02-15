@@ -86,8 +86,8 @@ export class RangeItem extends FilterItem {
    constructor(name, value_mode, min_val=null, max_val=null, validator = (value) => true) {
       super(name, value_mode, validator);
       this.input_mode = InputModes.RANGE;
-      this.initial_values[`${name}Min`] = min_val || RangeItem.DefaultValue(value_mode);
-      this.initial_values[`${name}Max`] = max_val || RangeItem.DefaultValue(value_mode);
+      this.initial_values[`${name}Min`] = min_val ?? RangeItem.DefaultValue(value_mode);
+      this.initial_values[`${name}Max`] = max_val ?? RangeItem.DefaultValue(value_mode);
    }
 
    static DefaultValue(value_mode) {
@@ -130,7 +130,7 @@ export class DropdownItem extends FilterItem {
       super(name, value_mode);
       this.input_mode = InputModes.DROPDOWN;
       this.initial_values[`${name}Type`] = type;
-      this.initial_values[`${name}Selected`] = selection || DropdownItem.DefaultValue(value_mode, type);
+      this.initial_values[`${name}Selected`] = selection ?? DropdownItem.DefaultValue(value_mode, type);
    }
 
    /**

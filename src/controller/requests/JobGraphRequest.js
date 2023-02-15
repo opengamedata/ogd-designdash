@@ -88,7 +88,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       let two_days_ago = new Date();
       two_days_ago.setDate(two_days_ago.getDate() - 2);
       let startDate = two_days_ago;
-      let endDate = two_days_ago;
+      let endDate   = two_days_ago;
       /** @type {Validator} */
       ret_val.AddItem(
          new RangeItem("DateRange", ValueModes.DATE, startDate, endDate, DateValidator)
@@ -132,13 +132,17 @@ export default class JobGraphRequest extends VisualizerRequest {
          ]
       };
       const selected_dict = requesterState['GameSelected'];
-      const game = AvailableGames.FromDict(selected_dict) || AvailableGames.Default();
+      const game = AvailableGames.FromDict(selected_dict) ?? AvailableGames.Default();
       console.log(`In JobGraphRequest, the game name selected is ${game.asString}`)
+      /** @type {Date} */
+      let min_date = requesterState['DateRangeMin'];
+      min_date.setUTCHours(0, 0, 0, 0);
+      let max_date = requesterState['DateRangeMax'];
+      max_date.setUTCHours(24, 0, 0, 0);
       return new PopulationAPIRequest(RequestModes.POPULATION, RequiredExtractors[game.asString], game,
                                    requesterState['AppVersionRangeMin'], requesterState['AppVersionRangeMax'],
                                    requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax'],
-                                   requesterState['DateRangeMin'], requesterState['DateRangeMax']
-      )
+                                   min_date, max_date);
    }
 
    /**
@@ -155,7 +159,7 @@ export default class JobGraphRequest extends VisualizerRequest {
     */
    GetVisualizerModel(requesterState, rawData) {
       if (this.viz_model.dataNotEqual(rawData)) {
-         this.viz_model = new JobGraphModel(requesterState['GameSelected'], rawData, 'TopJobCompletionDestinations');
+         this.viz_model = new JobGraphModel(requesterState['GameSelected'].asString, rawData, 'TopJobCompletionDestinations');
       }
       return this.viz_model;
    }

@@ -72,7 +72,7 @@ export class PopulationAPIRequest extends APIRequest {
    }
 
    genLocalStorageKey() {
-      return [this.request_mode.name, "POPULATION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version, this.start_date, this.end_date].join("/")
+      return [this.request_mode.name, "POPULATION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version, this.start_date?.toISOString(), this.end_date.toISOString()].join("/")
    }
 }
 
