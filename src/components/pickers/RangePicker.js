@@ -1,7 +1,7 @@
 // global imports
 import React, { useState } from 'react';
 // local imports
-import { ValueModes } from '../../controller/requests/FilterRequest';
+import ValueModes from '../../model/enums/ValueModes';
 import { ISODateFormat, USDateFormat } from '../../controller/TimeFormat';
 import Timedelta from '../../model/Timedelta';
 import TimedeltaPicker from '../pickers/TimedeltaPicker';
