@@ -28,16 +28,23 @@ import RadioPicker from "../../../components/pickers/RadioPicker";
 export default function JobGraph({ model, setVisualizer }) {
     /** @type {[JobGraphModel, JobGraphSetter]} data */
     const [localModel, setLocalModel] = useState(model instanceof JobGraphModel ? model : new JobGraphModel(null, null, null));
+    const [previousModel, setPreviousModel] = useState(model);
     /** @type {[string, StringSetter]} data */
     const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
     /** @type {[string[] | undefined, StringListSetter]} data */
     const [playersList, setPlayerList] = useState()
     const [playerHighlight, setHighlight] = useState()
 
+    // If input model changed, need to update the local model.
+    if (model != previousModel) {
+        setLocalModel(model instanceof JobGraphModel ? model : new JobGraphModel(null, null, null));
+        setPreviousModel(model);
+    }
+
     const updateLinkMode = (value) => {
-        setLinkMode(value);
-        setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, linkMode))
+        setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, value))
         setPlayerList([])
+        setLinkMode(value);
     }
 
     // useEffect(() => {
@@ -59,15 +66,6 @@ export default function JobGraph({ model, setVisualizer }) {
         }
         setPlayerList({ players, title })
     }
-
-    /**
-    * redirect function
-    * this function is passed to PlayersList
-    * when user selects a player/session, they will be taken to that player/session's timeline
-    */
-    const toPlayerTimeline = () => {
-        setVisualizer(Visualizers.PLAYER_TIMELINE);
-    };
 
     /**
      * draw the force directed graph on jobs/missions
@@ -140,6 +138,9 @@ export default function JobGraph({ model, setVisualizer }) {
             }
             const chart = ForceGraph( fGraphModel, fGraphAttribs, showPlayersList )
         }
+        else {
+            console.warn("JobGraph has no localModel to render!")
+        }
     }, [localModel, playerHighlight]) // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
 
     const pickerItems = [
@@ -157,7 +158,7 @@ export default function JobGraph({ model, setVisualizer }) {
                     <PlayersList
                         data={playersList}
                         playerSummary={localModel.Meta.playerSummary}
-                        redirect={toPlayerTimeline}
+                        redirect={() => { setVisualizer(Visualizers.PLAYER_TIMELINE); }}
                         playerHighlight={playerHighlight}
                         setHighlight={setHighlight}
                         setPlayerList={setPlayerList}
