@@ -1,6 +1,7 @@
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../../model/enums/AvailableGames";
-import { FilterRequest, RangeItem, DropdownItem, SeparatorItem, ValueModes } from "./FilterRequest";
+import { FilterRequest, RangeItem, DropdownItem, SeparatorItem } from "./FilterRequest";
+import ValueModes from "../../model/enums/ValueModes";
 import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
 import { APIRequest, PopulationAPIRequest } from "./APIRequest";
 import RequestModes from "../../model/enums/RequestModes";

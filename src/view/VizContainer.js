@@ -20,7 +20,8 @@ import DataFilter from './DataFilter/DataFilter';
 import InitialVisualizer from './visualizations/InitialVisualizer';
 import JobGraph from './visualizations/JobGraph/JobGraph';
 import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
-import { DropdownItem, InputModes, ValueModes } from '../controller/requests/FilterRequest';
+import { DropdownItem } from '../controller/requests/FilterRequest';
+import ValueModes from '../model/enums/ValueModes';
 import APIResult, { ResultStatus, RESTType } from '../model/APIResult';
 import VisualizerRequest from '../controller/requests/VisualizerRequest';
 

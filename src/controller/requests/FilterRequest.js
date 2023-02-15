@@ -1,51 +1,10 @@
-import EnumType from "../../model/enums/EnumType";
 import Timedelta from "../../model/Timedelta";
+import InputModes from "../../model/enums/InputModes";
+import ValueModes from "../../model/enums/ValueModes";
 
 /**
- * @typedef {import("../../typedefs").AnyMap} AnyMap
  * @typedef {import("../../typedefs").Validator} Validator
  */
-
-export class InputModes extends EnumType {
-   static NONE      = new InputModes('NONE');
-   static INPUT     = new InputModes('INPUT');
-   static RANGE     = new InputModes('RANGE');
-   static DROPDOWN  = new InputModes('DROPDOWN');
-   static SEPARATOR = new InputModes('SEPARATOR');
-
-   static EnumList() {
-      return [InputModes.NONE, InputModes.INPUT, InputModes.RANGE, InputModes.DROPDOWN, InputModes.SEPARATOR]
-   }
-
-   static Default() {
-      return this.NONE;
-   }
-
-   constructor(name, readable=name) {
-      super(name, readable);
-   }
-}
-
-export class ValueModes extends EnumType {
-   static NONE   = new ValueModes('NONE', 'No Value');
-   static NUMBER = new ValueModes('NUMBER', 'Number');
-   static TEXT   = new ValueModes('TEXT', 'Text');
-   static DATE   = new ValueModes('DATE', 'Date');
-   static TIME   = new ValueModes('TIME', 'Time');
-   static ENUM   = new ValueModes('ENUM', 'Custom Enumerated Type');
-
-   static EnumList() {
-      return [ValueModes.NUMBER, ValueModes.TEXT, ValueModes.DATE, ValueModes.TIME, ValueModes.ENUM]
-   }
-
-   static Default() {
-      return this.NONE;
-   }
-
-   constructor(name, readable=name) {
-      super(name, readable);
-   }
-}
 
 export class FilterRequest {
    /**
@@ -131,27 +90,29 @@ export class RangeItem extends FilterItem {
    }
 
    static DefaultValue(value_mode) {
+      let ret_val;
       switch (value_mode) {
          case ValueModes.NUMBER:
-            return 0;
+            ret_val = 0;
          break;
          case ValueModes.TEXT:
-            return "*";
+            ret_val = "*";
          break;
          case ValueModes.DATE:
-            return new Date();
+            ret_val = new Date();
          break;
          case ValueModes.TIME:
-            return new Timedelta();
+            ret_val = new Timedelta();
          break;
          case ValueModes.ENUM:
-            return 0;
+            ret_val = 0;
          break;
          case ValueModes.NONE:
          default:
-            return null;
+            ret_val = null;
          break;
       }
+      return ret_val;
    }
 }
 
@@ -178,9 +139,10 @@ export class DropdownItem extends FilterItem {
     * @returns 
     */
    static DefaultValue(value_mode, type) {
+      let ret_val;
       switch (value_mode) {
          case ValueModes.ENUM:
-            return type.EnumList()[0]
+            ret_val = type.EnumList()[0]
          break;
          case ValueModes.NONE:
          case ValueModes.NUMBER:
@@ -188,9 +150,10 @@ export class DropdownItem extends FilterItem {
          case ValueModes.DATE:
          case ValueModes.TIME:
          default:
-            return null;
+            ret_val = null;
          break;
       }
+      return ret_val;
    }
 }
 

@@ -6,7 +6,8 @@ import LargeButton from '../../components/buttons/LargeButton';
 import RangePicker from '../../components/pickers/RangePicker';
 import EnumPicker from '../../components/pickers/EnumPicker';
 //    model imports
-import { InputModes, ValueModes } from '../../controller/requests/FilterRequest';
+import InputModes from '../../model/enums/InputModes';
+import ValueModes from '../../model/enums/ValueModes';
 
 /**
  * @typedef {import("../../typedefs").MapSetter} MapSetter
