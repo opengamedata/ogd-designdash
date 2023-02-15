@@ -57,12 +57,12 @@ export default function VizContainer(props) {
    /** @type {[VisualizerRequest, any]} */
    const [request, _setRequest] = useState(new InitialVisualizerRequest());
    /** @type {[AnyMap, MapSetter]} */
-   const [visualizerRequestState, setVisualizerRequestState] = useState(request.GetFilterRequest().State);
+   const [visualizerRequestState, setVisualizerRequestState] = useState(request.GetFilterRequest().InitialState);
    console.log(`In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`)
 
    const setRequest = (request) => {
       // clear state from last viz.
-      setVisualizerRequestState(request.GetFilterRequest().State);
+      setVisualizerRequestState(request.GetFilterRequest().InitialState);
       console.log(`Just attempted to set the viz request state, now it's ${JSON.stringify(visualizerRequestState)}`)
       _setRequest(request);
    }

@@ -24,7 +24,7 @@ export class FilterRequest {
       return this.name;
    }
 
-   get State() {
+   get InitialState() {
       let init_state = {};
       this.Items.forEach(
          (elem) => {
