@@ -1,6 +1,7 @@
+// Local imports
+//    controller imports
 import VisualizerRequest from "./VisualizerRequest";
 import { AvailableGames } from "../../model/enums/AvailableGames";
-import InputModes from "../../model/enums/InputModes";
 import ValueModes from "../../model/enums/ValueModes";
 import { FilterRequest, DropdownItem } from "./FilterRequest";
 import { InitialVisualizerModel } from "../../model/visualizations/InitialVisualizerModel";

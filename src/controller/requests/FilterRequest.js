@@ -1,4 +1,5 @@
 import Timedelta from "../../model/Timedelta";
+import EnumType from "../../model/enums/EnumType";
 import InputModes from "../../model/enums/InputModes";
 import ValueModes from "../../model/enums/ValueModes";
 
@@ -136,9 +137,10 @@ export class DropdownItem extends FilterItem {
     * 
     * @param {ValueModes} value_mode 
     * @param {typeof EnumType} type 
-    * @returns 
+    * @returns {EnumType?}
     */
    static DefaultValue(value_mode, type) {
+      /** @type {EnumType?} */
       let ret_val;
       switch (value_mode) {
          case ValueModes.ENUM:
