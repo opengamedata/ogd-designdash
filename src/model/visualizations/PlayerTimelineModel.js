@@ -10,7 +10,7 @@ export class PlayerTimelineModel extends VisualizerModel {
    constructor(game_name, raw_data) {
       super(game_name, raw_data);
 
-      const event_list = JSON.parse(raw_data["EventList"])
+      const event_list = JSON.parse(raw_data["EventList"] ?? "{}")
       const sess_count = raw_data["SessionCount"]
 
       const events = event_list.map((evt) => {

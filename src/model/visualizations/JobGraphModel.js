@@ -15,7 +15,8 @@ export class JobGraphModel extends VisualizerModel {
     * @param {*} link_mode 
     */
    constructor(game_name, raw_data, link_mode) {
-      console.log(`In JobGraphModel, got game name of ${game_name} and raw_data of ${JSON.stringify(raw_data)}`)
+      console.log(`In JobGraphModel, got game name of ${game_name} and raw_data with ${Object.keys(raw_data ?? {}).length} keys`)
+      // console.log("raw_data: ", raw_data)
       super(game_name || "UNKNOWN GAME", raw_data)
       /** @type {object[]} */
       this.nodes = [];
@@ -31,6 +32,7 @@ export class JobGraphModel extends VisualizerModel {
       if (raw_data != null) {
          this.initializeFromRawData(raw_data, link_mode);
       }
+      console.log(`In JobGraphModel, generated ${this.Nodes.length} nodes and ${this.Links.length} links`)
    }
 
    /**
@@ -54,12 +56,12 @@ export class JobGraphModel extends VisualizerModel {
       let nodeBuckets = JobGraphModel.genNodeBuckets(raw_data, meta);
 
       // links
-      let l = JobGraphModel.genLinks(raw_data, link_mode)
+      let links = JobGraphModel.genLinks(raw_data, link_mode)
 
       // filter out nodes w/ no edges
-      const relevantNodes = Object.values(nodeBuckets).filter(
-         ({ id }) => l.map(link => link.source).includes(id) || l.map(link => link.target).includes(id)
-      );
+      const nodeFilter = ({ id }) => links.map(link => link.source).includes(id) || links.map(link => link.target).includes(id)
+      const relevantNodes = Object.values(nodeBuckets).filter(nodeFilter);
+
       if (link_mode === 'ActiveJobs') {
          relevantNodes.forEach(n => {
             // console.log(rawLinks)
@@ -67,13 +69,13 @@ export class JobGraphModel extends VisualizerModel {
             n.players = rawLinks[n.id]
          }
          );
+      }
 
       this.nodes = relevantNodes;
-      this.links = l;
+      this.links = links;
       this.meta = meta
       // console.log('relevantNodes', relevantNodes)
       // console.log('links', l)
-      }
    }
 
    /**

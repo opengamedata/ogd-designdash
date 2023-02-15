@@ -63,12 +63,12 @@ export default function VizContainer(props) {
    const setRequest = (request) => {
       // clear state from last viz.
       setVisualizerRequestState(request.GetFilterRequest().InitialState);
-      console.log(`Just attempted to set the viz request state, now it's ${JSON.stringify(visualizerRequestState)}`)
+      // console.log(`Just attempted to set the viz request state, now it's ${JSON.stringify(visualizerRequestState)}`)
       _setRequest(request);
    }
    const mergeVisualizerRequestState = (new_state) => {
       const merged_state = Object.assign({}, visualizerRequestState, new_state);
-      console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
+      // console.log(`Caller updated VizContainer's visualizerRequestState to ${JSON.stringify(merged_state)}`);
       setVisualizerRequestState(merged_state);
    };
 

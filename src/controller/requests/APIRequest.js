@@ -2,6 +2,7 @@
 
 // local imports
 import { AvailableGames } from "../../model/enums/AvailableGames";
+import { ISODatetimeFormat } from "../TimeFormat";
 
 /**
  * @typedef {import('../../model/enums/RequestModes').default} RequestModes
@@ -72,7 +73,7 @@ export class PopulationAPIRequest extends APIRequest {
    }
 
    genLocalStorageKey() {
-      return [this.request_mode.name, "POPULATION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version, this.start_date?.toISOString(), this.end_date?.toISOString()].join("/")
+      return [this.request_mode.name, "POPULATION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version, ISODatetimeFormat(this.start_date ?? new Date()), ISODatetimeFormat(this.end_date ?? new Date())].join("/")
    }
 }
 

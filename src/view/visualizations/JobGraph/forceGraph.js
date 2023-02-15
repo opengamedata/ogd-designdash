@@ -286,7 +286,10 @@ function ForceGraph({
 
     svg.call(zoom);
 
-    return Object.assign(svg.node(), { scales: { color } });
+    let target = svg.node();
+    let source = { scales: { color } };
+    console.log(`In forceGraph, svg.node() is ${target} and color got wrapped in ${JSON.stringify(source)}`)
+    return Object.assign(target, source);
 }
 
 export default ForceGraph

@@ -1,12 +1,14 @@
 import VisualizerRequest from "./VisualizerRequest";
-import { AvailableGames } from "../../model/enums/AvailableGames";
 import { FilterRequest, RangeItem, DropdownItem, SeparatorItem } from "./FilterRequest";
+import { PopulationAPIRequest } from "./APIRequest";
+import { AvailableGames } from "../../model/enums/AvailableGames";
 import ValueModes from "../../model/enums/ValueModes";
-import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
-import { APIRequest, PopulationAPIRequest } from "./APIRequest";
 import RequestModes from "../../model/enums/RequestModes";
+import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
+import { ISODatetimeFormat } from "../TimeFormat";
 
 /**
+ * @typedef {import("./APIRequest").APIRequest} APIRequest
  * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
@@ -89,6 +91,7 @@ export default class JobGraphRequest extends VisualizerRequest {
       two_days_ago.setDate(two_days_ago.getDate() - 2);
       let startDate = two_days_ago;
       let endDate   = two_days_ago;
+      // console.log(`In JobGraphRequest, the initial date range is ${ISODatetimeFormat(startDate)} to ${ISODatetimeFormat(endDate)}`)
       /** @type {Validator} */
       ret_val.AddItem(
          new RangeItem("DateRange", ValueModes.DATE, startDate, endDate, DateValidator)
@@ -116,9 +119,10 @@ export default class JobGraphRequest extends VisualizerRequest {
       const RequiredExtractors = {
          "AQUALAB": [
             'ActiveJobs',
-            'JobsAttempted-avg-time-per-attempt',
-            'JobsAttempted-job-name',
-            'JobsAttempted-job-difficulties',
+            'JobsAttempted',
+            // 'JobsAttempted-avg-time-per-attempt',
+            // 'JobsAttempted-job-name',
+            // 'JobsAttempted-job-difficulties',
             'TopJobCompletionDestinations',
             'TopJobSwitchDestinations',
             'PlayerSummary',
@@ -133,12 +137,11 @@ export default class JobGraphRequest extends VisualizerRequest {
       };
       const selected_dict = requesterState['GameSelected'];
       const game = AvailableGames.FromDict(selected_dict) ?? AvailableGames.Default();
-      console.log(`In JobGraphRequest, the game name selected is ${game.asString}`)
       /** @type {Date} */
-      let min_date = requesterState['DateRangeMin'];
-      min_date.setUTCHours(0, 0, 0, 0);
-      let max_date = requesterState['DateRangeMax'];
-      max_date.setUTCHours(24, 0, 0, 0);
+      let min_date = new Date(requesterState['DateRangeMin']);
+      min_date.setHours(0, 0, 0, 0);
+      let max_date = new Date(requesterState['DateRangeMax']);
+      max_date.setHours(23, 59, 59, 0);
       return new PopulationAPIRequest(RequestModes.POPULATION, RequiredExtractors[game.asString], game,
                                    requesterState['AppVersionRangeMin'], requesterState['AppVersionRangeMax'],
                                    requesterState['LogVersionRangeMin'], requesterState['LogVersionRangeMax'],
