@@ -17,9 +17,9 @@ import { OGDAPI } from '../controller/apis/OGDAPI';
 
 // view imports
 import DataFilter from './DataFilter/DataFilter';
-import InitialVisualizer from './visualizations/InitialVisualizer';
-import JobGraph from './visualizations/JobGraph/JobGraph';
-import PlayerTimeline from './visualizations/PlayerTimeline/PlayerTimeline';
+import InitialVisualizer from './visualizers/InitialVisualizer';
+import JobGraph from './visualizers/JobGraph/JobGraph';
+import PlayerTimeline from './visualizers/PlayerTimeline/PlayerTimeline';
 import { DropdownItem } from '../controller/requests/FilterRequest';
 import ValueModes from '../model/enums/ValueModes';
 import APIResult, { ResultStatus, RESTType } from '../model/APIResult';
