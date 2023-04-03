@@ -13,10 +13,10 @@ env:
   CI: ""
 
 jobs:
-  test_export:
+  deploy_dashboard:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     # - name: Get Node installed
     #   run: |
     #     sudo apt-get update
@@ -46,8 +46,8 @@ jobs:
       with:
         switches: -vrc --exclude-from rsync-exclude
         path: build/*
-        remote_path: ${{ secrets.DESIGN_DASH_PATH }}
-        remote_host: ${{ secrets.DESIGN_DASH_HOST }}
+        remote_path: ${{ vars.DESIGN_DASH_PATH }}
+        remote_host: ${{ vars.OGD_SERVICES_HOST }}
         remote_user: ${{ secrets.DESIGN_DASH_USER }}
         remote_key:  ${{ secrets.DESIGN_DASH_KEY  }}
     - name: Upload logs as artifacts
