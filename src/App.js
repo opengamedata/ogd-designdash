@@ -4,8 +4,8 @@ import './App.scss';
 // import './assets/scss/styles_ver1.scss';
 import { DASHBOARD_BASE } from './config';
 import { NavLink } from "react-router-dom";
-import Dashboard from './view/Dashboard';
-import NotFound from "./view/NotFound";
+import Dashboard from './components/Dashboard';
+import NotFound from "./components/NotFound";
 
 class App extends React.Component {
   constructor(props) {
