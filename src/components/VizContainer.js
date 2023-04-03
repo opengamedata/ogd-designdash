@@ -17,12 +17,12 @@ import { OGDAPI } from '../controller/apis/OGDAPI';
 
 // view imports
 import DataFilter from './DataFilter/DataFilter';
-import InitialVisualizer from './visualizers/InitialVisualizer';
-import JobGraph from './visualizers/JobGraph/JobGraph';
-import PlayerTimeline from './visualizers/PlayerTimeline/PlayerTimeline';
-import { DropdownItem } from '../controller/requests/FilterRequest';
-import ValueModes from '../model/enums/ValueModes';
-import APIResult, { ResultStatus, RESTType } from '../model/APIResult';
+import InitialVisualizer from '../visualizers/InitialVisualizer';
+import JobGraph from '../visualizers/JobGraph/JobGraph';
+import PlayerTimeline from '../visualizers/PlayerTimeline/PlayerTimeline';
+import { DropdownItem } from '../requests/FilterRequest';
+import ValueModes from '../enums/ValueModes';
+import APIResult, { ResultStatus, RESTType } from '../utils/APIResult';
 import VisualizerRequest from '../controller/requests/VisualizerRequest';
 
 /**
