@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 
 /**
- * @typedef {import("../../model/enums/EnumType").default} EnumType
- * @typedef {import("../../controller/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../../enums/EnumType").default} EnumType
+ * @typedef {import("../../requests/FilterRequest").FilterItem} FilterItem
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  */
 

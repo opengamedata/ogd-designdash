@@ -1,11 +1,11 @@
 // global imports
 
 // local imports
-import { AvailableGames } from "../../model/enums/AvailableGames";
-import { ISODatetimeFormat } from "../TimeFormat";
+import { AvailableGames } from "../enums/AvailableGames";
+import { ISODatetimeFormat } from "../utils/TimeFormat";
 
 /**
- * @typedef {import('../../model/enums/RequestModes').default} RequestModes
+ * @typedef {import('..//enums/RequestModes').default} RequestModes
  */
 
 export class APIRequest {

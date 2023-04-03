@@ -1,4 +1,4 @@
-import { API_ORIGIN } from '../../config';
+import { API_ORIGIN } from '../config';
 import OGDAPIInterface from './OGDAPIInterface';
 import { PopulationAPIRequest } from '../requests/APIRequest';
 

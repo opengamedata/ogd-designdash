@@ -6,14 +6,14 @@ import LargeButton from '../../components/buttons/LargeButton';
 import RangePicker from '../../components/pickers/RangePicker';
 import EnumPicker from '../../components/pickers/EnumPicker';
 //    model imports
-import InputModes from '../../model/enums/InputModes';
-import ValueModes from '../../model/enums/ValueModes';
+import InputModes from '../../enums/InputModes';
+import ValueModes from '../../enums/ValueModes';
 
 /**
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
- * @typedef {import("../../controller/requests/FilterRequest").FilterRequest} FilterRequest
- * @typedef {import("../../controller/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../../requests/FilterRequest").FilterRequest} FilterRequest
+ * @typedef {import("../../requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**
