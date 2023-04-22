@@ -11,12 +11,12 @@ export class ErrorBoundary extends React.Component {
    }
 
    componentDidCatch(error, errorInfo) {    // You can also log the error to an error reporting service
-      console.error(`Got error ${error}, with the following errorInfo: ${errorInfo}`);
+      console.error(`Got error ${errorInfo.toString()}, with the following error message:\n${error}`);
    }
 
    render() {
       if (this.state.hasError) {      // You can render any custom fallback UI
-         return <h1>Error in child component of type {this.props.childType}</h1>;
+         return <h1>Error in child component of type {this.props.childName}</h1>;
       }
       return this.props.children;
    }
