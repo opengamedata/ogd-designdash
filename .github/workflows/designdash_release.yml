@@ -2,16 +2,12 @@
 name: OpenGameData-DesignDash CI
 on:
   workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
-  push:
-    paths:
-    - '.github/workflows/DesignDash_CI.yml'
-    - '.github/actions/**'
-    - 'src/**'
-    - 'package.json'
+  push: # Trigger automatically when we do a merge to production
+     branches: [ production ]
 
 env:
-  TARGET_PATH: ${{ vars.WEB_PATH }}${{ github.event.repository.name }}/${{ github.ref_name }}
-  TARGET_HOST: ${{ vars.OGD_STAGING_HOST }}
+  TARGET_PATH: ${{ vars.WEB_PATH }}designer-dashboard/${{ github.ref_name }}
+  TARGET_HOST: ${{ vars.OGD_SERVICES_HOST }}
 
 jobs:
   ci_deploy:
