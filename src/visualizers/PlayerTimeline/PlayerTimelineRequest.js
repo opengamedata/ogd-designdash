@@ -1,14 +1,14 @@
-import VisualizerRequest from "./VisualizerRequest";
-import { AvailableGames } from "../../model/enums/AvailableGames";
-import { FilterRequest, DropdownItem } from "./FilterRequest";
-import ValueModes from "../../model/enums/ValueModes";
-import { PlayerTimelineModel } from "../../model/visualizations/PlayerTimelineModel";
+import VisualizerRequest from "../BaseVisualizer/VisualizerRequest";
+import { AvailableGames } from "../../enums/AvailableGames";
+import { FilterRequest, DropdownItem } from "../../requests/FilterRequest";
+import ValueModes from "../../enums/ValueModes";
+import { PlayerTimelineModel } from "./PlayerTimelineModel";
 
 /**
- * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
- * @typedef {import("./APIRequest").APIRequest} APIRequest
+ * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  */
 
 export default class PlayerTimelineRequest extends VisualizerRequest {

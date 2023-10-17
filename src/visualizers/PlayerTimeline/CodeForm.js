@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid'
-import LongButton from '../../../components/buttons/LongButton';
-import { API_ORIGIN } from '../../../config';
+import LongButton from '../../components/buttons/LongButton';
+import { API_ORIGIN } from '../../config';
 
 export default function CodeForm({ event, setFormVisible, selectedGame, selectedPlayer }) {
     const [codeTypes, setCodeTypes] = useState([])
