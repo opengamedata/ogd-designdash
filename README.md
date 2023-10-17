@@ -3,16 +3,16 @@ A repository for the development of the game designer dashboard for game data vi
 
 ## Code Layout
 
-We attempt to maintain a general model-view-controller separation of source code for the data web app.
 Under the `src` folder, we have the following structure:
 
-- `components` : Reusable view/control components that are not app-specific
-- `controller` : Logic code for controlling app behavior, as in MVC controller.
-- `model`      : Data retrieval/management code for creating consistent representations of data, as in MVC model.
-- `old_pages`  : Only exists to hold old code until refactoring is completed.
-- `view`       : Display code, mostly as renderable JSX, for displaying the model and controls to a user, as in MVC view.
-  - `pages`    : Contains subfolders for individual app pages
-    - `Dashboard` : View for the "Dashboard" tab.
+- `apis`       : Abstraction layer code for interfacing with the OpenGameData APIs.
+- `components` : Reusable view/control components for use in major view components, as well as structural components of the dashboard.
+- `enums`      : Simple enums for modes of operation
+- `hooks`      : Custom hooks for using external libraries
+- `requests`   : Classes for managing data requests to the APIs
+- `utils`      : Utility classes used within the app. The most important is APIResult, which contains data resulting from API requests.
+- `visualizers`: Contains model, view, and controller components for each type of data visualizer.
+  - `BaseVisualizer`: Contains base classes for the model and controller components for custom visualizers.
 
 ## Getting Started with Create React App
 
