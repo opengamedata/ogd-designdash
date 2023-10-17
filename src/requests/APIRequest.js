@@ -5,7 +5,7 @@ import { AvailableGames } from "../enums/AvailableGames";
 import { ISODatetimeFormat } from "../utils/TimeFormat";
 
 /**
- * @typedef {import('..//enums/RequestModes').default} RequestModes
+ * @typedef {import('../enums/RequestModes').default} RequestModes
  */
 
 export class APIRequest {

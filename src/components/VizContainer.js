@@ -7,9 +7,9 @@ import LoadingBlur from '../components/LoadingBlur';
 import EnumPicker from '../components/pickers/EnumPicker';
 
 // model imports
-import { Visualizers } from '../model/enums/Visualizers';
-import InitialVisualizerRequest from '../controller/requests/InitialVisualizerRequest';
-import JobGraphRequest from '../controller/requests/JobGraphRequest';
+import { Visualizers } from '../enums/Visualizers';
+import InitialVisualizerRequest from '../requests/InitialVisualizerRequest';
+import JobGraphRequest from '../requests/JobGraphRequest';
 import PlayerTimelineRequest from '../controller/requests/PlayerTimelineRequest';
 
 // controller imports

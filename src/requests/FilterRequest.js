@@ -1,10 +1,9 @@
-import Timedelta from "../../model/Timedelta";
-import EnumType from "../../model/enums/EnumType";
-import InputModes from "../../model/enums/InputModes";
-import ValueModes from "../../model/enums/ValueModes";
+import Timedelta from "../utils/Timedelta";
+import InputModes from "../enums/InputModes";
+import ValueModes from "../enums/ValueModes";
 
 /**
- * @typedef {import("../../typedefs").Validator} Validator
+ * @typedef {import("../typedefs").Validator} Validator
  */
 
 export class FilterRequest {
