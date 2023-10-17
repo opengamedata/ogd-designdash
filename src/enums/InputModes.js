@@ -1,4 +1,4 @@
-import EnumType from "../../model/enums/EnumType";
+import EnumType from "./EnumType";
 
 export default class InputModes extends EnumType {
    static NONE      = new InputModes('NONE');
