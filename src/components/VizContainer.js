@@ -5,25 +5,25 @@ import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import LoadingBlur from '../components/LoadingBlur';
 import EnumPicker from '../components/pickers/EnumPicker';
+import ValueModes from '../enums/ValueModes';
 
-// model imports
-import { Visualizers } from '../enums/Visualizers';
-import InitialVisualizerRequest from '../requests/InitialVisualizerRequest';
-import JobGraphRequest from '../requests/JobGraphRequest';
-import PlayerTimelineRequest from '../controller/requests/PlayerTimelineRequest';
+// api imports
+import { OGDAPI } from '../apis/OGDAPI';
 
 // controller imports
-import { OGDAPI } from '../controller/apis/OGDAPI';
+import { Visualizers } from '../enums/Visualizers';
+import InitialVisualizerRequest from '../visualizers/InitialVisualizer/InitialVisualizerRequest';
+import JobGraphRequest          from '../visualizers/JobGraph/JobGraphRequest';
+import PlayerTimelineRequest    from '../visualizers/PlayerTimeline/PlayerTimelineRequest';
 
 // view imports
 import DataFilter from './DataFilter/DataFilter';
-import InitialVisualizer from './visualizers/InitialVisualizer';
-import JobGraph from './visualizers/JobGraph/JobGraph';
-import PlayerTimeline from './visualizers/PlayerTimeline/PlayerTimeline';
-import { DropdownItem } from '../controller/requests/FilterRequest';
-import ValueModes from '../model/enums/ValueModes';
-import APIResult, { ResultStatus, RESTType } from '../model/APIResult';
-import VisualizerRequest from '../controller/requests/VisualizerRequest';
+import InitialVisualizer from '../visualizers/InitialVisualizer/InitialVisualizer';
+import JobGraph          from '../visualizers/JobGraph/JobGraph';
+import PlayerTimeline    from '../visualizers/PlayerTimeline/PlayerTimeline';
+import { DropdownItem } from '../requests/FilterRequest';
+import APIResult, { ResultStatus, RESTType } from '../utils/APIResult';
+import VisualizerRequest from '../visualizers/BaseVisualizer/VisualizerRequest';
 
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
