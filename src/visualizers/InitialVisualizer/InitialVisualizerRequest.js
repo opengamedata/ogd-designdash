@@ -1,13 +1,13 @@
 // Local imports
 //    controller imports
-import VisualizerRequest from "../../requests/VisualizerRequest";
+import VisualizerRequest from "../BaseVisualizer/VisualizerRequest";
 import { AvailableGames } from "../../enums/AvailableGames";
 import ValueModes from "../../enums/ValueModes";
 import { FilterRequest, DropdownItem } from "../../requests/FilterRequest";
 import { InitialVisualizerModel } from "./InitialVisualizerModel";
 
 /**
- * @typedef {import("../../model/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
  * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  */
 

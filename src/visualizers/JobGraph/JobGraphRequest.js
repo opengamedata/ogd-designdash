@@ -1,15 +1,15 @@
-import VisualizerRequest from "./VisualizerRequest";
-import { FilterRequest, RangeItem, DropdownItem, SeparatorItem } from "./FilterRequest";
-import { PopulationAPIRequest } from "./APIRequest";
-import { AvailableGames } from "../../model/enums/AvailableGames";
-import ValueModes from "../../model/enums/ValueModes";
-import RequestModes from "../../model/enums/RequestModes";
-import { JobGraphModel } from "../../model/visualizations/JobGraphModel";
-import { ISODatetimeFormat } from "../TimeFormat";
+import VisualizerRequest from "../BaseVisualizer/VisualizerRequest";
+import { FilterRequest, RangeItem, DropdownItem, SeparatorItem } from "../../requests/FilterRequest";
+import { PopulationAPIRequest } from "../../requests/APIRequest";
+import { AvailableGames } from "../../enums/AvailableGames";
+import ValueModes from "../../enums/ValueModes";
+import RequestModes from "../../enums/RequestModes";
+import { JobGraphModel } from "./JobGraphModel";
+import { ISODatetimeFormat } from "../../utils/TimeFormat";
 
 /**
- * @typedef {import("./APIRequest").APIRequest} APIRequest
- * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
+ * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
  * @typedef {import("../../typedefs").MapSetter} MapSetter
  * @typedef {import("../../typedefs").Validator} Validator
