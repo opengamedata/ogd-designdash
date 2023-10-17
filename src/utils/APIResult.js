@@ -1,4 +1,4 @@
-import EnumType from "./enums/EnumType";
+import EnumType from "../enums/EnumType";
 
 export class ResultStatus extends EnumType {
    static NONE    = new ResultStatus("NONE");
