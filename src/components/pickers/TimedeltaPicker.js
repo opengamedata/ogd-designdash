@@ -2,7 +2,7 @@
 // global imports
 import React from 'react';
 // local imports
-import Timedelta from '../../model/Timedelta';
+import Timedelta from '../../utils/Timedelta';
 
 /**
  * @typedef {import('../../typedefs').TimedeltaSetter} TimedeltaSetter
