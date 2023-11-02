@@ -10,8 +10,8 @@ import { AvailableGames } from "../../enums/AvailableGames";
 import ValueModes from "../../enums/ValueModes";
 import RequestModes from "../../enums/RequestModes";
 // import { JobGraphModel } from "./JobGraphModel";
-import { ISODatetimeFormat } from "../../utils/TimeFormat";
-
+// import { ISODatetimeFormat } from "../../utils/TimeFormat";
+import { HistogramModel } from "./HistogramModel";
 /**
  * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
@@ -24,11 +24,11 @@ export default class HistogramRequest extends VisualizerRequest {
   constructor() {
     super();
     this.filter_request = HistogramRequest._genFilterRequest();
-    // this.viz_model = new JobGraphModel(
-    //   AvailableGames.EnumList()[0].asString,
-    //   null,
-    //   null
-    // );
+    
+    this.viz_model = new HistogramModel(
+      AvailableGames.EnumList()[0].asString,
+      null
+    );
   }
 
   static _genFilterRequest() {
@@ -112,21 +112,12 @@ export default class HistogramRequest extends VisualizerRequest {
   GetAPIRequest(requesterState) {
     const RequiredExtractors = {
       AQUALAB: [
-        "ActiveJobs",
-        "JobsAttempted",
-        // 'JobsAttempted-avg-time-per-attempt',
-        // 'JobsAttempted-job-name',
-        // 'JobsAttempted-job-difficulties',
-        "TopJobCompletionDestinations",
-        "TopJobSwitchDestinations",
-        "PlayerSummary",
-        "PopulationSummary",
+        "SessionJobsCompleted",
+        "SwitchJobsCount",
+        "SessionDiveSitesCount"
       ],
       SHIPWRECKS: [
-        "ActiveJobs",
-        "JobsAttempted",
-        "PlayerSummary",
-        "PopulationSummary",
+        "EvidenceBoardCompleteCount"
       ],
     };
     const selected_dict = requesterState["GameSelected"];
@@ -162,14 +153,13 @@ export default class HistogramRequest extends VisualizerRequest {
    * @param {object} rawData
    * @returns {VisualizerModel} A model of the kind expected by the visualizer.
    */
-  // GetVisualizerModel(requesterState, rawData) {
-  //   if (this.viz_model.dataNotEqual(rawData)) {
-  //     this.viz_model = new JobGraphModel(
-  //       requesterState["GameSelected"].asString,
-  //       rawData,
-  //       "TopJobCompletionDestinations"
-  //     );
-  //   }
-  //   return this.viz_model;
-  // }
+  GetVisualizerModel(requesterState, rawData) {
+    if (this.viz_model.dataNotEqual(rawData)) {
+      this.viz_model = new HistogramModel(
+        requesterState["GameSelected"].asString,
+        rawData
+      );
+    }
+    return this.viz_model;
+  }
 }

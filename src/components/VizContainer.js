@@ -173,7 +173,13 @@ export default function VizContainer(props) {
       case Visualizers.HISTOGRAM:
          return (
             <ErrorBoundary childName={"HistogramVisualizer"}>
-               <HistogramVisualizer/>
+               <HistogramVisualizer
+                model={request.GetVisualizerModel(
+                  visualizerRequestState,
+                  rawData
+                )}
+                setVisualizer={setVisualizer}
+              />
             </ErrorBoundary>
          )
         case Visualizers.PLAYER_TIMELINE:
