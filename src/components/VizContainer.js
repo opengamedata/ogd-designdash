@@ -26,6 +26,8 @@ import APIResult, { ResultStatus, RESTType } from "../utils/APIResult";
 import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
 import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramRequest";
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
+import ScatterplotVisualizer from "../visualizers/ScatterplotVisualizer/ScatterplotVisualizer";
+import ScatterplotRequest from "../visualizers/ScatterplotVisualizer/ScatterplotRequest";
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
  * @typedef {import('../typedefs').MapSetter} MapSetter
@@ -87,6 +89,9 @@ export default function VizContainer(props) {
         break;
       case Visualizers.HISTOGRAM:
         setRequest(new HistogramRequest());
+        break;
+      case Visualizers.SCATTERPLOT:
+        setRequest(new ScatterplotRequest());
         break;
       case Visualizers.PLAYER_TIMELINE:
         setRequest(new PlayerTimelineRequest());
@@ -170,10 +175,10 @@ export default function VizContainer(props) {
               />
             </ErrorBoundary>
           );
-      case Visualizers.HISTOGRAM:
-         return (
+        case Visualizers.HISTOGRAM:
+          return (
             <ErrorBoundary childName={"HistogramVisualizer"}>
-               <HistogramVisualizer
+              <HistogramVisualizer
                 model={request.GetVisualizerModel(
                   visualizerRequestState,
                   rawData
@@ -181,7 +186,19 @@ export default function VizContainer(props) {
                 setVisualizer={setVisualizer}
               />
             </ErrorBoundary>
-         )
+          );
+        case Visualizers.SCATTERPLOT:
+          return (
+            <ErrorBoundary childName={"ScatterplotVisualizer"}>
+              <ScatterplotVisualizer
+                model={request.GetVisualizerModel(
+                  visualizerRequestState,
+                  rawData
+                )}
+                setVisualizer={setVisualizer}
+              />
+            </ErrorBoundary>
+          );
         case Visualizers.PLAYER_TIMELINE:
           return (
             <ErrorBoundary childName={"PlayerVisualizer"}>
