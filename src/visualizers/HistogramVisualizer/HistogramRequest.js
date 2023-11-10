@@ -5,7 +5,7 @@ import {
   DropdownItem,
   SeparatorItem,
 } from "../../requests/FilterRequest";
-import { PopulationAPIRequest } from "../../requests/APIRequest";
+import { PlayerAPIRequest, PopulationAPIRequest } from "../../requests/APIRequest";
 import { AvailableGames } from "../../enums/AvailableGames";
 import ValueModes from "../../enums/ValueModes";
 import RequestModes from "../../enums/RequestModes";
@@ -128,8 +128,8 @@ export default class HistogramRequest extends VisualizerRequest {
     min_date.setHours(0, 0, 0, 0);
     let max_date = new Date(requesterState["DateRangeMax"]);
     max_date.setHours(23, 59, 59, 0);
-    return new PopulationAPIRequest(
-      RequestModes.POPULATION,
+    return new PlayerAPIRequest(
+      RequestModes.PLAYER,
       RequiredExtractors[game.asString],
       game,
       requesterState["AppVersionRangeMin"],
