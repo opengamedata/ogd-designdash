@@ -6,6 +6,7 @@ export class Visualizers extends EnumType {
    static SCATTERPLOT = new Visualizers('SCATTERPLOT', 'Scatterplot');
    static JOB_GRAPH = new Visualizers('JOB_GRAPH', 'Job Graph');
    static PLAYER_TIMELINE = new Visualizers('PLAYER_TIMELINE', 'Player Timeline');
+
    
    static EnumList() {
       return [Visualizers.INITIAL, Visualizers.HISTOGRAM, Visualizers.SCATTERPLOT, Visualizers.JOB_GRAPH, Visualizers.PLAYER_TIMELINE]

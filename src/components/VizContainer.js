@@ -175,10 +175,10 @@ export default function VizContainer(props) {
               />
             </ErrorBoundary>
           );
-      case Visualizers.HISTOGRAM:
-         return (
+        case Visualizers.HISTOGRAM:
+          return (
             <ErrorBoundary childName={"HistogramVisualizer"}>
-               <HistogramVisualizer
+              <HistogramVisualizer
                 model={request.GetVisualizerModel(
                   visualizerRequestState,
                   rawData
