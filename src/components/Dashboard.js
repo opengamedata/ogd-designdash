@@ -25,6 +25,7 @@ export default function Dashboard() {
             </div>
             <div id="ContainerCollection" className='relative grid grid-flow-row-dense'>
                 <VizContainer column={1} row={1}></VizContainer>
+                <VizContainer column={1} row={2}></VizContainer>
             </div>
             {/* In the future, add controls to manage multiple visualizations, which each get own filtering options. */}
         </div>
