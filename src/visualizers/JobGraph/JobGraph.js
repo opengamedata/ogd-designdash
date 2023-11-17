@@ -152,7 +152,7 @@ export default function JobGraph({ model, setVisualizer }) {
     if (model instanceof JobGraphModel) {
         return (
             <>
-                <svg ref={ref} className="border-b border border-green-700" />
+                <svg ref={ref} className="w-full border border-green-700" />
 
                 {playersList ?
                     <PlayersList

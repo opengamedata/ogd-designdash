@@ -161,71 +161,69 @@ export default function VizContainer(props) {
   };
 
   const renderVisualizer = () => {
-    if (!loading) {
-      switch (visualizer) {
-        case Visualizers.JOB_GRAPH:
-          return (
-            <ErrorBoundary childName={"JobVisualizer"}>
-              <JobGraph
-                model={request.GetVisualizerModel(
-                  visualizerRequestState,
-                  rawData
-                )}
-                setVisualizer={setVisualizer}
-              />
-            </ErrorBoundary>
-          );
-        case Visualizers.HISTOGRAM:
-          return (
-            <ErrorBoundary childName={"HistogramVisualizer"}>
-              <HistogramVisualizer
-                model={request.GetVisualizerModel(
-                  visualizerRequestState,
-                  rawData
-                )}
-                setVisualizer={setVisualizer}
-              />
-            </ErrorBoundary>
-         )
+    switch (visualizer) {
+      case Visualizers.JOB_GRAPH:
+        return (
+          <ErrorBoundary childName={"JobVisualizer"}>
+            {
+              loading ?
+                <LoadingBlur loading={loading} />
+                :
+                <JobGraph
+                  model={request.GetVisualizerModel(
+                    visualizerRequestState,
+                    rawData
+                  )}
+                  setVisualizer={setVisualizer}
+                />
+            }
+
+
+          </ErrorBoundary>
+        );
+      case Visualizers.HISTOGRAM:
+        return (
+          <ErrorBoundary childName={"HistogramVisualizer"}>
+            <HistogramVisualizer
+              model={request.GetVisualizerModel(
+                visualizerRequestState,
+                rawData
+              )}
+              setVisualizer={setVisualizer}
+            />
+          </ErrorBoundary>
+        )
       case Visualizers.SCATTERPLOT:
-         return (
-            <ErrorBoundary childName={"ScatterplotVisualizer"}>
-               <ScatterplotVisualizer
-                model={request.GetVisualizerModel(
-                  visualizerRequestState,
-                  rawData
-                )}
-                setVisualizer={setVisualizer}
-              />
-            </ErrorBoundary>
-         )
-        case Visualizers.PLAYER_TIMELINE:
-          return (
-            <ErrorBoundary childName={"PlayerVisualizer"}>
-              <PlayerTimeline
-                model={request.GetVisualizerModel(
-                  visualizerRequestState,
-                  rawData
-                )}
-                setVisualizer={setVisualizer}
-              />
-            </ErrorBoundary>
-          );
-        case Visualizers.INITIAL:
-        default:
-          return (
-            <ErrorBoundary childName={"InitialVisualizer"}>
-              <InitialVisualizer />
-            </ErrorBoundary>
-          );
-      }
-    } else {
-      return (
-        <div>
-          <Cog6ToothIcon className="animate-spin h-8 w-8" /> &nbsp;Please
-          wait...
-        </div>
-      );
+        return (
+          <ErrorBoundary childName={"ScatterplotVisualizer"}>
+            <ScatterplotVisualizer
+              model={request.GetVisualizerModel(
+                visualizerRequestState,
+                rawData
+              )}
+              setVisualizer={setVisualizer}
+            />
+          </ErrorBoundary>
+        )
+      case Visualizers.PLAYER_TIMELINE:
+        return (
+          <ErrorBoundary childName={"PlayerVisualizer"}>
+            <PlayerTimeline
+              model={request.GetVisualizerModel(
+                visualizerRequestState,
+                rawData
+              )}
+              setVisualizer={setVisualizer}
+            />
+          </ErrorBoundary>
+        );
+      case Visualizers.INITIAL:
+      default:
+        return (
+          <ErrorBoundary childName={"InitialVisualizer"}>
+            <InitialVisualizer />
+          </ErrorBoundary>
+        );
     }
   };
 
@@ -241,9 +239,9 @@ export default function VizContainer(props) {
   };
   return (
     <div className="flex-auto border-4 border-red-700" style={styling}>
-      <LoadingBlur loading={loading} height={8} width={8} />
+      {/* <LoadingBlur loading={loading} height={8} width={8} /> */}
       <div className="container relative flex">
-        <div className="absolute left-0 max-w-72 max-h-full overflow-y-auto">
+        <div className="left-0 max-w-72 max-h-full overflow-y-auto">
           <EnumPicker
             adjustMode={true}
             filterItem={dropdownFilterItem}
@@ -261,7 +259,7 @@ export default function VizContainer(props) {
             />
           </ErrorBoundary>
         </div>
-        <div className="container relative left-72 border shadow-sm">
+        <div className="container left-72 border shadow-sm">
           {renderVisualizer()}
         </div>
       </div>
