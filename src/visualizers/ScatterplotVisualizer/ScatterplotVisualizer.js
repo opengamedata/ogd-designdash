@@ -170,7 +170,7 @@ function HistogramVisualizer({ model, setVisualizer }) {
       .attr("y", margin.top - 10)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
-      .text("Scatterplot of Frequency of Values from 1 to 100");
+      .text("The Frequency of 1000 Random Values from 1 to 100");
   }, []);
 
   return (
