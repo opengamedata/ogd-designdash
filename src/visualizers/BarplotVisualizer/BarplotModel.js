@@ -15,15 +15,16 @@ export class BarplotModel extends VisualizerModel {
     */
 
    constructor(game_name, raw_data) {
-      var data = [];
-      for (var i = 0; i < 1000; i++) {
-         var randomValue = Math.floor(Math.random() * 100) + 1; // Generates a random number between 1 and 100 (inclusive)
-         data.push(randomValue);
-      }
-      raw_data = data;
+      // var data = [];
+      // for (var i = 0; i < 1000; i++) {
+      //    var randomValue = Math.floor(Math.random() * 100) + 1; // Generates a random number between 1 and 100 (inclusive)
+      //    data.push(randomValue);
+      // }
+      const dict = { "level1": 100, "level2": 40, "level3": 20, "level4": 10, "level5": 5, "level6": 3 };
+      raw_data = dict;
       game_name = "counter_test";
-      console.log(data);
-      console.log(`In ScatterplotModel, got game name of ${game_name} and raw_data with ${Object.keys(raw_data ?? {}).length} keys`)
+      console.log(dict);
+      console.log(`In BarplotModel, got game name of ${game_name} and raw_data with ${Object.keys(raw_data ?? {}).length} keys`)
       super(game_name || "UNKNOWN GAME", raw_data)
    }
 }
