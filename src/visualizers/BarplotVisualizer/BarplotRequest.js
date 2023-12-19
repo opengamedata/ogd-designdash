@@ -7,12 +7,11 @@ import {
 } from "../../requests/FilterRequest";
 import { PlayerAPIRequest, PopulationAPIRequest } from "../../requests/APIRequest";
 import { AvailableGames } from "../../enums/AvailableGames";
-import { SessionOrPlayerEnums } from "../../enums/SessionOrPlayerEnums";
 import ValueModes from "../../enums/ValueModes";
 import RequestModes from "../../enums/RequestModes";
 // import { JobGraphModel } from "./JobGraphModel";
 // import { ISODatetimeFormat } from "../../utils/TimeFormat";
-import { HistogramModel } from "./HistogramModel";
+import { BarplotModel } from "./BarplotModel";
 /**
  * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
@@ -21,12 +20,12 @@ import { HistogramModel } from "./HistogramModel";
  * @typedef {import("../../typedefs").Validator} Validator
  */
 
-export default class HistogramRequest extends VisualizerRequest {
+export default class BarplotRequest extends VisualizerRequest {
   constructor() {
     super();
-    this.filter_request = HistogramRequest._genFilterRequest();
+    this.filter_request = BarplotRequest._genFilterRequest();
     
-    this.viz_model = new HistogramModel(
+    this.viz_model = new BarplotModel(
       AvailableGames.EnumList()[0].asString,
       null
     );
@@ -76,7 +75,7 @@ export default class HistogramRequest extends VisualizerRequest {
     };
     
 
-    let ret_val = new FilterRequest("Histogram");
+    let ret_val = new FilterRequest("Scatterplot");
     ret_val.AddItem(
       new DropdownItem(
         "Game",
@@ -89,7 +88,7 @@ export default class HistogramRequest extends VisualizerRequest {
     two_days_ago.setDate(two_days_ago.getDate() - 2);
     let startDate = two_days_ago;
     let endDate = two_days_ago;
-    // console.log(`In HistogramRequest, the initial date range is ${ISODatetimeFormat(startDate)} to ${ISODatetimeFormat(endDate)}`)
+    // console.log(`In ScatterplotRequest, the initial date range is ${ISODatetimeFormat(startDate)} to ${ISODatetimeFormat(endDate)}`)
     /** @type {Validator} */
     ret_val.AddItem(
       new RangeItem(
@@ -100,16 +99,6 @@ export default class HistogramRequest extends VisualizerRequest {
         DateValidator
       )
     );
-    ret_val.AddItem(
-      new DropdownItem(
-        "Session or Player",
-        ValueModes.ENUM,
-        SessionOrPlayerEnums,
-        SessionOrPlayerEnums.FromName("Session")
-      )
-    );
-
-
     
     ret_val.AddItem(new SeparatorItem("JobFilterSeparator"));
     
@@ -166,7 +155,7 @@ export default class HistogramRequest extends VisualizerRequest {
    */
   GetVisualizerModel(requesterState, rawData) {
     if (this.viz_model.dataNotEqual(rawData)) {
-      this.viz_model = new HistogramModel(
+      this.viz_model = new BarplotModel(
         requesterState["GameSelected"].asString,
         rawData
       );

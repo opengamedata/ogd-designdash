@@ -28,6 +28,8 @@ import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramReques
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
 import ScatterplotVisualizer from "../visualizers/ScatterplotVisualizer/ScatterplotVisualizer";
 import ScatterplotRequest from "../visualizers/ScatterplotVisualizer/ScatterplotRequest";
+import BarplotVisualizer from "../visualizers/BarplotVisualizer/BarplotVisualizer";
+import BarplotRequest from "../visualizers/BarplotVisualizer/BarplotRequest";
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
  * @typedef {import('../typedefs').MapSetter} MapSetter
@@ -92,6 +94,9 @@ export default function VizContainer(props) {
         break;
       case Visualizers.SCATTERPLOT:
         setRequest(new ScatterplotRequest());
+        break;
+      case Visualizers.BARPLOT:
+        setRequest(new BarplotRequest());
         break;
       case Visualizers.PLAYER_TIMELINE:
         setRequest(new PlayerTimelineRequest());
@@ -197,6 +202,18 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"ScatterplotVisualizer"}>
             <ScatterplotVisualizer
+              model={request.GetVisualizerModel(
+                visualizerRequestState,
+                rawData
+              )}
+              setVisualizer={setVisualizer}
+            />
+          </ErrorBoundary>
+        )
+      case Visualizers.BARPLOT:
+        return (
+          <ErrorBoundary childName={"BarplotVisualizer"}>
+            <BarplotVisualizer
               model={request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData

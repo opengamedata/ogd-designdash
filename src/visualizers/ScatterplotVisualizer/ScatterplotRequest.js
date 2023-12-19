@@ -7,6 +7,7 @@ import {
 } from "../../requests/FilterRequest";
 import { PlayerAPIRequest, PopulationAPIRequest } from "../../requests/APIRequest";
 import { AvailableGames } from "../../enums/AvailableGames";
+import { SessionOrPlayerEnums } from "../../enums/SessionOrPlayerEnums";
 import ValueModes from "../../enums/ValueModes";
 import RequestModes from "../../enums/RequestModes";
 // import { JobGraphModel } from "./JobGraphModel";
@@ -97,6 +98,14 @@ export default class ScatterplotRequest extends VisualizerRequest {
         startDate,
         endDate,
         DateValidator
+      )
+    );
+    ret_val.AddItem(
+      new DropdownItem(
+        "Session or Player",
+        ValueModes.ENUM,
+        SessionOrPlayerEnums,
+        SessionOrPlayerEnums.FromName("Session")
       )
     );
     
