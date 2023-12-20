@@ -4,17 +4,16 @@ import * as d3 from "d3";
 
 function BarplotVisualizer({ model, setVisualizer }) {
   const svgRef = useRef();
-  const dict = { "level1": 100, "level2": 40, "level3": 20, "level4": 10, "level5": 5, "level6": 3 };
-
-  const svgWidth = 600;
+  var dict = model.Data
+  const svgWidth = 450;
   const svgHeight = 400;
   useEffect(() => {
     // Convert dictionary to array format
     const data = Object.entries(dict).map(([category, value]) => ({ category, value }));
 
-    const margin = { top: 10, right: 30, bottom: 30, left: 40 };
-    const width = 450 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+    const width = svgWidth - margin.left - margin.right;
+    const height = svgHeight - margin.top - margin.bottom;
 
     // Clear the previous contents
     d3.select(svgRef.current).selectAll("*").remove();
@@ -51,6 +50,28 @@ function BarplotVisualizer({ model, setVisualizer }) {
       .attr("width", x.bandwidth())
       .attr("height", d => height - y(d.value))
       .attr("fill", "#69b3a2");
+    // Main Title
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", 0 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "20px")
+      .text("Main Title");
+
+    // X-axis Title
+    svg.append("text")
+      .attr("transform", `translate(${width / 2}, ${height + margin.top })`)
+      .style("text-anchor", "middle")
+      .text("X-axis Title");
+
+    // Y-axis Title
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Y-axis Title");
   }, []);
 
   return (

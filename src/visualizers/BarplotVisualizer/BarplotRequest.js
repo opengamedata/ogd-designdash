@@ -6,7 +6,8 @@ import {
   SeparatorItem,
 } from "../../requests/FilterRequest";
 import { PlayerAPIRequest, PopulationAPIRequest } from "../../requests/APIRequest";
-import { AvailableGames } from "../../enums/AvailableGames";
+// import { AvailableGames } from "../../enums/AvailableGames";
+import { AllowedGames } from "./AllowedGames";
 import ValueModes from "../../enums/ValueModes";
 import RequestModes from "../../enums/RequestModes";
 // import { JobGraphModel } from "./JobGraphModel";
@@ -26,7 +27,7 @@ export default class BarplotRequest extends VisualizerRequest {
     this.filter_request = BarplotRequest._genFilterRequest();
     
     this.viz_model = new BarplotModel(
-      AvailableGames.EnumList()[0].asString,
+      AllowedGames.EnumList()[0].asString,
       null
     );
   }
@@ -80,8 +81,8 @@ export default class BarplotRequest extends VisualizerRequest {
       new DropdownItem(
         "Game",
         ValueModes.ENUM,
-        AvailableGames,
-        AvailableGames.FromName("AQUALAB")
+        AllowedGames,
+        AllowedGames.FromName("AQUALAB")
       )
     );
     let two_days_ago = new Date();
@@ -122,7 +123,7 @@ export default class BarplotRequest extends VisualizerRequest {
     };
     const selected_dict = requesterState["GameSelected"];
     const game =
-      AvailableGames.FromDict(selected_dict) ?? AvailableGames.Default();
+    AllowedGames.FromDict(selected_dict) ?? AllowedGames.Default();
     /** @type {Date} */
     let min_date = new Date(requesterState["DateRangeMin"]);
     min_date.setHours(0, 0, 0, 0);

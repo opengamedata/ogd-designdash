@@ -1,4 +1,5 @@
 import VisualizerModel from "../BaseVisualizer/VisualizerModel";
+import { AvailableGames } from "../../enums/AvailableGames";
 
 export class JobGraphModel extends VisualizerModel {
    /**
@@ -169,8 +170,10 @@ export class JobGraphModel extends VisualizerModel {
       }
       return l;
    }
-
-   /**
+   static allowedGames() {
+      return ['AQUALAB'].map((game) => new AvailableGames(game));
+  }
+     /**
     * @returns {object[]}
     */
    get Nodes() {
