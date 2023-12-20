@@ -50,19 +50,20 @@ function BarplotVisualizer({ model, setVisualizer }) {
       .attr("width", x.bandwidth())
       .attr("height", d => height - y(d.value))
       .attr("fill", "#69b3a2");
+      
     // Main Title
     svg.append("text")
-      .attr("x", width / 2)
-      .attr("y", 0 - (margin.top / 2))
+      .attr("x", svgWidth / 2)
+      .attr("y", margin.top / 2)
       .attr("text-anchor", "middle")
-      .style("font-size", "20px")
-      .text("Main Title");
+      .style("font-size", "16px")
+      .text("Frequency of 1000 Random Values");
 
-    // X-axis Title
-    svg.append("text")
-      .attr("transform", `translate(${width / 2}, ${height + margin.top })`)
+      svg
+      .append("text")
+      .attr("transform", `translate(${width / 2}, ${height + margin.top - 10})`)
       .style("text-anchor", "middle")
-      .text("X-axis Title");
+      .text("Number");
 
     // Y-axis Title
     svg.append("text")

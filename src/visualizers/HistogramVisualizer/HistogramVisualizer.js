@@ -61,7 +61,7 @@ function HistogramVisualizer({ model, setVisualizer }) {
       .attr("x", svgWidth / 2)
       .attr("y", margin.top / 2)
       .attr("text-anchor", "middle")
-      .style("font-size", "20px")
+      .style("font-size", "16px")
       .text("Frequency of 1000 Random Values");
   }, []);
 

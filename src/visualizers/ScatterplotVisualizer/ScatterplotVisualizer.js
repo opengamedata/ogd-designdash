@@ -6,12 +6,12 @@ function ScatterplotVisualizer({ model, setVisualizer }) {
   const svgRef = useRef(null);
   var data = model.Data;
 
-  const svgWidth = 600;
+  const svgWidth = 450;
   const svgHeight = 400;
   useEffect(() => {
     // scatter plot sample
     const svg = d3.select(svgRef.current);
-    const margin = { top: 30, right: 30, bottom: 60, left: 60 };
+    const margin = { top: 40, right: 40, bottom: 40, left: 40 };
     const width = svgWidth - margin.left - margin.right;
     const height = svgHeight - margin.top - margin.bottom;
 
@@ -42,7 +42,7 @@ function ScatterplotVisualizer({ model, setVisualizer }) {
       .attr("cx", (d) => x(d[0]))
       .attr("cy", (d) => y(d[1]))
       .attr("r", 2)
-      .style("fill", "steelblue");
+      .style("fill", "#69b3a2");
 
     g
       .append("g")
@@ -52,8 +52,7 @@ function ScatterplotVisualizer({ model, setVisualizer }) {
 
     g
       .append("text")
-      .attr("x", width / 2)
-      .attr("y", height + 40)
+      .attr("transform", `translate(${width / 2}, ${height + margin.top - 10})`)
       .style("text-anchor", "middle")
       .text("Number");
 
@@ -62,21 +61,22 @@ function ScatterplotVisualizer({ model, setVisualizer }) {
       .attr("class", "axis")
       .call(d3.axisLeft(y));
 
-    g
-      .append("text")
-      .attr("x", -15)
-      .attr("y", -30)
-      .style("text-anchor", "middle")
+    // Y-axis Title
+    g.append("text")
       .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
       .text("Frequency");
 
-    svg
-      .append("text")
+    // Main Title
+    svg.append("text")
       .attr("x", svgWidth / 2)
-      .attr("y", margin.top - 10)
+      .attr("y", margin.top / 2)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
-      .text("The Frequency of 1000 Random Values from 1 to 100");
+      .text("Frequency of 1000 Random Values");
   }, []);
 
   return (
