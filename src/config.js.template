@@ -105,7 +105,7 @@ export const game_links = {
  * For Vis Dashboard
  */
 // open game data core
-export const API_ORIGIN = 'https://fieldday-web.wcer.wisc.edu/wsgi-bin/opengamedata.wsgi/'
+export const API_ORIGIN = 'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata-server/feature/ogd-package/features/data.wsgi'
 
 // list of games that can be visualized in the Dashboard (used in VisForm)
 export const vis_games = ['AQUALAB', 'SHIPWRECKS']
