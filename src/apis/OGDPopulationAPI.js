@@ -19,19 +19,23 @@ export class OGDPopulationAPI extends OGDAPIInterface {
          if (request.end_date === null) {
             console.warn("selection_options.end_date was null! Defaulting to today.")
          }
-         const urlPath = `game/${request.Game}/metrics`;
+         const urlPath = `populations/metrics`;
          let start_date = request.start_date ?? new Date();
          let end_date   = request.end_date   ?? new Date();
          const searchParams = new URLSearchParams({
-            start_datetime: encodeURIComponent(start_date.toISOString().split('T')[0]) + 'T00:00',
-            end_datetime:   encodeURIComponent(  end_date.toISOString().split('T')[0]) + 'T23:59',
-            metrics: `[${request.Extractors}]`
+            game_id        : encodeURIComponent(request.Game),
+            start_datetime : encodeURIComponent(start_date.toISOString().split('T')[0]) + 'T00:00',
+            end_datetime   : encodeURIComponent(end_date.toISOString().split('T')[0]) + 'T23:59',
+            metrics        : encodeURIComponent(`[${request.Extractors}]`)
          });
 
          // fetch by url
          const url = new URL(`${urlPath}?${searchParams.toString()}`, API_ORIGIN)
          console.log(`OGDPopulationAPI is making a request to ${url}`)
-         return fetch(url);
+         let options = {
+            method : "POST"
+         };
+         return fetch(url, options);
       }
       else {
          throw new TypeError("Sent wrong type of selection options to Population API!");
