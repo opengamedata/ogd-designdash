@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
   push:
     paths:
-    - '.github/workflows/DesignDash_CI.yml'
+    - '.github/workflows/designdash_CI.yml'
     - '.github/actions/**'
     - 'src/**'
     - 'package.json'
