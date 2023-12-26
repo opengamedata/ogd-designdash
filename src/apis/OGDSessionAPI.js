@@ -21,9 +21,11 @@ export class OGDSessionAPI extends OGDAPIInterface {
          if (request.session_ids.length > 1) {
             console.warn(`selection_options.session_ids had ${request.session_ids.length} ids, only retrieving the first in SessionAPI`);
          }
-         const urlPath = `game/${request.Game}/session/${request.session_ids[0]}/metrics`;
+         const urlPath = `/session/metrics`;
          const searchParams = new URLSearchParams({
-            metrics: `[${request.Extractors}]`
+            game_id   : encodeURIComponent(request.Game),
+            player_id : encodeURIComponent(request.session_ids[0]),
+            metrics   : encodeURIComponent(`[${request.Extractors}]`)
          });
 
          // fetch by url
