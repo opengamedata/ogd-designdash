@@ -18,7 +18,7 @@ export class APIRequest {
     * @param {string | null} min_log_version
     * @param {string | null} max_log_version
     */
-   constructor(request_mode, extractor_list, game=AvailableGames.EnumList()[0],
+   constructor(request_mode, extractor_list=[], game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null) {
       this.request_mode    = request_mode;
@@ -103,6 +103,34 @@ export class PlayerAPIRequest extends APIRequest {
    }
 }
 
+export class PlayerAPIListRequest extends APIRequest {
+   /**
+    * @param {RequestModes} request_mode
+    * @param {string[]} extractor_list
+    * @param {AvailableGames} game
+    * @param {string | null} min_app_version
+    * @param {string | null} max_app_version
+    * @param {string | null} min_log_version
+    * @param {string | null} max_log_version
+    * @param {Date | null} start_date
+    * @param {Date | null} end_date
+    */
+   constructor(request_mode, extractor_list, game=AvailableGames.EnumList()[0],
+               min_app_version=null, max_app_version=null,
+               min_log_version=null, max_log_version=null,
+               start_date=null, end_date=null) {
+      super(request_mode, extractor_list, game,
+            min_app_version, max_app_version,
+            min_log_version, max_log_version);
+      this.start_date = start_date;
+      this.end_date = end_date;
+   }
+
+   genLocalStorageKey() {
+      return [this.request_mode.name, "PLAYER_LIST", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
+   }
+}
+
 export class SessionAPIRequest extends APIRequest {
    /**
     * @param {RequestModes} request_mode
@@ -126,5 +154,33 @@ export class SessionAPIRequest extends APIRequest {
 
    genLocalStorageKey() {
       return [this.request_mode.name, "SESSION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
+   }
+}
+
+export class SessionAPIListRequest extends APIRequest {
+   /**
+    * @param {RequestModes} request_mode
+    * @param {string[]} extractor_list
+    * @param {AvailableGames} game
+    * @param {string | null} min_app_version
+    * @param {string | null} max_app_version
+    * @param {string | null} min_log_version
+    * @param {string | null} max_log_version
+    * @param {Date | null} start_date
+    * @param {Date | null} end_date
+    */
+   constructor(request_mode, extractor_list, game=AvailableGames.EnumList()[0],
+               min_app_version=null, max_app_version=null,
+               min_log_version=null, max_log_version=null,
+               start_date=null, end_date=null) {
+      super(request_mode, extractor_list, game,
+            min_app_version, max_app_version,
+            min_log_version, max_log_version);
+      this.start_date = start_date;
+      this.end_date = end_date;
+   }
+
+   genLocalStorageKey() {
+      return [this.request_mode.name, "SESSION_LIST", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
    }
 }
