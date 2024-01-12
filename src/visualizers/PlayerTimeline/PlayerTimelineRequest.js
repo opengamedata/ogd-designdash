@@ -1,5 +1,5 @@
 import VisualizerRequest from "../BaseVisualizer/VisualizerRequest";
-import { AvailableGames } from "../../enums/AvailableGames";
+import { AvailableGames } from "../BaseVisualizer/AvailableGames";
 import { FilterRequest, DropdownItem } from "../../requests/FilterRequest";
 import ValueModes from "../../enums/ValueModes";
 import { PlayerTimelineModel } from "./PlayerTimelineModel";
