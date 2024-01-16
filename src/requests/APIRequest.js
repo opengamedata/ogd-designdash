@@ -39,13 +39,13 @@ export class APIRequest {
    }
    HeaderParams() {
       /**
-       * @returns {object[]}
+       * @returns {Object.<string, object>}
        */
       throw new TypeError("API request must implement the HeaderParams function!");
    }
    BodyParams() {
       /**
-       * @returns {object[]}
+       * @returns {Object.<string, object>}
        */
       throw new TypeError("API request must implement the BodyParams function!");
    }
