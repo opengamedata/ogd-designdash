@@ -25,6 +25,9 @@ export class APIRequest {
    }
 
    genLocalStorageKey() {
+      /**
+       * @returns {string}
+       */
       return [this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
    }
 

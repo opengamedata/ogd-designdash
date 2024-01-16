@@ -30,6 +30,9 @@ export class PopulationFeatureListRequest extends APIRequest {
    }
 
    genLocalStorageKey() {
+      /**
+       * @returns {string}
+       */
       return ["POPULATION", this.game_name, "FeatureList"].join("/")
    }
 }

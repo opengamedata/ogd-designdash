@@ -49,6 +49,9 @@ export class PopulationMetricsRequest extends APIRequest {
    }
 
    genLocalStorageKey() {
+      /**
+       * @returns {string}
+       */
       let _start = ISODatetimeFormat(this.start_date ?? new Date());
       let _end   = ISODatetimeFormat(this.end_date   ?? new Date());
       return ["POPULATION", this.game_name, this.min_app_version, this.max_app_version,
