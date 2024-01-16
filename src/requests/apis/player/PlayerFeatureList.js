@@ -33,6 +33,6 @@ export class PlayerFeatureListRequest extends APIRequest {
       /**
        * @returns {string}
        */
-      return ["POPULATION", this.game_name, "FeatureList"].join("/")
+      return ["PLAYER", this.game_name, "FeatureList"].join("/")
    }
 }
