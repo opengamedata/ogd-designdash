@@ -14,6 +14,9 @@ export class APIRequest {
    constructor(game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null) {
+      if (this.constructor === APIRequest) {
+         throw new TypeError("Tried to instantiate abstract class APIRequest!")
+      }
       this.game_name       = game.name;
       this.min_app_version = min_app_version;
       this.max_app_version = max_app_version;
