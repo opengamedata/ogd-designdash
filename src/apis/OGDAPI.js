@@ -23,7 +23,7 @@ export class OGDAPI {
          try {
             switch (request.RequestMode) {
                case RequestModes.POPULATION:
-                  return OGDPopulationAPI.fetch(request);
+                  return OGDPopulationAPI.fetchMetrics(request);
                break;
                case RequestModes.PLAYER:
                   return OGDPlayerAPI.fetch(request);
