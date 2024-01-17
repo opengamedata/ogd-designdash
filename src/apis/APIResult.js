@@ -1,4 +1,5 @@
 import EnumType from "../enums/EnumType";
+import { RESTTypes }   from "../enums/RESTTypes"
 
 export class ResultStatus extends EnumType {
    static NONE    = new ResultStatus("NONE");
@@ -8,21 +9,6 @@ export class ResultStatus extends EnumType {
 
    static EnumList() {
       return [ResultStatus.NONE, ResultStatus.SUCCESS, ResultStatus.ERR_SRV, ResultStatus.ERR_REQ];
-   }
-
-   constructor(name, readable=name) {
-      super(name, readable);
-   }
-}
-
-export class RESTType extends EnumType {
-   static NONE = new RESTType("NONE");
-   static GET  = new RESTType("GET");
-   static POST = new RESTType("POST");
-   static PUT  = new RESTType("PUT");
-
-   static EnumList() {
-      return [RESTType.NONE, RESTType.GET, RESTType.POST, RESTType.PUT];
    }
 
    constructor(name, readable=name) {
@@ -41,15 +27,15 @@ export default class APIResult {
          this.message     = response_object.msg;
          /** @type {ResultStatus} */
          this.status      = ResultStatus.FromName(response_object.status) ?? ResultStatus.NONE;
-         /** @type {RESTType} */
-         this.req_type    = RESTType.FromName(response_object.type) ?? RESTType.NONE;
+         /** @type {RESTTypes} */
+         this.req_type    = RESTTypes.FromName(response_object.type) ?? RESTTypes.NONE;
          /** @type {object} */
          this.values_dict = response_object.val;
       }
       else {
          this.message     = "FAIL: Response object was null";
          this.status      = ResultStatus.NONE;
-         this.req_type    = RESTType.NONE;
+         this.req_type    = RESTTypes.NONE;
          this.values_dict = {};
       }
    }

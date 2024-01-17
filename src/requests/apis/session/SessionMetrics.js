@@ -1,12 +1,12 @@
 import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../enums/AvailableGames";
-import { RequestTypes }   from "../../../enums/RequestTypes"
+import { RESTTypes }   from "../../../enums/RESTTypes"
 
 export class SessionMetricsRequest extends APIRequest {
    /**
     * @param {string[]} features
     * @param {string} session_id
-    * @param {RequestTypes}  request_type
+    * @param {RESTTypes}  request_type
     * @param {AvailableGames} game
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
@@ -14,7 +14,7 @@ export class SessionMetricsRequest extends APIRequest {
     * @param {string | null} max_log_version
     */
    constructor(features, session_id,
-               request_type=RequestTypes.POST,
+               request_type=RESTTypes.POST,
                game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null) {

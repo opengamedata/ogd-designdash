@@ -1,13 +1,13 @@
 import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../enums/AvailableGames";
-import { RequestTypes }   from "../../../enums/RequestTypes"
+import { RESTTypes }   from "../../../enums/RESTTypes"
 
 export class SessionFeatureListRequest extends APIRequest {
    /**
-    * @param {RequestTypes}  request_type
+    * @param {RESTTypes}  request_type
     * @param {AvailableGames} game
     */
-   constructor(request_type=RequestTypes.GET,
+   constructor(request_type=RESTTypes.GET,
                game=AvailableGames.EnumList()[0]) {
       super(request_type, game,
             null, null,

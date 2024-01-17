@@ -1,12 +1,12 @@
 import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../enums/AvailableGames";
-import { RequestTypes } from "../../../enums/RequestTypes"
+import { RESTTypes } from "../../../enums/RESTTypes"
 import { ISODatetimeFormat } from '../../../utils/TimeFormat';
 
 export class PopulationMetricsRequest extends APIRequest {
    /**
     * @param {string[]} features
-    * @param {RequestTypes}  request_type
+    * @param {RESTTypes}  request_type
     * @param {AvailableGames} game
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
@@ -16,7 +16,7 @@ export class PopulationMetricsRequest extends APIRequest {
     * @param {Date | null} end_date
     */
    constructor(features,
-               request_type=RequestTypes.POST,
+               request_type=RESTTypes.POST,
                game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null,

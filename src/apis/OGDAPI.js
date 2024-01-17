@@ -1,4 +1,4 @@
-import { RequestTypes } from '../enums/RequestTypes';
+import { RESTTypes } from '../enums/RESTTypes';
 
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
@@ -29,13 +29,13 @@ export class OGDAPI {
       if (request != null) {
          try {
             switch (request.RequestType) {
-               case RequestTypes.GET:
+               case RESTTypes.GET:
                   return OGDAPI.fetchGET(request);
                break;
-               case RequestTypes.POST:
+               case RESTTypes.POST:
                   return OGDAPI.fetchPOST(request);
                break;
-               case RequestTypes.PUT:
+               case RESTTypes.PUT:
                   return OGDAPI.fetchPUT(request);
                break;
                default:

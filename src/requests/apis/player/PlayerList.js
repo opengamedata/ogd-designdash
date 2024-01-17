@@ -1,11 +1,11 @@
 import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../enums/AvailableGames";
-import { RequestTypes }   from "../../../enums/RequestTypes"
+import { RESTTypes }   from "../../../enums/RESTTypes"
 import { ISODatetimeFormat } from '../../../utils/TimeFormat';
 
 export class PlayerListRequest extends APIRequest {
    /**
-    * @param {RequestTypes}  request_type
+    * @param {RESTTypes}  request_type
     * @param {AvailableGames} game
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
@@ -14,7 +14,7 @@ export class PlayerListRequest extends APIRequest {
     * @param {Date | null} start_date
     * @param {Date | null} end_date
     */
-   constructor(request_type=RequestTypes.GET,
+   constructor(request_type=RESTTypes.GET,
                game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null,
