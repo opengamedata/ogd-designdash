@@ -1,9 +1,9 @@
 import EnumType from "./EnumType";
 
 export default class RequestTypes extends EnumType {
-   static GET      = new RequestTypes('GET');
-   static POST     = new RequestTypes('POST');
-   static PUT     = new RequestTypes('PUT');
+   static GET  = new RequestTypes('GET');
+   static POST = new RequestTypes('POST');
+   static PUT  = new RequestTypes('PUT');
 
    static EnumList() {
       return [RequestTypes.GET, RequestTypes.POST, RequestTypes.PUT]
