@@ -6,22 +6,22 @@ import { RequestTypes }   from "../enums/RequestTypes"
 
 export class APIRequest {
    /**
-    * @param {AvailableGames} game
     * @param {RequestTypes}  request_type
+    * @param {AvailableGames} game
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
     * @param {string | null} min_log_version
     * @param {string | null} max_log_version
     */
-   constructor(game=AvailableGames.EnumList()[0],
-               request_type=RequestTypes.Default(),
+   constructor(request_type=RequestTypes.Default(),
+               game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null) {
       if (this.constructor === APIRequest) {
          throw new TypeError("Tried to instantiate abstract class APIRequest!")
       }
-      this.game_name       = game.name;
       this.request_type    = request_type
+      this.game_name       = game.name;
       this.min_app_version = min_app_version;
       this.max_app_version = max_app_version;
       this.min_log_version = min_log_version;

@@ -6,18 +6,20 @@ export class SessionsMetricsRequest extends APIRequest {
    /**
     * @param {string[]} features
     * @param {Array.<string>} session_ids
-    * @param {AvailableGames} game
     * @param {RequestTypes}  request_type
+    * @param {AvailableGames} game
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
     * @param {string | null} min_log_version
     * @param {string | null} max_log_version
     */
-   constructor(features, session_ids, game=AvailableGames.EnumList()[0],
-               request_type=RequestTypes.Default(),
+   constructor(features, session_ids,
+               request_type=RequestTypes.POST,
+               game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null) {
-      super(game, request_type, min_app_version, max_app_version,
+      super(request_type, game,
+            min_app_version, max_app_version,
             min_log_version, max_log_version);
       this.features   = features;
       this.session_ids = session_ids;

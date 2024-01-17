@@ -6,8 +6,8 @@ import { ISODatetimeFormat } from '../../../utils/TimeFormat';
 export class PopulationMetricsRequest extends APIRequest {
    /**
     * @param {string[]} features
-    * @param {AvailableGames} game
     * @param {RequestTypes}  request_type
+    * @param {AvailableGames} game
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
     * @param {string | null} min_log_version
@@ -15,12 +15,13 @@ export class PopulationMetricsRequest extends APIRequest {
     * @param {Date | null} start_date
     * @param {Date | null} end_date
     */
-   constructor(features, game=AvailableGames.EnumList()[0],
+   constructor(features,
                request_type=RequestTypes.Default(),
+               game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null,
                start_date     =null, end_date       =null) {
-      super(game, request_type,
+      super(request_type, game,
             min_app_version, max_app_version,
             min_log_version, max_log_version);
       this.features = features;
