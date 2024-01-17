@@ -14,7 +14,7 @@ export class PlayerListRequest extends APIRequest {
     * @param {Date | null} start_date
     * @param {Date | null} end_date
     */
-   constructor(request_type=RequestTypes.Default(),
+   constructor(request_type=RequestTypes.GET,
                game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null,

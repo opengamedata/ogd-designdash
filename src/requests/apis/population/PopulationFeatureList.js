@@ -7,7 +7,7 @@ export class PopulationFeatureListRequest extends APIRequest {
     * @param {RequestTypes}  request_type
     * @param {AvailableGames} game
     */
-   constructor(request_type=RequestTypes.Default(), 
+   constructor(request_type=RequestTypes.GET, 
                game=AvailableGames.EnumList()[0]) {
       super(request_type, game,
             null, null,

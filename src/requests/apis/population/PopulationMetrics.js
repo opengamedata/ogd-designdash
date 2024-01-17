@@ -16,7 +16,7 @@ export class PopulationMetricsRequest extends APIRequest {
     * @param {Date | null} end_date
     */
    constructor(features,
-               request_type=RequestTypes.Default(),
+               request_type=RequestTypes.POST,
                game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null,

@@ -14,7 +14,7 @@ export class PlayersMetricsRequest extends APIRequest {
     * @param {string | null} max_log_version
     */
    constructor(features, player_ids,
-               request_type=RequestTypes.Default(),
+               request_type=RequestTypes.POST,
                game=AvailableGames.EnumList()[0],
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null) {
