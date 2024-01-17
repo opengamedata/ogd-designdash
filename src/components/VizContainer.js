@@ -22,7 +22,7 @@ import InitialVisualizer from "../visualizers/InitialVisualizer/InitialVisualize
 import JobGraph from "../visualizers/JobGraph/JobGraph";
 import PlayerTimeline from "../visualizers/PlayerTimeline/PlayerTimeline";
 import { DropdownItem } from "../requests/FilterRequest";
-import APIResult, { ResultStatus, RESTType } from "../apis/APIResult";
+import APIResult, { ResultStatus } from "../apis/APIResult";
 import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
 import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramRequest";
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
