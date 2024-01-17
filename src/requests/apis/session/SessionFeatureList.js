@@ -18,7 +18,7 @@ export class SessionFeatureListRequest extends APIRequest {
       /**
        * @returns {string}
        */
-      return `/sessions/metrics/list/${this.Game()}`
+      return `/sessions/metrics/list/${this.Game}`
    }
    HeaderParams() {
       /**

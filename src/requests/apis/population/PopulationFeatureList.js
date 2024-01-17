@@ -18,7 +18,7 @@ export class PopulationFeatureListRequest extends APIRequest {
       /**
        * @returns {string}
        */
-      return `/populations/metrics/list/${this.Game()}`
+      return `/populations/metrics/list/${this.Game}`
    }
    HeaderParams() {
       /**

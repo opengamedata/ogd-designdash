@@ -46,7 +46,7 @@ export class PopulationMetricsRequest extends APIRequest {
        * @returns {Object.<string, object>}
        */
       return {
-         "game_id"        : this.Game(),
+         "game_id"        : this.Game,
          "start_datetime" : this.start_date,
          "end_datetime"   : this.end_date,
          "metrics"        : this.features

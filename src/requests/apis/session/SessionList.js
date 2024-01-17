@@ -30,7 +30,7 @@ export class SessionListRequest extends APIRequest {
       /**
        * @returns {string}
        */
-      return `/sessions/list/${this.Game()}`
+      return `/sessions/list/${this.Game}`
    }
    HeaderParams() {
       /**

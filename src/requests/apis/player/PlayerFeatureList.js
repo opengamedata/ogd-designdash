@@ -18,7 +18,7 @@ export class PlayerFeatureListRequest extends APIRequest {
       /**
        * @returns {string}
        */
-      return `/players/metrics/list/${this.Game()}`
+      return `/players/metrics/list/${this.Game}`
    }
    HeaderParams() {
       /**

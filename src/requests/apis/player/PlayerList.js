@@ -30,7 +30,7 @@ export class PlayerListRequest extends APIRequest {
       /**
        * @returns {string}
        */
-      return `/players/list/${this.Game()}`
+      return `/players/list/${this.Game}`
    }
    HeaderParams() {
       /**

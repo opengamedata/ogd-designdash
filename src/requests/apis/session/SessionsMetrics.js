@@ -42,7 +42,7 @@ export class SessionsMetricsRequest extends APIRequest {
        * @returns {Object.<string, object>}
        */
       return {
-         "game_id"        : this.Game(),
+         "game_id"        : this.Game,
          "session_ids"    : this.session_ids,
          "metrics"        : this.features
       }

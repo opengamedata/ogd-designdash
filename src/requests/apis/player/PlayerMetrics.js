@@ -42,7 +42,7 @@ export class PlayerMetricsRequest extends APIRequest {
        * @returns {Object.<string, object>}
        */
       return {
-         "game_id"       : this.Game(),
+         "game_id"       : this.Game,
          "player_id"     : this.player_id,
          "metrics"       : this.features
       }

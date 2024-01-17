@@ -34,10 +34,6 @@ export class APIRequest {
        */
       return [this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
    }
-
-   Game() {
-      return this.game_name;
-   }
    URLPath() {
       /**
        * @returns {string}
@@ -57,6 +53,18 @@ export class APIRequest {
       throw new TypeError("API request must implement the BodyParams function!");
    }
 
+   get RequestType() {
+      /**
+       * @returns {RequestTypes}
+       */
+      return this.request_type
+   }
+   get Game() {
+      /**
+       * @returns {string}
+       */
+      return this.game_name;
+   }
    get LocalStorageKey() {
       return this.genLocalStorageKey();
    }
