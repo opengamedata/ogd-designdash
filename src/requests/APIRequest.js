@@ -28,41 +28,41 @@ export class APIRequest {
       this.max_log_version = max_log_version;
    }
 
+   /**
+    * @returns {string}
+    */
    genLocalStorageKey() {
-      /**
-       * @returns {string}
-       */
       return [this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version].join("/")
    }
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       throw new TypeError("API request must implement the URLPath function!");
    }
+   /**
+    * @returns {Object.<string, object>}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
       throw new TypeError("API request must implement the HeaderParams function!");
    }
+   /**
+    * @returns {Object.<string, object>}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
       throw new TypeError("API request must implement the BodyParams function!");
    }
 
+   /**
+    * @returns {RESTTypes}
+    */
    get RequestType() {
-      /**
-       * @returns {RESTTypes}
-       */
       return this.request_type
    }
+   /**
+    * @returns {string}
+    */
    get Game() {
-      /**
-       * @returns {string}
-       */
       return this.game_name;
    }
    get LocalStorageKey() {
