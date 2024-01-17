@@ -1,10 +1,12 @@
 import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../enums/AvailableGames";
+import { RequestTypes }   from "../../../enums/RequestTypes"
 import { ISODatetimeFormat } from '../../../utils/TimeFormat';
 
 export class SessionListRequest extends APIRequest {
    /**
     * @param {AvailableGames} game
+    * @param {RequestTypes}  request_type
     * @param {string | null} min_app_version
     * @param {string | null} max_app_version
     * @param {string | null} min_log_version
@@ -13,10 +15,11 @@ export class SessionListRequest extends APIRequest {
     * @param {Date | null} end_date
     */
    constructor(game=AvailableGames.EnumList()[0],
+               request_type=RequestTypes.Default(),
                min_app_version=null, max_app_version=null,
                min_log_version=null, max_log_version=null,
                start_date=null, end_date=null) {
-      super(game, min_app_version, max_app_version,
+      super(game, request_type, min_app_version, max_app_version,
             min_log_version, max_log_version);
       this.start_date = start_date;
       this.end_date = end_date;

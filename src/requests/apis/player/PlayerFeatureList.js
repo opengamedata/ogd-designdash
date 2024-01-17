@@ -1,12 +1,15 @@
 import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../enums/AvailableGames";
+import { RequestTypes }   from "../../../enums/RequestTypes"
 
 export class PlayerFeatureListRequest extends APIRequest {
    /**
     * @param {AvailableGames} game
+    * @param {RequestTypes}  request_type
     */
-   constructor(game=AvailableGames.EnumList()[0]) {
-      super(game, null, null,
+   constructor(game=AvailableGames.EnumList()[0],
+               request_type=RequestTypes.Default()) {
+      super(game, request_type, null, null,
             null, null);
    }
 
