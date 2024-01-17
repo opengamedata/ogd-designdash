@@ -22,8 +22,14 @@ export class SessionListRequest extends APIRequest {
       super(request_type, game,
             min_app_version, max_app_version,
             min_log_version, max_log_version);
-      this.start_date = start_date;
-      this.end_date = end_date;
+      if (start_date === null) {
+         console.warn("start_date was null! Defaulting to today.")
+      }
+      if (end_date === null) {
+         console.warn("end_date was null! Defaulting to today.")
+      }
+      this.start_date = start_date ?? new Date();
+      this.end_date = end_date ?? new Date();
    }
 
    URLPath() {
@@ -37,8 +43,8 @@ export class SessionListRequest extends APIRequest {
        * @returns {Object.<string, object>}
        */
       return {
-         "start_datetime" : this.start_date,
-         "end_datetime"   : this.end_date
+         "start_datetime" : this.start_date.toISOString().split('T')[0] + 'T00:00',
+         "end_datetime"   : this.end_date.toISOString().split('T')[0] + 'T23:59'
       }
    }
    BodyParams() {
@@ -49,6 +55,9 @@ export class SessionListRequest extends APIRequest {
    }
 
    genLocalStorageKey() {
-      return ["SESSION", this.game_name, this.min_app_version, this.max_app_version, this.min_log_version, this.max_log_version, ISODatetimeFormat(this.start_date ?? new Date()), ISODatetimeFormat(this.end_date ?? new Date())].join("/")
+      let _start = ISODatetimeFormat(this.start_date ?? new Date())
+      let _end   = ISODatetimeFormat(this.end_date ?? new Date())
+      return ["SESSION", this.game_name, this.min_app_version, this.max_app_version,
+            this.min_log_version, this.max_log_version, _start, _end].join("/")
    }
 }
