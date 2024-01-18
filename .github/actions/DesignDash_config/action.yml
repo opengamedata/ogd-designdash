@@ -9,6 +9,10 @@ inputs:
     description: "API path for hitting the ogd-server api"
     required: true
     default: 'api placeholder'
+  package_home:
+    description: "URL of the package homepage location"
+    required: true
+    default: 'homepage placeholder'
 runs:
   using: "composite"
   steps:
@@ -17,4 +21,7 @@ runs:
       shell: bash
     - name: Set SSH hostname
       run: sed -i 's@api_origin_default@${{inputs.api_origin}}@g' src/config.js
+      shell: bash
+    - name: Set package homepage
+      run: sed -i 's@PACKAGE_HOMEPAGE@${{inputs.package_home}}@g' package.json
       shell: bash

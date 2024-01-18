@@ -5,7 +5,7 @@
   "author": "Yuheng Chen, Luke Swanson",
   "license": "MIT",
   "main": "src/index.js",
-  "homepage": "https://fielddaylab.wisc.edu/opengamedata/designdashboard/ci/master",
+  "homepage": "PACKAGE_HOMEPAGE",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/opengamedata/opengamedata-designdash.git"

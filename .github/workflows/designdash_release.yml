@@ -27,6 +27,7 @@ jobs:
       uses: ./.github/actions/DesignDash_config
       with:
         api_origin: ${{ secrets.OGD_API_ORIGIN }}
+        package_home: ${{ env.TARGET_HOST }}${{ env.TARGET_URL }}
 
     # 2. Build 
     - name: Install Node
