@@ -67,4 +67,4 @@ jobs:
         remote_user: ${{ secrets.DEPLOY_USER }}
         remote_key:  ${{ secrets.DEPLOY_KEY  }}
     - name: Announce deploy
-      run: echo "Deployed to ${{ env.TARGET_HOST }}${{ env.TARGET_URL }}"
+      run: echo "Deployed to ${{ env.TARGET_HOST }}/${{ env.TARGET_URL }}"
