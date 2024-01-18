@@ -1,4 +1,4 @@
-export const DASHBOARD_BASE = "/opengamedata/designdashboard/ci/master"; // TODO: this goes in a config or something
+export const DASHBOARD_BASE = "BASE_URL"; // TODO: this goes in a config or something
 
 /**
  * For dataset download
@@ -105,7 +105,7 @@ export const game_links = {
  * For Vis Dashboard
  */
 // open game data core
-export const API_ORIGIN = 'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata-server/feature/ogd-package/features/data.wsgi'
+export const API_ORIGIN = 'api_origin_default'
 
 // list of games that can be visualized in the Dashboard (used in VisForm)
 export const vis_games = ['AQUALAB', 'SHIPWRECKS']

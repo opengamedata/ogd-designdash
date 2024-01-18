@@ -22,6 +22,9 @@ runs:
     - name: Set SSH hostname
       run: sed -i 's@api_origin_default@${{inputs.api_origin}}@g' src/config.js
       shell: bash
+    - name: Set dashboard base directory
+      run: sed -i 's@BASE_URL@${{inputs.package_home}}@g' src/config.js
+      shell: bash
     - name: Set package homepage
       run: sed -i 's@PACKAGE_HOMEPAGE@${{inputs.package_home}}@g' package.json
       shell: bash

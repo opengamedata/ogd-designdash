@@ -8,6 +8,7 @@ on:
 env:
   TARGET_HOST: ${{ vars.OGD_SERVICES_HOST }}
   TARGET_PATH: ${{ vars.WEB_PATH }}designer-dashboard/${{ github.ref_name }}
+  URL_PATH:    designer-dashboard/${{ github.ref_name }}
   TARGET_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
 
 jobs:
@@ -27,7 +28,7 @@ jobs:
       uses: ./.github/actions/DesignDash_config
       with:
         api_origin: ${{ secrets.OGD_API_ORIGIN }}
-        package_home: ${{ env.TARGET_URL }}
+        package_home: ${{ env.URL_PATH }}
 
     # 2. Build 
     - name: Install Node
