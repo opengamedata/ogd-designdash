@@ -5,12 +5,13 @@ import {
   DropdownItem,
   SeparatorItem,
 } from "../../requests/FilterRequest";
-import { PlayerAPIRequest, PopulationAPIRequest } from "../../requests/APIRequest";
+import { PopulationMetricsRequest } from "../../requests/apis/population/PopulationMetrics"
+import { PlayersMetricsRequest } from "../../requests/apis/player/PlayersMetrics"
 // import { AvailableGames } from "../../enums/AvailableGames";
 import { AllowedGames } from "./AllowedGames";
 import { SessionOrPlayerEnums } from "../../enums/SessionOrPlayerEnums";
 import ValueModes from "../../enums/ValueModes";
-import RequestModes from "../../enums/RequestModes";
+import { RESTTypes } from "../../enums/RESTTypes"
 // import { JobGraphModel } from "./JobGraphModel";
 // import { ISODatetimeFormat } from "../../utils/TimeFormat";
 import { HistogramModel } from "./HistogramModel";
@@ -140,16 +141,15 @@ export default class HistogramRequest extends VisualizerRequest {
     min_date.setHours(0, 0, 0, 0);
     let max_date = new Date(requesterState["DateRangeMax"]);
     max_date.setHours(23, 59, 59, 0);
-    return new PlayerAPIRequest(
-      RequestModes.PLAYER,
+    return new PlayersMetricsRequest(
       RequiredExtractors[game.asString],
+      [],
+      RESTTypes.POST,
       game,
       requesterState["AppVersionRangeMin"],
       requesterState["AppVersionRangeMax"],
       requesterState["LogVersionRangeMin"],
       requesterState["LogVersionRangeMax"],
-      min_date,
-      max_date
     );
   }
 
