@@ -10,6 +10,7 @@ on:
     - 'package.json'
 
 env:
+  TARGET_URL:  ${{ github.event.repository.name }}/${{ github.ref_name }}
   TARGET_PATH: ${{ vars.WEB_PATH }}${{ github.event.repository.name }}/${{ github.ref_name }}
   TARGET_HOST: ${{ vars.OGD_STAGING_HOST }}
 
@@ -65,4 +66,4 @@ jobs:
         remote_user: ${{ secrets.DEPLOY_USER }}
         remote_key:  ${{ secrets.DEPLOY_KEY  }}
     - name: Announce deploy
-      run: echo "Deployed to ${{ env.TARGET_HOST }}${{ env.TARGET_PATH }}"
+      run: echo "Deployed to ${{ env.TARGET_HOST }}${{ env.TARGET_URL }}"

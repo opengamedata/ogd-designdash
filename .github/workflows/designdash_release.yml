@@ -6,6 +6,7 @@ on:
      branches: [ production ]
 
 env:
+  TARGET_URL:  designer-dashboard/${{ github.ref_name }}
   TARGET_PATH: ${{ vars.WEB_PATH }}designer-dashboard/${{ github.ref_name }}
   TARGET_HOST: ${{ vars.OGD_SERVICES_HOST }}
 
@@ -54,4 +55,4 @@ jobs:
         remote_user: ${{ secrets.DEPLOY_USER }}
         remote_key:  ${{ secrets.DEPLOY_KEY  }}
     - name: Announce deploy
-      run: echo "Deployed to ${{ env.TARGET_HOST }}${{ env.TARGET_PATH }}"
+      run: echo "Deployed to ${{ env.TARGET_HOST }}${{ env.TARGET_URL }}"
