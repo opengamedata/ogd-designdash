@@ -10,9 +10,9 @@ on:
     - 'package.json'
 
 env:
-  TARGET_URL:  ${{ github.event.repository.name }}/${{ github.ref_name }}
-  TARGET_PATH: ${{ vars.WEB_PATH }}${{ github.event.repository.name }}/${{ github.ref_name }}
   TARGET_HOST: ${{ vars.OGD_STAGING_HOST }}
+  TARGET_PATH: ${{ vars.WEB_PATH }}${{ github.event.repository.name }}/${{ github.ref_name }}
+  TARGET_URL:  ${{ vars.OGD_STAGING_HOST }}/${{ github.event.repository.name }}/${{ github.ref_name }}
 
 jobs:
   ci_deploy:
@@ -31,7 +31,7 @@ jobs:
       uses: ./.github/actions/DesignDash_config
       with:
         api_origin: ${{ secrets.OGD_API_ORIGIN }}
-        package_home: ${{ env.TARGET_HOST }}${{ env.TARGET_URL }}
+        package_home: ${{ env.TARGET_URL }}
 
     # 2. Build 
     - name: Install Node
@@ -67,4 +67,4 @@ jobs:
         remote_user: ${{ secrets.DEPLOY_USER }}
         remote_key:  ${{ secrets.DEPLOY_KEY  }}
     - name: Announce deploy
-      run: echo "Deployed to ${{ env.TARGET_HOST }}/${{ env.TARGET_URL }}"
+      run: echo "Deployed to ${{ env.TARGET_URL }}"
