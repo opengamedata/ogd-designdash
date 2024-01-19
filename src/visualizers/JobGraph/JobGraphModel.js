@@ -1,5 +1,5 @@
 import VisualizerModel from "../BaseVisualizer/VisualizerModel";
-import { AvailableGames } from "../../enums/AvailableGames";
+import { AvailableGames } from "../BaseVisualizer/AvailableGames";
 
 export class JobGraphModel extends VisualizerModel {
    /**

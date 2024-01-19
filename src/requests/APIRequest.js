@@ -1,7 +1,7 @@
 // global imports
 
 // local imports
-import { AvailableGames } from "../enums/AvailableGames";
+import { AvailableGames } from "../visualizers/BaseVisualizer/AvailableGames";
 import { RESTTypes }   from "../enums/RESTTypes"
 
 export class APIRequest {
