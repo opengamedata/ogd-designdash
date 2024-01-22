@@ -12,8 +12,8 @@ env:
   TARGET_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
 
 jobs:
-  ci_deploy:
-    name: CI Deploy of Designer Dashboard
+  release_deploy:
+    name: Release Deploy of Designer Dashboard
     runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
