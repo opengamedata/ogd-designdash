@@ -7,7 +7,7 @@ import {
 } from "../../requests/FilterRequest";
 import { PopulationMetricsRequest } from "../../requests/apis/population/PopulationMetrics"
 import { PlayersMetricsRequest } from "../../requests/apis/player/PlayersMetrics"
-// import { AvailableGames } from "../../enums/AvailableGames";
+// import { AvailableGames } from "../../visualizers/BaseVisualizer/AvailableGames";
 import { AvailableGames } from "../BaseVisualizer/AvailableGames";
 import { SessionOrPlayerEnums } from "../../enums/SessionOrPlayerEnums";
 import ValueModes from "../../enums/ValueModes";

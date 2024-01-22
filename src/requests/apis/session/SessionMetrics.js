@@ -1,5 +1,5 @@
 import { APIRequest } from '../../APIRequest';
-import { AvailableGames } from "../../../enums/AvailableGames";
+import { AvailableGames } from "../../../visualizers/BaseVisualizer/AvailableGames";
 import { RESTTypes }   from "../../../enums/RESTTypes"
 
 export class SessionMetricsRequest extends APIRequest {

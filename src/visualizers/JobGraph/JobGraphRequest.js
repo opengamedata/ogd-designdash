@@ -6,7 +6,7 @@ import {
   SeparatorItem,
 } from "../../requests/FilterRequest";
 import { PopulationMetricsRequest } from "../../requests/apis/population/PopulationMetrics";
-// import { AvailableGames } from "../../enums/AvailableGames";
+// import { AvailableGames } from "../../visualizers/BaseVisualizer/AvailableGames";
 import { JobGraphGames } from "./JobGraphGames";
 import ValueModes from "../../enums/ValueModes";
 import { RESTTypes } from "../../enums/RESTTypes"
