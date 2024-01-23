@@ -47,6 +47,14 @@ jobs:
     - name: Connect VPN
       run: echo ${{ secrets.VPN_PASS }} | sudo openconnect --protocol=gp -u ${{ secrets.VPN_USER }} --passwd-on-stdin soe.vpn.wisc.edu &
 
+    - name: Setup Access Key
+      run: |
+        mkdir -p ~/.ssh
+        echo '${{secrets.DEPLOY_KEY}}' >> ./key.txt
+        chmod 600 ./key.txt
+    - name: Ensure directory exists
+      run: ssh -o StrictHostKeyChecking=no -T -i ./key.txt ${{ secrets.DEPLOY_USER }}@${{ env.TARGET_HOST }} "mkdir -p ${{ env.TARGET_PATH }}"
+
     - name: Upload to web server via rsync
       uses: burnett01/rsync-deployments@5.2
       with:
