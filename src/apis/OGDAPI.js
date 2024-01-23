@@ -72,7 +72,7 @@ export class OGDAPI {
          // fetch by url
          const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
          const url = new URL(_path, API_ORIGIN)
-         console.log(`OGDPopulationAPI is making a request to ${url}`)
+         console.log(`OGDAPI is making a request to ${url}`)
          let options = {
             method : "GET"
          };
@@ -96,7 +96,7 @@ export class OGDAPI {
          // fetch by url
          const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
          const url = new URL(_path, API_ORIGIN)
-         console.log(`OGDPopulationAPI is making a request to ${url}`)
+         console.log(`OGDAPI is making a request to ${url}`)
          let options = {
             method : "POST"
          };
@@ -120,7 +120,7 @@ export class OGDAPI {
          // fetch by url
          const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
          const url = new URL(_path, API_ORIGIN)
-         console.log(`OGDPopulationAPI is making a request to ${url}`)
+         console.log(`OGDAPI is making a request to ${url}`)
          let options = {
             method : "PUT"
          };
