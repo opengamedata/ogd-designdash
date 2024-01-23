@@ -11,16 +11,6 @@ export class OGDAPI {
     * @returns {Promise<Response>}
     */
    static fetch(request) {
-      const bad_request_type = {
-         result: `Request to API Failed, invalid request type ${request ? request.RequestType.name : "(no request given)"}!`,
-         status: "FAILURE",
-         val: "{}"
-      };
-      const failed_request = {
-         result: "Request to API Failed",
-         status: "FAILURE",
-         val: "{}"
-      };
       const no_request = {
          result: "No Data Requested",
          status: "SUCCESS",
@@ -28,6 +18,16 @@ export class OGDAPI {
       };
 
       if (request != null) {
+         const bad_request_type = {
+            result: `Request to API Failed, invalid request type ${request.RequestType ? request.RequestType.asString : "(no request type given)"}!`,
+            status: "FAILURE",
+            val: "{}"
+         };
+         const failed_request = {
+            result: "Request to API Failed",
+            status: "FAILURE",
+            val: "{}"
+         };
          try {
             switch (request.RequestType) {
                case RESTTypes.GET:
