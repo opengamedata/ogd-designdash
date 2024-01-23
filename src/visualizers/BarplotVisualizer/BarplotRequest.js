@@ -5,7 +5,7 @@ import {
   DropdownItem,
   SeparatorItem,
 } from "../../requests/FilterRequest";
-import { PopulationMetricsRequest } from "../../requests/apis/population/PopulationMetrics"
+import { PlayerListRequest } from "../../requests/apis/player/PlayerList"
 import { PlayersMetricsRequest } from "../../requests/apis/player/PlayersMetrics"
 // import { AvailableGames } from "../../visualizers/BaseVisualizer/AvailableGames";
 import { AvailableGames } from "../BaseVisualizer/AvailableGames";
@@ -14,6 +14,7 @@ import { RESTTypes } from "../../enums/RESTTypes"
 // import { JobGraphModel } from "./JobGraphModel";
 // import { ISODatetimeFormat } from "../../utils/TimeFormat";
 import { BarplotModel } from "./BarplotModel";
+import { OGDAPI } from "../../apis/OGDAPI";
 /**
  * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
@@ -111,7 +112,7 @@ export default class BarplotRequest extends VisualizerRequest {
    * @param {object} requesterState
    * @returns {APIRequest?} The API request that gets the visualizer's required data.
    */
-  GetAPIRequest(requesterState) {
+  async GetAPIRequest(requesterState) {
     const RequiredExtractors = {
       AQUALAB: [
         "SessionJobsCompleted",
@@ -130,6 +131,18 @@ export default class BarplotRequest extends VisualizerRequest {
     min_date.setHours(0, 0, 0, 0);
     let max_date = new Date(requesterState["DateRangeMax"]);
     max_date.setHours(23, 59, 59, 0);
+    const population_request = new PlayerListRequest(
+      RESTTypes.GET,
+      game,
+      requesterState["AppVersionRangeMin"],
+      requesterState["AppVersionRangeMax"],
+      requesterState["LogVersionRangeMin"],
+      requesterState["LogVersionRangeMax"],
+      min_date,
+      max_date
+    )
+    let result = (await OGDAPI.fetch(population_request)).json()
+    console.log(`Result object from fetching player list request has structure:\n${result}`)
     return new PlayersMetricsRequest(
       RequiredExtractors[game.asString],
       [],
