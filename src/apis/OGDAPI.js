@@ -71,7 +71,7 @@ export class OGDAPI {
 
          // fetch by url
          const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
-         console.log(`OGDAPI is preparing a request to path ${_path}`)
+         console.log(`OGDAPI is preparing a request to path ${_path}, at origin ${API_ORIGIN}`)
          const url = new URL(_path, API_ORIGIN)
          console.log(`OGDAPI is making a request to ${url}`)
          let options = {
@@ -96,7 +96,7 @@ export class OGDAPI {
 
          // fetch by url
          const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
-         console.log(`OGDAPI is preparing a request to path ${_path}`)
+         console.log(`OGDAPI is preparing a request to path ${_path}, at origin ${API_ORIGIN}`)
          const url = new URL(_path, API_ORIGIN)
          console.log(`OGDAPI is making a request to ${url}`)
          let options = {
@@ -121,7 +121,7 @@ export class OGDAPI {
 
          // fetch by url
          const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
-         console.log(`OGDAPI is preparing a request to path ${_path}`)
+         console.log(`OGDAPI is preparing a request to path ${_path}, at origin ${API_ORIGIN}`)
          const url = new URL(_path, API_ORIGIN)
          console.log(`OGDAPI is making a request to ${url}`)
          let options = {
