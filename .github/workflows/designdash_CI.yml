@@ -31,7 +31,7 @@ jobs:
     - name: Set up Config File
       uses: ./.github/actions/DesignDash_config
       with:
-        api_origin: ${{ secrets.OGD_API_ORIGIN }}
+        api_origin: ${{ vars.OGD_API_ORIGIN }}
         package_home: ${{ env.URL_PATH }}
 
     # 2. Build 

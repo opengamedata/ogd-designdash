@@ -8,7 +8,6 @@ on:
 env:
   TARGET_HOST: ${{ vars.OGD_SERVICES_HOST }}
   TARGET_PATH: ${{ vars.WEB_PATH }}designer-dashboard/${{ github.ref_name }}
-  URL_PATH:    designer-dashboard/${{ github.ref_name }}
   TARGET_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
 
 jobs:
