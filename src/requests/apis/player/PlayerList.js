@@ -2,6 +2,7 @@ import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../visualizers/BaseVisualizer/AvailableGames";
 import { RESTTypes }   from "../../../enums/RESTTypes"
 import { ISODatetimeFormat } from '../../../utils/TimeFormat';
+import { Form } from 'react-router-dom';
 
 export class PlayerListRequest extends APIRequest {
    /**
@@ -32,26 +33,28 @@ export class PlayerListRequest extends APIRequest {
       this.end_date   = end_date   ?? new Date();
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return `/players/list/${this.Game}`
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {
+      return new URLSearchParams({
          "start_datetime" : this.start_date.toISOString().split('T')[0] + 'T00:00',
          "end_datetime"   : this.end_date.toISOString().split('T')[0] + 'T23:59'
-      }
+      })
    }
+
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new FormData();
    }
 
    genLocalStorageKey() {

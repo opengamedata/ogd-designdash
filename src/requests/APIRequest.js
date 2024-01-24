@@ -41,13 +41,13 @@ export class APIRequest {
       throw new TypeError("API request must implement the URLPath function!");
    }
    /**
-    * @returns {Object.<string, object>}
+    * @returns {URLSearchParams}
     */
    HeaderParams() {
       throw new TypeError("API request must implement the HeaderParams function!");
    }
    /**
-    * @returns {Object.<string, object>}
+    * @returns {FormData}
     */
    BodyParams() {
       throw new TypeError("API request must implement the BodyParams function!");
@@ -67,5 +67,30 @@ export class APIRequest {
    }
    get LocalStorageKey() {
       return this.genLocalStorageKey();
+   }
+
+   /**
+    * 
+    * @param {string} base_url 
+    * @returns {URL}
+    */
+   FetchURL(base_url) {
+      let searchParams = null;
+      if (Object.keys(this.HeaderParams()).length > 0) {
+         searchParams = []
+         let callback = (key) => searchParams.push(`${key}=${encodeURIComponent(this.HeaderParams()[key])}`);
+         Object.keys(this.HeaderParams()).forEach( callback );
+      }
+
+      // fetch by url
+      const _path = searchParams ? `${this.URLPath()}?${searchParams.join("&")}` : this.URLPath()
+      return new URL(base_url + _path);
+   }
+   FetchOptions() {
+      let options = {
+         method : this.RequestType.asString,
+         body   : this.BodyParams()
+      };
+      return options
    }
 }

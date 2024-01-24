@@ -25,27 +25,30 @@ export class SessionMetricsRequest extends APIRequest {
       this.session_id = session_id;
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return "/session/metrics"
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return []
+      return new URLSearchParams();
    }
+
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {
-         "game_id"       : this.Game,
-         "session_id"    : this.session_id,
-         "metrics"       : this.features
-      }
+      const ret_val = new FormData();
+      const _features = this.features.join(",");
+      ret_val.append("game_id",   this.Game)
+      ret_val.append("session_id", this.session_id)
+      ret_val.append("metrics",   `[${_features}]`)
+      return ret_val
    }
 
    genLocalStorageKey() {

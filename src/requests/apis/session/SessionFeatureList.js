@@ -14,23 +14,25 @@ export class SessionFeatureListRequest extends APIRequest {
             null, null);
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return `/sessions/metrics/list/${this.Game}`
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new URLSearchParams();
    }
+
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new FormData()
    }
 
    genLocalStorageKey() {

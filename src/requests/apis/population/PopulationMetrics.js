@@ -2,6 +2,7 @@ import { APIRequest } from '../../APIRequest';
 import { AvailableGames } from "../../../visualizers/BaseVisualizer/AvailableGames";
 import { RESTTypes } from "../../../enums/RESTTypes"
 import { ISODatetimeFormat } from '../../../utils/TimeFormat';
+import { Form } from 'react-router-dom';
 
 export class PopulationMetricsRequest extends APIRequest {
    /**
@@ -35,28 +36,31 @@ export class PopulationMetricsRequest extends APIRequest {
       this.end_date   = end_date   ?? new Date();
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return "/populations/metrics"
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new URLSearchParams();
    }
+    
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {
-         "game_id"        : this.Game,
-         "start_datetime" : this.start_date.toISOString().split('T')[0] + 'T00:00',
-         "end_datetime"   : this.end_date.toISOString().split('T')[0] + 'T23:59',
-         "metrics"        : this.features
-      }
+      const ret_val = new FormData();
+      const _features = this.features.join(",");
+      ret_val.append("game_id",        this.Game)
+      ret_val.append("start_datetime", this.start_date.toISOString().split('T')[0] + 'T00:00')
+      ret_val.append("end_datetime",   this.end_date.toISOString().split('T')[0] + 'T23:59')
+      ret_val.append("metrics",        `[${_features}]`)
+      return ret_val
    }
 
    genLocalStorageKey() {

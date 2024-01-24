@@ -32,26 +32,28 @@ export class SessionListRequest extends APIRequest {
       this.end_date = end_date ?? new Date();
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return `/sessions/list/${this.Game}`
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {
+      return new URLSearchParams({
          "start_datetime" : this.start_date.toISOString().split('T')[0] + 'T00:00',
          "end_datetime"   : this.end_date.toISOString().split('T')[0] + 'T23:59'
-      }
+      })
    }
+
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new FormData()
    }
 
    genLocalStorageKey() {

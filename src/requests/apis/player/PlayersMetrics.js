@@ -25,27 +25,31 @@ export class PlayersMetricsRequest extends APIRequest {
       this.player_ids = player_ids;
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return "/players/metrics"
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return []
+      return new URLSearchParams();
    }
+
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {
-         "game_id"        : this.Game,
-         "player_ids"     : this.player_ids,
-         "metrics"        : this.features
-      }
+      const ret_val = new FormData();
+      const _features = this.features.join(",");
+      const _player_ids = this.player_ids.join(",")
+      ret_val.append("game_id",    this.Game)
+      ret_val.append("player_ids", `[${_player_ids}]`)
+      ret_val.append("metrics",    `[${_features}]`)
+      return ret_val
    }
 
    genLocalStorageKey() {

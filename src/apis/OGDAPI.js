@@ -62,24 +62,9 @@ export class OGDAPI {
     * @returns {Promise<Response>}
     */
    static fetchGET(request) {
-         let searchParams = null;
-         if (Object.keys(request.HeaderParams()).length > 0) {
-            searchParams = []
-            let callback = (key) => searchParams.push(`${key}=${encodeURIComponent(request.HeaderParams()[key])}`);
-            Object.keys(request.HeaderParams()).forEach( callback );
-         }
-
-         // fetch by url
-         const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
-         console.log(`OGDAPI is preparing a request to path ${_path}, at origin ${API_ORIGIN}`)
-         const url = new URL(API_ORIGIN + _path, )
+         const url = request.FetchURL(API_ORIGIN);
          console.log(`OGDAPI is making a request to ${url}`)
-         let options = {
-            method : "GET"
-         };
-         if (Object.keys(request.BodyParams()).length > 0) {
-            options.body = JSON.stringify(request.BodyParams())
-         }
+         const options = request.FetchOptions();
          return fetch(url, options);
    }
    /**
@@ -102,6 +87,7 @@ export class OGDAPI {
          let options = {
             method : "POST"
          };
+         let body = 
          if (Object.keys(request.BodyParams()).length > 0) {
             options.body = JSON.stringify(request.BodyParams())
          }

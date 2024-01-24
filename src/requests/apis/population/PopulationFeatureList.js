@@ -14,23 +14,25 @@ export class PopulationFeatureListRequest extends APIRequest {
             null, null);
    }
 
+   /**
+    * @returns {string}
+    */
    URLPath() {
-      /**
-       * @returns {string}
-       */
       return `/populations/metrics/list/${this.Game}`
    }
+
+   /**
+    * @returns {URLSearchParams}
+    */
    HeaderParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new URLSearchParams();
    }
+
+   /**
+    * @returns {FormData}
+    */
    BodyParams() {
-      /**
-       * @returns {Object.<string, object>}
-       */
-      return {}
+      return new FormData();
    }
 
    genLocalStorageKey() {
