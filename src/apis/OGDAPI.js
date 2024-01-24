@@ -29,21 +29,10 @@ export class OGDAPI {
             val: "{}"
          };
          try {
-            switch (request.RequestType) {
-               case RESTTypes.GET:
-                  return OGDAPI.fetchGET(request);
-               break;
-               case RESTTypes.POST:
-                  return OGDAPI.fetchPOST(request);
-               break;
-               case RESTTypes.PUT:
-                  return OGDAPI.fetchPUT(request);
-               break;
-               default:
-                  let dummy = new Response(JSON.stringify(bad_request_type), {status:405});
-                  return Promise.resolve(dummy);
-               break;
-            }
+            const url = request.FetchURL(API_ORIGIN);
+            const options = request.FetchOptions();
+            console.log(`OGDAPI is making a request to ${url}`)
+            return fetch(url, options);
          }
          catch (err) {
             console.warn(`Could not make API Request, got the following error:\n${err}`)
@@ -57,65 +46,4 @@ export class OGDAPI {
       }
    }
 
-   /**
-    * @param {APIRequest} request 
-    * @returns {Promise<Response>}
-    */
-   static fetchGET(request) {
-         const url = request.FetchURL(API_ORIGIN);
-         console.log(`OGDAPI is making a request to ${url}`)
-         const options = request.FetchOptions();
-         return fetch(url, options);
-   }
-   /**
-    * @param {APIRequest} request 
-    * @returns {Promise<Response>}
-    */
-   static fetchPOST(request) {
-         let searchParams = null;
-         if (Object.keys(request.HeaderParams()).length > 0) {
-            searchParams = []
-            let callback = (key) => searchParams.push(`${key}=${encodeURIComponent(request.HeaderParams()[key])}`);
-            Object.keys(request.HeaderParams()).forEach( callback );
-         }
-
-         // fetch by url
-         const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
-         console.log(`OGDAPI is preparing a request to path ${_path}, at origin ${API_ORIGIN}`)
-         const url = new URL(API_ORIGIN + _path, )
-         console.log(`OGDAPI is making a request to ${url}`)
-         let options = {
-            method : "POST"
-         };
-         let body = 
-         if (Object.keys(request.BodyParams()).length > 0) {
-            options.body = JSON.stringify(request.BodyParams())
-         }
-         return fetch(url, options);
-   }
-   /**
-    * @param {APIRequest} request 
-    * @returns {Promise<Response>}
-    */
-   static fetchPUT(request) {
-         let searchParams = null;
-         if (Object.keys(request.HeaderParams()).length > 0) {
-            searchParams = []
-            let callback = (key) => searchParams.push(`${key}=${encodeURIComponent(request.HeaderParams()[key])}`);
-            Object.keys(request.HeaderParams()).forEach( callback );
-         }
-
-         // fetch by url
-         const _path = searchParams ? `${request.URLPath}?${searchParams.join("&")}` : request.URLPath()
-         console.log(`OGDAPI is preparing a request to path ${_path}, at origin ${API_ORIGIN}`)
-         const url = new URL(API_ORIGIN + _path, )
-         console.log(`OGDAPI is making a request to ${url}`)
-         let options = {
-            method : "PUT"
-         };
-         if (Object.keys(request.BodyParams()).length > 0) {
-            options.body = JSON.stringify(request.BodyParams())
-         }
-         return fetch(url, options);
-   }
 }
