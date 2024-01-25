@@ -23,14 +23,14 @@ export default class APIResult {
     */
    constructor(response_object) {
       if (response_object != null) {
-         /** @type {string} */
-         this.message     = response_object.msg;
-         /** @type {ResultStatus} */
-         this.status      = ResultStatus.FromName(response_object.status) ?? ResultStatus.NONE;
          /** @type {RESTTypes} */
          this.req_type    = RESTTypes.FromName(response_object.type) ?? RESTTypes.NONE;
          /** @type {object} */
          this.values_dict = response_object.val;
+         /** @type {string} */
+         this.message     = response_object.msg;
+         /** @type {ResultStatus} */
+         this.status      = ResultStatus.FromName(response_object.status) ?? ResultStatus.NONE;
       }
       else {
          this.message     = "FAIL: Response object was null";
@@ -40,24 +40,24 @@ export default class APIResult {
       }
    }
 
-   get Message() {
-      return this.message;
-   }
-   get Status() {
-      return this.status;
-   }
    get RequestType() {
       return this.req_type;
    }
    get Values() {
       return this.values_dict;
    }
+   get Message() {
+      return this.message;
+   }
+   get Status() {
+      return this.status;
+   }
    get asDict() {
       return {
-         msg: this.message,
-         status: this.status,
          type: this.req_type,
-         val: this.values_dict
+         val: this.values_dict,
+         msg: this.message,
+         status: this.status
       }
    }
 }
