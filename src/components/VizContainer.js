@@ -145,7 +145,7 @@ export default function VizContainer(props) {
           .then((json) => new APIResult(json))
           .then((result) => {
             if (result.Status !== ResultStatus.SUCCESS) throw result.Message;
-            console.log(result.asDict);
+            console.log(`Fetch resulted in ${result.asDict}`);
             // store data locally and in the state variable
             localStorage.setItem(
               api_request.LocalStorageKey,
