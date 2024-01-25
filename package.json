@@ -5,7 +5,7 @@
   "author": "Yuheng Chen, Luke Swanson, Yucheng Lin",
   "license": "MIT",
   "main": "src/index.js",
-  "homepage": "PACKAGE_HOMEPAGE",
+  "homepage": "/home",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/opengamedata/opengamedata-designdash.git"

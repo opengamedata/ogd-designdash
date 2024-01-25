@@ -1,7 +1,7 @@
 // global imports
 import React from 'react';
 // local imports
-import { vis_games } from '../../config';
+import { AvailableGames } from '../../visualizers/BaseVisualizer/AvailableGames';
 
 /**
  * @typedef {import("../../typedefs").SetterMap} SetterMap
@@ -25,9 +25,9 @@ export default function GamePicker({
 }) {
     const gameList = () => {
         const games = []
-        vis_games.forEach((k) => {
+        AvailableGames.EnumList().forEach((k) => {
             games.push(
-                <option key={k} value={k}>{k}</option>
+                <option key={k.asString} value={k.asString}>{k.asDisplayString}</option>
             )
         })
         return games
