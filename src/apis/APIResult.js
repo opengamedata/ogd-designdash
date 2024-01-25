@@ -26,7 +26,7 @@ export default class APIResult {
          /** @type {RESTTypes} */
          this.req_type    = RESTTypes.FromName(response_object.type) ?? RESTTypes.NONE;
          /** @type {object} */
-         this.values_dict = response_object.val;
+         this.values_dict = JSON.parse(response_object.val);
          /** @type {string} */
          this.message     = response_object.msg;
          /** @type {ResultStatus} */
