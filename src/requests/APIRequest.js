@@ -86,7 +86,7 @@ export class APIRequest {
       // fetch by url
       const _path = searchParams ? `${this.URLPath()}?${searchParams.join("&")}` : this.URLPath()
       console.log(`Got a FetchURL with base "${api_host}" and path "${api_path}${_path}"`)
-      return new URL(api_path + _path, api_host);
+      return new URL(api_path + _path, "https://" + api_host);
    }
    FetchOptions() {
       let options = {
