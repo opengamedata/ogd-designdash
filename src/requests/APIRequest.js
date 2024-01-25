@@ -71,10 +71,11 @@ export class APIRequest {
 
    /**
     * 
-    * @param {string} base_url 
+    * @param {string} api_host 
+    * @param {string} api_path
     * @returns {URL}
     */
-   FetchURL(base_url) {
+   FetchURL(api_host, api_path) {
       let searchParams = null;
       if (Object.keys(this.HeaderParams()).length > 0) {
          searchParams = []
@@ -84,7 +85,8 @@ export class APIRequest {
 
       // fetch by url
       const _path = searchParams ? `${this.URLPath()}?${searchParams.join("&")}` : this.URLPath()
-      return new URL(base_url + _path);
+      console.log(`Got a FetchURL with base "${api_host}" and path "${api_path}${_path}"`)
+      return new URL(api_path + _path, api_host);
    }
    FetchOptions() {
       let options = {

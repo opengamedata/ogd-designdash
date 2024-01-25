@@ -1,4 +1,4 @@
-import { API_ORIGIN } from '../config';
+import { API_ORIGIN, API_PATH } from '../config';
 import { RESTTypes } from '../enums/RESTTypes';
 
 /**
@@ -29,7 +29,7 @@ export class OGDAPI {
             val: "{}"
          };
          try {
-            const url = request.FetchURL(API_ORIGIN);
+            const url = request.FetchURL(API_ORIGIN, API_PATH);
             const options = request.FetchOptions();
             console.log(`OGDAPI is making a request to ${url}`)
             return fetch(url, options);
