@@ -121,8 +121,8 @@ export default function VizContainer(props) {
     const api_request = request.GetAPIRequest(visualizerRequestState);
     if (api_request != null) {
       setLoading(true);
-      let api_result = OGDAPI.fetch(api_request);
-      api_result.then((result) => setRawData(result.Values))
+      OGDAPI.fetch(api_request)
+            .then((result) => setRawData(result.Values));
     } else {
       console.log(`No API request for ${request}`);
     }
