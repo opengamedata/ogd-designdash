@@ -19,7 +19,7 @@ export class ResultStatus extends EnumType {
 export default class APIResult {
    /**
     * 
-    * @param {object?} response_object 
+    * @param {Object.<string, any>?} response_object 
     */
    constructor(response_object) {
       if (response_object != null) {
