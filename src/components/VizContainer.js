@@ -121,45 +121,12 @@ export default function VizContainer(props) {
     const api_request = request.GetAPIRequest(visualizerRequestState);
     if (api_request != null) {
       setLoading(true);
-      const localData = localStorage.getItem(api_request.LocalStorageKey);
-      // console.log(localData)
-      if (localData) {
-        try {
-          console.log(`Found ${api_request.LocalStorageKey} in the cache`);
-          // if query found in storage, retreive JSON
-          setRawData(JSON.parse(localData));
-        } catch (err) {
-          console.error(
-            `Local data (${localData}) was not valid JSON!\nResulted in error ${err}`
-          );
-        } finally {
-          setLoading(false);
-        }
-      }
-      // if not found in storage, request dataset
-      else {
-        console.log(`Fetching into ${api_request.LocalStorageKey}`);
-        OGDAPI.fetch(api_request)
-          .then((result) => {
-            if (result.Status !== ResultStatus.SUCCESS) throw result.Message;
-            console.log(`Fetch resulted in ${result.asDict}`);
-            // store data locally and in the state variable
-            localStorage.setItem(
-              api_request.LocalStorageKey,
-              JSON.stringify(result.Values)
-            );
-            setRawData(result.Values);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error(error);
-            setLoading(false);
-            alert(error);
-          });
-      }
+      let api_result = OGDAPI.fetch(api_request);
+      api_result.then((result) => setRawData(result.Values))
     } else {
       console.log(`No API request for ${request}`);
     }
+    setLoading(false);
   };
 
   const renderVisualizer = () => {
