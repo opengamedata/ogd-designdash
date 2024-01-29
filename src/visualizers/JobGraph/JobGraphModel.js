@@ -47,8 +47,8 @@ export class JobGraphModel extends VisualizerModel {
       // metadata
       /** @type JobGraphMeta */
       const meta = {
-         playerSummary: JSON.parse(raw_data.PlayerSummary.replaceAll('\\', '')),
-         populationSummary: JSON.parse(raw_data.PopulationSummary.replaceAll('\\', '').replaceAll('_', ' ')),
+         playerSummary: JSON.parse(raw_data.PlayerSummary),
+         populationSummary: JSON.parse(raw_data.PopulationSummary),
          maxAvgTime: 0,
          minAvgTime: Infinity
       }
@@ -66,7 +66,7 @@ export class JobGraphModel extends VisualizerModel {
       if (link_mode === 'ActiveJobs') {
          relevantNodes.forEach(n => {
             // console.log(rawLinks)
-            const rawLinks = JSON.parse(raw_data[link_mode].replaceAll('\\', ''))
+            const rawLinks = JSON.parse(raw_data[link_mode])
             n.players = rawLinks[n.id]
          }
          );
@@ -119,7 +119,7 @@ export class JobGraphModel extends VisualizerModel {
     */
    static genLinks(rawData, linkMode) {
       let l = []
-      const rawLinks = JSON.parse(rawData[linkMode].replaceAll('\\', ''))
+      const rawLinks = JSON.parse(rawData[linkMode])
 
       switch (linkMode) {
          case 'TopJobCompletionDestinations':

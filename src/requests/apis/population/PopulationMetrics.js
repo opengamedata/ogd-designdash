@@ -55,11 +55,10 @@ export class PopulationMetricsRequest extends APIRequest {
     */
    BodyParams() {
       const ret_val = new FormData();
-      const _features = this.features.join(",");
       ret_val.append("game_id",        this.Game)
       ret_val.append("start_datetime", this.start_date.toISOString().split('T')[0] + 'T00:00')
       ret_val.append("end_datetime",   this.end_date.toISOString().split('T')[0] + 'T23:59')
-      ret_val.append("metrics",        `[${_features}]`)
+      ret_val.append("metrics",        JSON.stringify(this.features))
       return ret_val
    }
 

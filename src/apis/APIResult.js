@@ -25,8 +25,14 @@ export default class APIResult {
       if (response_object != null) {
          /** @type {RESTTypes} */
          this.req_type    = RESTTypes.FromName(response_object.type) ?? RESTTypes.NONE;
-         /** @type {object} */
-         this.values_dict = JSON.parse(response_object.val);
+         try {
+            /** @type {object} */
+            this.values_dict = JSON.parse(response_object.val);
+         }
+         catch (err) {
+            console.error(`Got an error when trying to JSON.parse the following:\n${response_object}`)
+            this.values_dict = response_object.val
+         }
          /** @type {string} */
          this.message     = response_object.msg;
          /** @type {ResultStatus} */
