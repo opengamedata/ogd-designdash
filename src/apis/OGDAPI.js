@@ -1,5 +1,5 @@
 import { API_ORIGIN, API_PATH } from '../config';
-import APIResult, { ResultStatus } from "../apis/APIResult";
+import APIResponse, { ResultStatus } from "../apis/APIResult";
 
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
@@ -84,7 +84,7 @@ export class OGDAPI {
 
    /**
     * @param {APIRequest?} request
-    * @returns {Promise<APIResult>}
+    * @returns {Promise<APIResponse>}
     */
    static fetch(request) {
       /*
@@ -150,7 +150,7 @@ export class OGDAPI {
       // else { ret_val = OGDAPI.NoRequest.json() }, which is the default for ret_val
    // 3. Whether we got from fetch or cache, we take the JSON from the response and use it to populate an APIResult.
       return ret_val
-            .then((response) => new APIResult(response))
+            .then((response) => new APIResponse(response))
             .catch(
                (error) => {
                            console.log(`Could not convert Response JSON to an APIResult object, an error occurred!\n${error}`);

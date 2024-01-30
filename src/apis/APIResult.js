@@ -16,7 +16,7 @@ export class ResultStatus extends EnumType {
    }
 }
 
-export default class APIResult {
+export default class APIResponse {
    /**
     * 
     * @param {Object.<string, any>?} response_object 

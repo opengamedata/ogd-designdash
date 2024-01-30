@@ -112,7 +112,8 @@ export default class BarplotRequest extends VisualizerRequest {
    * @param {object} requesterState
    * @returns {APIRequest?} The API request that gets the visualizer's required data.
    */
-  async GetAPIRequest(requesterState) {
+  GetAPIRequest(requesterState) {
+  // 1. Set up variables for the request
     const RequiredExtractors = {
       AQUALAB: [
         "SessionJobsCompleted",
@@ -123,14 +124,14 @@ export default class BarplotRequest extends VisualizerRequest {
         "EvidenceBoardCompleteCount"
       ],
     };
-    const selected_dict = requesterState["GameSelected"];
-    const game =
-    AvailableGames.FromDict(selected_dict) ?? AvailableGames.Default();
+    const selected_game = requesterState["GameSelected"];
+    const game = AvailableGames.FromDict(selected_game) ?? AvailableGames.Default();
     /** @type {Date} */
     let min_date = new Date(requesterState["DateRangeMin"]);
     min_date.setHours(0, 0, 0, 0);
     let max_date = new Date(requesterState["DateRangeMax"]);
     max_date.setHours(23, 59, 59, 0);
+  // 2. Create a request for player list, which we need in order to grab values across players
     const population_request = new PlayerListRequest(
       RESTTypes.GET,
       game,
@@ -141,18 +142,20 @@ export default class BarplotRequest extends VisualizerRequest {
       min_date,
       max_date
     )
-    let result = (await OGDAPI.fetch(population_request)).json()
-    console.log(`Result object from fetching player list request has structure:\n${result}`)
-    return new PlayersMetricsRequest(
-      RequiredExtractors[game.asString],
-      [],
-      RESTTypes.POST,
-      game,
-      requesterState["AppVersionRangeMin"],
-      requesterState["AppVersionRangeMax"],
-      requesterState["LogVersionRangeMin"],
-      requesterState["LogVersionRangeMax"],
-    );
+    let ret_val = OGDAPI.fetch(population_request)
+    .then((api_result) => {
+      console.log(`Result object from fetching player list request has structure:\n${result}`)
+      return new PlayersMetricsRequest(
+        RequiredExtractors[game.asString][0],
+        api_result.Values,
+        RESTTypes.POST,
+        game,
+        requesterState["AppVersionRangeMin"],
+        requesterState["AppVersionRangeMax"],
+        requesterState["LogVersionRangeMin"],
+        requesterState["LogVersionRangeMax"],
+      );
+    })
   }
 
   /**
