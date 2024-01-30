@@ -59,10 +59,10 @@ export default function VizContainer(props) {
   // data view vars
 
   /** @type {[VisualizerRequest, any]} */
-  const [vis_request, _setRequest] = useState(new InitialVisualizerRequest());
+  const [request, _setRequest] = useState(new InitialVisualizerRequest());
   /** @type {[AnyMap, MapSetter]} */
   const [visualizerRequestState, setVisualizerRequestState] = useState(
-    vis_request.GetFilterRequest().InitialState
+    request.GetFilterRequest().InitialState
   );
   // console.log(
   //   `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
@@ -118,13 +118,13 @@ export default function VizContainer(props) {
     // flush current dataset and start loading animation
     setRawData(null);
 
-    const _api_request = vis_request.GetAPIRequest(visualizerRequestState);
-    if (_api_request != null) {
+    const api_request = request.GetAPIRequest(visualizerRequestState);
+    if (api_request != null) {
       setLoading(true);
-      OGDAPI.fetch(_api_request)
+      OGDAPI.fetch(api_request)
             .then((result) => setRawData(result.Values));
     } else {
-      console.log(`No API request for ${vis_request}`);
+      console.log(`No API request for ${request}`);
     }
     setLoading(false);
   };
@@ -139,22 +139,20 @@ export default function VizContainer(props) {
                 <LoadingBlur loading={loading} />
                 :
                 <JobGraph
-                  model={vis_request.GetVisualizerModel(
+                  model={request.GetVisualizerModel(
                     visualizerRequestState,
                     rawData
                   )}
                   setVisualizer={setVisualizer}
                 />
             }
-
-
           </ErrorBoundary>
         );
       case Visualizers.HISTOGRAM:
         return (
           <ErrorBoundary childName={"HistogramVisualizer"}>
             <HistogramVisualizer
-              model={vis_request.GetVisualizerModel(
+              model={request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -166,7 +164,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"ScatterplotVisualizer"}>
             <ScatterplotVisualizer
-              model={vis_request.GetVisualizerModel(
+              model={request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -178,7 +176,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"BarplotVisualizer"}>
             <BarplotVisualizer
-              model={vis_request.GetVisualizerModel(
+              model={request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -190,7 +188,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"PlayerVisualizer"}>
             <PlayerTimeline
-              model={vis_request.GetVisualizerModel(
+              model={request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -233,7 +231,7 @@ export default function VizContainer(props) {
           />
           <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
             <DataFilter
-              filterRequest={vis_request.GetFilterRequest()}
+              filterRequest={request.GetFilterRequest()}
               loading={loading}
               mergeContainerState={mergeVisualizerRequestState}
               updateData={retrieveData}
