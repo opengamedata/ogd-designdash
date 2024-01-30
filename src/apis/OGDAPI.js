@@ -90,7 +90,7 @@ export class OGDAPI {
       /*
          Overall how it works:
          First, we need to check if data is cached or not.
-         If it isn't, we need to get data from server, cache it, and still pass that data on to return an APIResult.
+         If it isn't, we need to get data from server, cache it, and still pass that data on to return an APIResponse.
          Because this is dealing with fetch API, we need to return a promise in order to avoid having to sort out await-async madness.
          Thus, if data was cached, we're still going to need to return a promise.
          Hence, in either case we generate a Response object, and then get the .json() to return.
@@ -148,12 +148,12 @@ export class OGDAPI {
          }
       }
       // else { ret_val = OGDAPI.NoRequest.json() }, which is the default for ret_val
-   // 3. Whether we got from fetch or cache, we take the JSON from the response and use it to populate an APIResult.
+   // 3. Whether we got from fetch or cache, we take the JSON from the response and use it to populate an APIResponse.
       return ret_val
             .then((response) => new APIResponse(response))
             .catch(
                (error) => {
-                           console.log(`Could not convert Response JSON to an APIResult object, an error occurred!\n${error}`);
+                           console.log(`Could not convert Response JSON to an APIResponse object, an error occurred!\n${error}`);
                            return OGDAPI.BadConversion.json()
             })
    }

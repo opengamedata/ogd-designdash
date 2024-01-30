@@ -10,7 +10,7 @@ Under the `src` folder, we have the following structure:
 - `enums`      : Simple enums for modes of operation
 - `hooks`      : Custom hooks for using external libraries
 - `requests`   : Classes for managing data requests to the APIs
-- `utils`      : Utility classes used within the app. The most important is APIResult, which contains data resulting from API requests.
+- `utils`      : Utility classes used within the app. The most important is APIResponse, which contains data resulting from API requests.
 - `visualizers`: Contains model, view, and controller components for each type of data visualizer.
   - `BaseVisualizer`: Contains base classes for the model and controller components for custom visualizers.
 
