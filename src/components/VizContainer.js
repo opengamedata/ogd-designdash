@@ -22,6 +22,7 @@ import InitialVisualizer from "../visualizers/InitialVisualizer/InitialVisualize
 import JobGraph from "../visualizers/JobGraph/JobGraph";
 import PlayerTimeline from "../visualizers/PlayerTimeline/PlayerTimeline";
 import { DropdownItem } from "../requests/FilterRequest";
+import APIResponse, { ResultStatus } from "../apis/APIResponse";
 import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
 import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramRequest";
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
@@ -64,9 +65,9 @@ export default function VizContainer(props) {
   const [visualizerRequestState, setVisualizerRequestState] = useState(
     request.GetFilterRequest().InitialState
   );
-  // console.log(
-  //   `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
-  // );
+  console.log(
+    `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
+  );
 
   const setRequest = (request) => {
     // clear state from last viz.
@@ -121,12 +122,47 @@ export default function VizContainer(props) {
     const api_request = request.GetAPIRequest(visualizerRequestState);
     if (api_request != null) {
       setLoading(true);
-      OGDAPI.fetch(api_request)
-            .then((result) => setRawData(result.Values));
+      const localData = localStorage.getItem(api_request.LocalStorageKey);
+      // console.log(localData)
+      if (localData) {
+        try {
+          console.log(`Found ${api_request.LocalStorageKey} in the cache`);
+          // if query found in storage, retreive JSON
+          setRawData(JSON.parse(localData));
+        } catch (err) {
+          console.error(
+            `Local data (${localData}) was not valid JSON!\nResulted in error ${err}`
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+      // if not found in storage, request dataset
+      else {
+        console.log(`Fetching into ${api_request.LocalStorageKey}`);
+        OGDAPI.fetch(api_request)
+          .then((response) => response.json())
+          .then((json) => new APIResponse(json))
+          .then((result) => {
+            if (result.Status !== ResultStatus.SUCCESS) throw result.Message;
+            console.log(result.asDict);
+            // store data locally and in the state variable
+            localStorage.setItem(
+              api_request.LocalStorageKey,
+              JSON.stringify(result.Values)
+            );
+            setRawData(result.Values);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error(error);
+            setLoading(false);
+            alert(error);
+          });
+      }
     } else {
       console.log(`No API request for ${request}`);
     }
-    setLoading(false);
   };
 
   const renderVisualizer = () => {
@@ -146,6 +182,8 @@ export default function VizContainer(props) {
                   setVisualizer={setVisualizer}
                 />
             }
+
+
           </ErrorBoundary>
         );
       case Visualizers.HISTOGRAM:
@@ -229,6 +267,7 @@ export default function VizContainer(props) {
             }}
             key="VizTypeDropdown"
           />
+          
           <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
             <DataFilter
               filterRequest={request.GetFilterRequest()}

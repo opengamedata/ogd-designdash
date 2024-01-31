@@ -102,6 +102,8 @@ export default class HistogramRequest extends VisualizerRequest {
         DateValidator
       )
     );
+
+   
     ret_val.AddItem(
       new DropdownItem(
         "Session or Player",
