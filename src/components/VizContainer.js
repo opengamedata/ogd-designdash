@@ -30,6 +30,10 @@ import ScatterplotVisualizer from "../visualizers/ScatterplotVisualizer/Scatterp
 import ScatterplotRequest from "../visualizers/ScatterplotVisualizer/ScatterplotRequest";
 import BarplotVisualizer from "../visualizers/BarplotVisualizer/BarplotVisualizer";
 import BarplotRequest from "../visualizers/BarplotVisualizer/BarplotRequest";
+import LargeButton from "./buttons/LargeButton";
+import SmallButton from "./buttons/SmallButton";
+import { AvailableModes } from "../visualizers/BaseVisualizer/AvailableModes";
+import FilePicker from "./pickers/FilePicker";
 /**
  * @typedef {import('../typedefs').AnyMap} AnyMap
  * @typedef {import('../typedefs').MapSetter} MapSetter
@@ -141,8 +145,6 @@ export default function VizContainer(props) {
       else {
         console.log(`Fetching into ${api_request.LocalStorageKey}`);
         OGDAPI.fetch(api_request)
-          .then((response) => response.json())
-          .then((json) => new APIResponse(json))
           .then((result) => {
             if (result.Status !== ResultStatus.SUCCESS) throw result.Message;
             console.log(result.asDict);
@@ -182,8 +184,6 @@ export default function VizContainer(props) {
                   setVisualizer={setVisualizer}
                 />
             }
-
-
           </ErrorBoundary>
         );
       case Visualizers.HISTOGRAM:
@@ -244,12 +244,20 @@ export default function VizContainer(props) {
     }
   };
 
-  const dropdownFilterItem = new DropdownItem(
+  const dropdownVizPicker = new DropdownItem(
     "VizPicker",
     ValueModes.ENUM,
     Visualizers,
     visualizer
   );
+
+  const [mode, setMode] = useState(AvailableModes.Default().asString);
+  const dropdownModePicker = new DropdownItem(
+    "ModePicker",
+    ValueModes.ENUM,
+    AvailableModes,
+    AvailableModes.Default()
+  )
   const styling = {
     gridColumn: props.column,
     gridRow: props.row,
@@ -261,21 +269,40 @@ export default function VizContainer(props) {
         <div className="left-0 max-w-72 max-h-full overflow-y-auto">
           <EnumPicker
             adjustMode={true}
-            filterItem={dropdownFilterItem}
+            filterItem={dropdownVizPicker}
             mergeContainerState={(new_state) => {
-              setVisualizer(new_state[`${dropdownFilterItem.Name}Selected`]);
+              setVisualizer(new_state[`${dropdownVizPicker.Name}Selected`]);
             }}
             key="VizTypeDropdown"
           />
-          
-          <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
-            <DataFilter
-              filterRequest={request.GetFilterRequest()}
-              loading={loading}
-              mergeContainerState={mergeVisualizerRequestState}
-              updateData={retrieveData}
-            />
-          </ErrorBoundary>
+          <EnumPicker
+            adjustMode={true}
+            filterItem={dropdownModePicker}
+            mergeContainerState={(new_state) => {
+              setMode(new_state[`${dropdownModePicker.Name}Selected`].asString);
+            }}
+            key="dropdownModePicker"
+          />
+          {/* Add a dropdown for users to choose file or api */}
+          {/* 1. if File is chosen, file-upload-button-page */}
+          {/* 2. if api is chosen, data-filter-page */}
+          {
+            mode === "File" ?
+              <div className="file-upload-container">
+                <FilePicker onFileSelected={(file) => {
+                  console.log('File selected:', file);
+                }} />
+              </div>
+              :
+              <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
+                <DataFilter
+                  filterRequest={request.GetFilterRequest()}
+                  loading={loading}
+                  mergeContainerState={mergeVisualizerRequestState}
+                  updateData={retrieveData}
+                />
+              </ErrorBoundary>
+          }
         </div>
         <div className="container left-72 border shadow-sm">
           {renderVisualizer()}
