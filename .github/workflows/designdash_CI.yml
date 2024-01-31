@@ -12,7 +12,7 @@ on:
 env:
   TARGET_HOST: ${{ vars.OGD_STAGING_HOST }}
   TARGET_PATH: ${{ vars.WEB_PATH }}${{ github.event.repository.name }}/${{ github.ref_name }}
-  URL_PATH:    ${{ github.event.repository.name }}/${{ github.ref_name }}/features/data.wsgi
+  URL_PATH:    ${{ github.event.repository.name }}/${{ github.ref_name }}
 
 jobs:
   ci_deploy:
@@ -68,4 +68,4 @@ jobs:
         remote_user: ${{ secrets.DEPLOY_USER }}
         remote_key:  ${{ secrets.DEPLOY_KEY  }}
     - name: Announce deploy
-      run: echo "Deployed to ${{ vars.OGD_STAGING_HOST }}${{ env.URL_PATH }}"
+      run: echo "Deployed to ${{ vars.OGD_STAGING_HOST }}/${{ env.URL_PATH }}"
