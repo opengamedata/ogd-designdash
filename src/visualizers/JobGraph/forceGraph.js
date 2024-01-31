@@ -288,7 +288,7 @@ function ForceGraph({
 
     let target = svg.node();
     let source = { scales: { color } };
-    console.log(`In forceGraph, svg.node() is ${target} and color got wrapped in ${JSON.stringify(source)}`)
+    // console.log(`In forceGraph, svg.node() is ${target} and color got wrapped in ${JSON.stringify(source)}`)
     return Object.assign(target, source);
 }
 
