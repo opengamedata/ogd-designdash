@@ -119,7 +119,7 @@ export default function VizContainer(props) {
     // flush current dataset and start loading animation
     setRawData(null);
     setLoading(true);
-    /** @type {APIRequest?} */
+    /** @type {APIRequest | Promise<APIRequest>?} */
     const api_request = viz_request.GetAPIRequest(visualizerRequestState);
     if (api_request != null) {
       OGDAPI.fetch(api_request)
