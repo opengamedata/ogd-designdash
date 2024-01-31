@@ -40,9 +40,9 @@ export default class JobGraphRequest extends VisualizerRequest {
       // if empty fields, prompt user to fill in the blanks & return
       // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
       const startDate = vals["min"];
-      const endDate = vals["max"];
-      const today = new Date();
-      const queryEnd = new Date(endDate);
+      const endDate   = vals["max"];
+      const today     = new Date();
+      const queryEnd  = new Date(endDate);
       // console.log(today, queryEnd)
       // console.log(today - queryEnd)
       // if (startDate == null || endDate == null) {
