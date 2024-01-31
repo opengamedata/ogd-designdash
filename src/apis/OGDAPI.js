@@ -1,5 +1,5 @@
 import { API_ORIGIN, API_PATH } from '../config';
-import APIResponse, { ResponseStatus } from "../apis/APIResponse";
+import APIResponse from "../apis/APIResponse";
 
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
