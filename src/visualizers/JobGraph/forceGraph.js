@@ -194,9 +194,6 @@ function ForceGraph({
         // .attr('stroke-width', .2)
         .attr('fill', 'black')
 
-
-
-
     if (W) link.attr("stroke-width", ({ index: i }) => W[i]);
     if (L) link.attr("stroke", ({ index: i }) => L[i]);
     if (LD) link.append('title').text(({ index: i }) => LD[i]);
