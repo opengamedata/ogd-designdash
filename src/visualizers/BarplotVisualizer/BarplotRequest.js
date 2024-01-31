@@ -144,7 +144,7 @@ export default class BarplotRequest extends VisualizerRequest {
     )
     let ret_val = OGDAPI.fetch(population_request)
     .then((api_result) => {
-      console.log(`Result object from fetching player list request has structure:\n${result}`)
+      console.log(`Result object from fetching player list request has structure:\n${api_result.Values}`)
       return new PlayersMetricsRequest(
         RequiredExtractors[game.asString][0],
         api_result.Values,
@@ -156,6 +156,7 @@ export default class BarplotRequest extends VisualizerRequest {
         requesterState["LogVersionRangeMax"],
       );
     })
+    return ret_val
   }
 
   /**
