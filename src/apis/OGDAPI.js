@@ -1,5 +1,5 @@
 import { API_ORIGIN, API_PATH } from '../config';
-import APIResponse, { ResultStatus } from "../apis/APIResponse";
+import APIResponse, { ResponseStatus } from "../apis/APIResponse";
 
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
@@ -81,6 +81,21 @@ export class OGDAPI {
          {status:500}
       );
    }
+   /**
+    * Getter for a default response when the OGD API code got an error for reasons unknown
+    * @returns {Response}
+    */
+   static get UnknownError() {
+      return new Response(
+         JSON.stringify(
+            {
+               result: "An unknown error occured during request processing.",
+               status: "FAILURE",
+               val: "{}"
+         }),
+         {status:500}
+      );
+   }
 
    /**
     * @param {Promise<APIRequest>! | APIRequest!} api_request
@@ -92,6 +107,10 @@ export class OGDAPI {
       return ret_val
             .then( (request) => {
                OGDAPI.fetchAPIRequest(request)
+            })
+            .catch((error) => {
+               console.log(`Could not make API Request, got the following error:\n${error}`);
+               return OGDAPI.UnknownError.json()
             })
    }
 
