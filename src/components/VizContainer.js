@@ -30,6 +30,7 @@ import ScatterplotRequest from "../visualizers/ScatterplotVisualizer/Scatterplot
 import BarplotVisualizer from "../visualizers/BarplotVisualizer/BarplotVisualizer";
 import BarplotRequest from "../visualizers/BarplotVisualizer/BarplotRequest";
 /**
+ * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  * @typedef {import('../typedefs').AnyMap} AnyMap
  * @typedef {import('../typedefs').MapSetter} MapSetter
  * @typedef {import('../typedefs').VisualizerSetter} VisualizerSetter
@@ -59,10 +60,10 @@ export default function VizContainer(props) {
   // data view vars
 
   /** @type {[VisualizerRequest, any]} */
-  const [request, _setRequest] = useState(new InitialVisualizerRequest());
+  const [viz_request, _setRequest] = useState(new InitialVisualizerRequest());
   /** @type {[AnyMap, MapSetter]} */
   const [visualizerRequestState, setVisualizerRequestState] = useState(
-    request.GetFilterRequest().InitialState
+    viz_request.GetFilterRequest().InitialState
   );
   // console.log(
   //   `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
@@ -117,14 +118,14 @@ export default function VizContainer(props) {
   const retrieveData = () => {
     // flush current dataset and start loading animation
     setRawData(null);
-
-    const api_request = request.GetAPIRequest(visualizerRequestState);
+    setLoading(true);
+    /** @type {APIRequest?} */
+    const api_request = viz_request.GetAPIRequest(visualizerRequestState);
     if (api_request != null) {
-      setLoading(true);
       OGDAPI.fetch(api_request)
             .then((result) => setRawData(result.Values));
     } else {
-      console.log(`No API request for ${request}`);
+      console.log(`No API request for ${viz_request}`);
     }
     setLoading(false);
   };
@@ -139,7 +140,7 @@ export default function VizContainer(props) {
                 <LoadingBlur loading={loading} />
                 :
                 <JobGraph
-                  model={request.GetVisualizerModel(
+                  model={viz_request.GetVisualizerModel(
                     visualizerRequestState,
                     rawData
                   )}
@@ -152,7 +153,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"HistogramVisualizer"}>
             <HistogramVisualizer
-              model={request.GetVisualizerModel(
+              model={viz_request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -164,7 +165,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"ScatterplotVisualizer"}>
             <ScatterplotVisualizer
-              model={request.GetVisualizerModel(
+              model={viz_request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -176,7 +177,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"BarplotVisualizer"}>
             <BarplotVisualizer
-              model={request.GetVisualizerModel(
+              model={viz_request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -188,7 +189,7 @@ export default function VizContainer(props) {
         return (
           <ErrorBoundary childName={"PlayerVisualizer"}>
             <PlayerTimeline
-              model={request.GetVisualizerModel(
+              model={viz_request.GetVisualizerModel(
                 visualizerRequestState,
                 rawData
               )}
@@ -231,7 +232,7 @@ export default function VizContainer(props) {
           />
           <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
             <DataFilter
-              filterRequest={request.GetFilterRequest()}
+              filterRequest={viz_request.GetFilterRequest()}
               loading={loading}
               mergeContainerState={mergeVisualizerRequestState}
               updateData={retrieveData}
