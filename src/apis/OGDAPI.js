@@ -103,10 +103,9 @@ export class OGDAPI {
     */
    static fetch(api_request) {
       /** @type {Promise<any>} */
-      const ret_val = Promise.resolve(api_request)
-      return ret_val
+      return Promise.resolve(api_request)
             .then( (request) => {
-               OGDAPI.fetchAPIRequest(request)
+               return OGDAPI.fetchAPIRequest(request)
             })
             .catch((error) => {
                console.log(`Could not make API Request, got the following error:\n${error}`);
