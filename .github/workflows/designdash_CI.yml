@@ -12,7 +12,7 @@ on:
 env:
   # Environment has variables for the host, the path on the host filesystem, the path in the URL, and the full deploy URL
   DEPLOY_HOST: ${{ vars.OGD_STAGING_HOST }}
-  DEPLOY_DIR:  ${{ vars.WEB_PATH }}${{ github.event.repository.name }}/${{ github.ref_name }}
+  DEPLOY_DIR:  ${{ vars.WEB_PATH }}/${{ github.event.repository.name }}/${{ github.ref_name }}
   DEPLOY_URL:  ${{ vars.OGD_STAGING_HOST }}/${{ github.event.repository.name }}/${{ github.ref_name }}
   URL_PATH:    ${{ github.event.repository.name }}/${{ github.ref_name }}
 
