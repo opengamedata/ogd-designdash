@@ -21,7 +21,7 @@ jobs:
 
     steps:
 
-    # 1. Local checkout & config
+  # 1. Local checkout & config
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Set up Config File
@@ -31,7 +31,7 @@ jobs:
         api_path:     ${{ vars.OGD_API_PATH }}
         package_home: ${{ env.URL_PATH }}
 
-    # 2. Build 
+  # 2. Build 
     - name: Install Node
       uses: actions/setup-node@v3
       with:
@@ -42,7 +42,7 @@ jobs:
     - name: Build
       run: npm run build
 
-    # 3. Remote config & deploy
+  # 3. Remote config & deploy
     - name: Install OpenConnect
       run: sudo apt-get -q update && sudo apt-get -q install openconnect
     - name: Connect VPN
