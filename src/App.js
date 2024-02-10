@@ -18,9 +18,7 @@ class App extends React.Component {
       <>
         <nav className="w-screen flex justify-between fixed top-0 bg-white">
             <base href={"/"}></base>
-            <NavLink className="px-5 py-3 tracking-wide font-light" to="/">
-                Open Game Data
-            </NavLink>
+            <NavLink className="px-5 py-3 tracking-wide font-light" to="/">OGD Design Dashboard</NavLink>
         </nav>
         <div className={`App h-screen w-screen py-12 ${gradient}`}>
           <Routes>
