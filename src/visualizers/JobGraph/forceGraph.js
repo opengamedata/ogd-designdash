@@ -194,9 +194,6 @@ function ForceGraph({
         // .attr('stroke-width', .2)
         .attr('fill', 'black')
 
-
-
-
     if (W) link.attr("stroke-width", ({ index: i }) => W[i]);
     if (L) link.attr("stroke", ({ index: i }) => L[i]);
     if (LD) link.append('title').text(({ index: i }) => LD[i]);
@@ -288,7 +285,7 @@ function ForceGraph({
 
     let target = svg.node();
     let source = { scales: { color } };
-    console.log(`In forceGraph, svg.node() is ${target} and color got wrapped in ${JSON.stringify(source)}`)
+    // console.log(`In forceGraph, svg.node() is ${target} and color got wrapped in ${JSON.stringify(source)}`)
     return Object.assign(target, source);
 }
 

@@ -1,22 +1,22 @@
 // global imports
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useD3 } from "../../../controller/hooks/useD3";
+import { useD3 } from "../../hooks/useD3";
 // local imports
-import { initial_timeline_filter_options } from '../../../config';
-import LargeButton from "../../../components/buttons/LargeButton";
+import { initial_timeline_filter_options } from '../../config';
+import LargeButton from "../../components/buttons/LargeButton";
 import CodeForm from './CodeForm';
 import EventFilterCtrl from './EventFilterCtrl';
 import timeline from "./timeline";
 //    model imports
-import { Visualizers } from '../../../model/enums/Visualizers';
-import { PlayerTimelineModel } from '../../../model/visualizations/PlayerTimelineModel';
+import { Visualizers } from '../../enums/Visualizers';
+import { PlayerTimelineModel } from './PlayerTimelineModel';
 
 /**
- * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("../../../typedefs").StringSetter} StringSetter
- * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
- * @typedef {import("../../../typedefs").SetterCallback} SetterCallback
+ * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../typedefs").StringSetter} StringSetter
+ * @typedef {import("../../typedefs").StringListSetter} StringListSetter
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
 
 /**

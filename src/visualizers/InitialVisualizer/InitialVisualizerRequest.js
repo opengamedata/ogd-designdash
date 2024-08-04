@@ -1,14 +1,14 @@
 // Local imports
 //    controller imports
-import VisualizerRequest from "./VisualizerRequest";
-import { AvailableGames } from "../../model/enums/AvailableGames";
-import ValueModes from "../../model/enums/ValueModes";
-import { FilterRequest, DropdownItem } from "./FilterRequest";
-import { InitialVisualizerModel } from "../../model/visualizations/InitialVisualizerModel";
+import VisualizerRequest from "../BaseVisualizer/VisualizerRequest";
+import { AvailableGames } from "../BaseVisualizer/AvailableGames";
+import ValueModes from "../../enums/ValueModes";
+import { FilterRequest, DropdownItem } from "../../requests/FilterRequest";
+import { InitialVisualizerModel } from "./InitialVisualizerModel";
 
 /**
- * @typedef {import("../../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("./APIRequest").APIRequest} APIRequest
+ * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  */
 
 export default class InitialVisualizerRequest extends VisualizerRequest {
@@ -29,7 +29,7 @@ export default class InitialVisualizerRequest extends VisualizerRequest {
 
    /**
     * @param {object} requesterState
-    * @returns {APIRequest?} The API request that gets the visualizer's required data.
+    * @returns {APIRequest | Promise<APIRequest>?} The API request that gets the visualizer's required data.
     */
    GetAPIRequest(requesterState) {
       return null;

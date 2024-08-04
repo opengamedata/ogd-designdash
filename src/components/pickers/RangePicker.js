@@ -1,15 +1,15 @@
 // global imports
 import React, { useState } from 'react';
 // local imports
-import ValueModes from '../../model/enums/ValueModes';
-import { ISODateFormat, USDateFormat } from '../../controller/TimeFormat';
-import Timedelta from '../../model/Timedelta';
+import ValueModes from '../../enums/ValueModes';
+import { ISODateFormat, USDateFormat } from '../../utils/TimeFormat';
+import Timedelta from '../../utils/Timedelta';
 import TimedeltaPicker from '../pickers/TimedeltaPicker';
 
 /**
  * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  * @typedef {import("../../typedefs").MapSetter} MapSetter
- * @typedef {import("../../controller/requests/FilterRequest").FilterItem} FilterItem
+ * @typedef {import("../../requests/FilterRequest").FilterItem} FilterItem
  */
 
  /**

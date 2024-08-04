@@ -5,14 +5,16 @@ import {
   DropdownItem,
   SeparatorItem,
 } from "../../requests/FilterRequest";
-import { PopulationMetricsRequest } from "../../requests/apis/population/PopulationMetrics";
+import { PlayerListRequest } from "../../requests/apis/player/PlayerList"
+import { PlayersMetricsRequest } from "../../requests/apis/player/PlayersMetrics"
 // import { AvailableGames } from "../../visualizers/BaseVisualizer/AvailableGames";
-import { JobGraphGames } from "./JobGraphGames";
+import { AvailableGames } from "../BaseVisualizer/AvailableGames";
 import ValueModes from "../../enums/ValueModes";
 import { RESTTypes } from "../../enums/RESTTypes"
-import { JobGraphModel } from "./JobGraphModel";
-import { ISODatetimeFormat } from "../../utils/TimeFormat";
-
+// import { JobGraphModel } from "./JobGraphModel";
+// import { ISODatetimeFormat } from "../../utils/TimeFormat";
+import { BarplotModel } from "./BarplotModel";
+import { OGDAPI } from "../../apis/OGDAPI";
 /**
  * @typedef {import("../../requests/APIRequest").APIRequest} APIRequest
  * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
@@ -21,13 +23,13 @@ import { ISODatetimeFormat } from "../../utils/TimeFormat";
  * @typedef {import("../../typedefs").Validator} Validator
  */
 
-export default class JobGraphRequest extends VisualizerRequest {
+export default class BarplotRequest extends VisualizerRequest {
   constructor() {
     super();
-    this.filter_request = JobGraphRequest._genFilterRequest();
-    this.viz_model = new JobGraphModel(
-      JobGraphGames.EnumList()[0].asString,
-      null,
+    this.filter_request = BarplotRequest._genFilterRequest();
+    
+    this.viz_model = new BarplotModel(
+      AvailableGames.EnumList()[0].asString,
       null
     );
   }
@@ -40,15 +42,10 @@ export default class JobGraphRequest extends VisualizerRequest {
       // if empty fields, prompt user to fill in the blanks & return
       // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
       const startDate = vals["min"];
-      const endDate   = vals["max"];
-      const today     = new Date();
-      const queryEnd  = new Date(endDate);
-      // console.log(today, queryEnd)
-      // console.log(today - queryEnd)
-      // if (startDate == null || endDate == null) {
-      //    alert("Need to select both a start and an end date!")
-      //    return false;
-      // }
+      const endDate = vals["max"];
+      const today = new Date();
+      const queryEnd = new Date(endDate);
+
       if (startDate > endDate) {
         alert("The start date must not be later than the end date!");
         return false;
@@ -79,38 +76,22 @@ export default class JobGraphRequest extends VisualizerRequest {
         }
       };
     };
-    /**
-     * @type {Validator}
-     */
-    const MinJobsValidator = (vals) => {
-      const minPlaytime = vals["min"];
-      const maxPlaytime = vals["max"];
-      if (
-        minPlaytime != null &&
-        maxPlaytime != null &&
-        minPlaytime > maxPlaytime
-      ) {
-        alert("The minimum play time must be less than the maximum!");
-        return false;
-      } else {
-        return true;
-      }
-    };
+    
 
-    let ret_val = new FilterRequest("JobGraph");
+    let ret_val = new FilterRequest("Scatterplot");
     ret_val.AddItem(
       new DropdownItem(
         "Game",
         ValueModes.ENUM,
-        JobGraphGames,
-        JobGraphGames.FromName("AQUALAB")
+        AvailableGames,
+        AvailableGames.FromName("AQUALAB")
       )
     );
     let two_days_ago = new Date();
     two_days_ago.setDate(two_days_ago.getDate() - 2);
     let startDate = two_days_ago;
     let endDate = two_days_ago;
-    // console.log(`In JobGraphRequest, the initial date range is ${ISODatetimeFormat(startDate)} to ${ISODatetimeFormat(endDate)}`)
+    // console.log(`In ScatterplotRequest, the initial date range is ${ISODatetimeFormat(startDate)} to ${ISODatetimeFormat(endDate)}`)
     /** @type {Validator} */
     ret_val.AddItem(
       new RangeItem(
@@ -121,28 +102,9 @@ export default class JobGraphRequest extends VisualizerRequest {
         DateValidator
       )
     );
-    ret_val.AddItem(
-      new RangeItem(
-        "AppVersionRange",
-        ValueModes.TEXT,
-        "*",
-        "*",
-        VersionValidator("App")
-      )
-    );
-    ret_val.AddItem(
-      new RangeItem(
-        "LogVersionRange",
-        ValueModes.TEXT,
-        "*",
-        "*",
-        VersionValidator("Log")
-      )
-    );
+    
     ret_val.AddItem(new SeparatorItem("JobFilterSeparator"));
-    ret_val.AddItem(
-      new RangeItem("MinimumJobs", ValueModes.NUMBER, 0, null, MinJobsValidator)
-    );
+    
     return ret_val;
   }
 
@@ -151,36 +113,27 @@ export default class JobGraphRequest extends VisualizerRequest {
    * @returns {APIRequest | Promise<APIRequest>?} The API request that gets the visualizer's required data.
    */
   GetAPIRequest(requesterState) {
+  // 1. Set up variables for the request
     const RequiredExtractors = {
       AQUALAB: [
-        "ActiveJobs",
-        "JobsAttempted",
-        // 'JobsAttempted-avg-time-per-attempt',
-        // 'JobsAttempted-job-name',
-        // 'JobsAttempted-job-difficulties',
-        "TopJobCompletionDestinations",
-        "TopJobSwitchDestinations",
-        "PlayerSummary",
-        "PopulationSummary",
+        "SessionJobsCompleted",
+        "SwitchJobsCount",
+        "SessionDiveSitesCount"
       ],
       SHIPWRECKS: [
-        "ActiveJobs",
-        "JobsAttempted",
-        "PlayerSummary",
-        "PopulationSummary",
+        "EvidenceBoardCompleteCount"
       ],
     };
-    const selected_dict = requesterState["GameSelected"];
-    const game =
-    JobGraphGames.FromDict(selected_dict) ?? JobGraphGames.Default();
+    const selected_game = requesterState["GameSelected"];
+    const game = AvailableGames.FromDict(selected_game) ?? AvailableGames.Default();
     /** @type {Date} */
     let min_date = new Date(requesterState["DateRangeMin"]);
     min_date.setHours(0, 0, 0, 0);
     let max_date = new Date(requesterState["DateRangeMax"]);
     max_date.setHours(23, 59, 59, 0);
-    return new PopulationMetricsRequest(
-      RequiredExtractors[game.asString],
-      RESTTypes.POST,
+  // 2. Create a request for player list, which we need in order to grab values across players
+    const population_request = new PlayerListRequest(
+      RESTTypes.GET,
       game,
       requesterState["AppVersionRangeMin"],
       requesterState["AppVersionRangeMax"],
@@ -188,7 +141,22 @@ export default class JobGraphRequest extends VisualizerRequest {
       requesterState["LogVersionRangeMax"],
       min_date,
       max_date
-    );
+    )
+    let ret_val = OGDAPI.fetch(population_request)
+    .then((api_result) => {
+      console.log(`Result object from fetching player list request has structure:\n${api_result.Values}`)
+      return new PlayersMetricsRequest(
+        RequiredExtractors[game.asString][0],
+        api_result.Values,
+        RESTTypes.POST,
+        game,
+        requesterState["AppVersionRangeMin"],
+        requesterState["AppVersionRangeMax"],
+        requesterState["LogVersionRangeMin"],
+        requesterState["LogVersionRangeMax"],
+      );
+    })
+    return ret_val
   }
 
   /**
@@ -205,10 +173,9 @@ export default class JobGraphRequest extends VisualizerRequest {
    */
   GetVisualizerModel(requesterState, rawData) {
     if (this.viz_model.dataNotEqual(rawData)) {
-      this.viz_model = new JobGraphModel(
+      this.viz_model = new BarplotModel(
         requesterState["GameSelected"].asString,
-        rawData,
-        "TopJobCompletionDestinations"
+        rawData
       );
     }
     return this.viz_model;

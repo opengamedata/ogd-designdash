@@ -2,20 +2,20 @@
 import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 // local imports
-import { useD3 } from "../../../controller/hooks/useD3";
-import { JobGraphModel } from "../../../model/visualizations/JobGraphModel";
+import { useD3 } from "../../hooks/useD3";
+import { JobGraphModel } from "./JobGraphModel";
 import PlayersList from "./PlayersList";
 import ForceGraph from './forceGraph'
 import JobGraphLegend from "./JobGraphLegend";
-import { Visualizers } from "../../../model/enums/Visualizers";
-import RadioPicker from "../../../components/pickers/RadioPicker";
+import { Visualizers } from "../../enums/Visualizers";
+import RadioPicker from "../../components/pickers/RadioPicker";
 
 /**
- * @typedef {import("../../../model/visualizations/VisualizerModel").default} VisualizerModel
- * @typedef {import("../../../typedefs").JobGraphSetter} JobGraphSetter
- * @typedef {import("../../../typedefs").StringSetter} StringSetter
- * @typedef {import("../../../typedefs").StringListSetter} StringListSetter
- * @typedef {import("../../../typedefs").SetterCallback} SetterCallback
+ * @typedef {import("../BaseVisualizer/VisualizerModel").default} VisualizerModel
+ * @typedef {import("../../typedefs").JobGraphSetter} JobGraphSetter
+ * @typedef {import("../../typedefs").StringSetter} StringSetter
+ * @typedef {import("../../typedefs").StringListSetter} StringListSetter
+ * @typedef {import("../../typedefs").SetterCallback} SetterCallback
  */
 
 /**
@@ -152,7 +152,7 @@ export default function JobGraph({ model, setVisualizer }) {
     if (model instanceof JobGraphModel) {
         return (
             <>
-                <svg ref={ref} className="border-b border border-green-700" />
+                <svg ref={ref} className="w-full border border-green-700" />
 
                 {playersList ?
                     <PlayersList

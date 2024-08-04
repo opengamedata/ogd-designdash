@@ -1,4 +1,4 @@
-import VisualizerModel from "./VisualizerModel";
+import VisualizerModel from "../BaseVisualizer/VisualizerModel";
 import { color_20 } from "../../config";
 
 export class PlayerTimelineModel extends VisualizerModel {

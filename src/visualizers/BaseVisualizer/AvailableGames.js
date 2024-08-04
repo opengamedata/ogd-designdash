@@ -1,9 +1,11 @@
-import EnumType from "./EnumType";
-import { vis_games } from '../../config';
-
+import EnumType from "../../enums/EnumType";
+import { game_list } from '../../config';
+/**
+ * Default options for dropdown item
+ */
 export class AvailableGames extends EnumType {
    static EnumList() {
-      return vis_games.map((game) => new AvailableGames(game));
+      return game_list.map((game) => new AvailableGames(game));
    }
 
    static Default() {

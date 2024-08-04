@@ -1,4 +1,4 @@
- import VisualizerModel from './VisualizerModel';
+ import VisualizerModel from '../BaseVisualizer/VisualizerModel';
 
  /**
  * @typedef {import('../../typedefs').FeaturesMap} FeaturesMap
