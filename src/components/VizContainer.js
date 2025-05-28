@@ -68,7 +68,7 @@ export default function VizContainer(props) {
   const [viz_request, _setRequest] = useState(new InitialVisualizerRequest());
   /** @type {[AnyMap, MapSetter]} */
   const [visualizerRequestState, setVisualizerRequestState] = useState(
-    request.GetFilterRequest().InitialState
+    viz_request.GetFilterRequest().InitialState
   );
   console.log(
     `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
