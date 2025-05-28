@@ -112,6 +112,7 @@ export default class BarplotRequest extends VisualizerRequest {
    * @param {object} requesterState
    * @returns {APIRequest?} The API request that gets the visualizer's required data.
    */
+
   GetAPIRequest(requesterState) {
   // 1. Set up variables for the request
     const RequiredExtractors = {
@@ -124,6 +125,7 @@ export default class BarplotRequest extends VisualizerRequest {
         "EvidenceBoardCompleteCount"
       ],
     };
+    
     const selected_game = requesterState["GameSelected"];
     const game = AvailableGames.FromDict(selected_game) ?? AvailableGames.Default();
     /** @type {Date} */
@@ -131,6 +133,7 @@ export default class BarplotRequest extends VisualizerRequest {
     min_date.setHours(0, 0, 0, 0);
     let max_date = new Date(requesterState["DateRangeMax"]);
     max_date.setHours(23, 59, 59, 0);
+  // 2. Create a request for player list, which we need in order to grab values across players
   // 2. Create a request for player list, which we need in order to grab values across players
     const population_request = new PlayerListRequest(
       RESTTypes.GET,
