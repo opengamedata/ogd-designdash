@@ -22,18 +22,16 @@ import InitialVisualizer from "../visualizers/InitialVisualizer/InitialVisualize
 import JobGraph from "../visualizers/JobGraph/JobGraph";
 import PlayerTimeline from "../visualizers/PlayerTimeline/PlayerTimeline";
 import { DropdownItem } from "../requests/FilterRequest";
-import APIResponse, { ResultStatus } from "../apis/APIResponse";
-import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
+import { ResultStatus } from "../apis/APIResponse";
 import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramRequest";
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
 import ScatterplotVisualizer from "../visualizers/ScatterplotVisualizer/ScatterplotVisualizer";
 import ScatterplotRequest from "../visualizers/ScatterplotVisualizer/ScatterplotRequest";
 import BarplotVisualizer from "../visualizers/BarplotVisualizer/BarplotVisualizer";
 import BarplotRequest from "../visualizers/BarplotVisualizer/BarplotRequest";
-import LargeButton from "./buttons/LargeButton";
-import SmallButton from "./buttons/SmallButton";
 import { AvailableModes } from "../visualizers/BaseVisualizer/AvailableModes";
 import FilePicker from "./pickers/FilePicker";
+import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  * @typedef {import('../typedefs').AnyMap} AnyMap
@@ -59,7 +57,6 @@ import FilePicker from "./pickers/FilePicker";
 export default function VizContainer(props) {
   // data loading vars
   const [loading, setLoading] = useState(false);
-
   const [rawData, setRawData] = useState(null);
 
   // data view vars
@@ -174,18 +171,17 @@ export default function VizContainer(props) {
       case Visualizers.JOB_GRAPH:
         return (
           <ErrorBoundary childName={"JobVisualizer"}>
-            {
-              loading ?
-                <LoadingBlur loading={loading} />
-                :
-                <JobGraph
-                  model={viz_request.GetVisualizerModel(
-                    visualizerRequestState,
-                    rawData
-                  )}
-                  setVisualizer={setVisualizer}
-                />
-            }
+            {loading ? (
+              <LoadingBlur loading={loading} />
+            ) : (
+              <JobGraph
+                model={viz_request.GetVisualizerModel(
+                  visualizerRequestState,
+                  rawData
+                )}
+                setVisualizer={setVisualizer}
+              />
+            )}
           </ErrorBoundary>
         );
       case Visualizers.HISTOGRAM:
@@ -199,7 +195,7 @@ export default function VizContainer(props) {
               setVisualizer={setVisualizer}
             />
           </ErrorBoundary>
-        )
+        );
       case Visualizers.SCATTERPLOT:
         return (
           <ErrorBoundary childName={"ScatterplotVisualizer"}>
@@ -211,7 +207,7 @@ export default function VizContainer(props) {
               setVisualizer={setVisualizer}
             />
           </ErrorBoundary>
-        )
+        );
       case Visualizers.BARPLOT:
         return (
           <ErrorBoundary childName={"BarplotVisualizer"}>
@@ -223,7 +219,7 @@ export default function VizContainer(props) {
               setVisualizer={setVisualizer}
             />
           </ErrorBoundary>
-        )
+        );
       case Visualizers.PLAYER_TIMELINE:
         return (
           <ErrorBoundary childName={"PlayerVisualizer"}>
@@ -259,7 +255,7 @@ export default function VizContainer(props) {
     ValueModes.ENUM,
     AvailableModes,
     AvailableModes.Default()
-  )
+  );
   const styling = {
     gridColumn: props.column,
     gridRow: props.row,
@@ -288,23 +284,20 @@ export default function VizContainer(props) {
           {/* Add a dropdown for users to choose file or api */}
           {/* 1. if File is chosen, file-upload-button-page */}
           {/* 2. if api is chosen, data-filter-page */}
-          {
-            mode === "File" ?
-              <div className="file-upload-container">
-                <FilePicker onFileSelected={(file) => {
-                  console.log('File selected:', file);
-                }} />
-              </div>
-              :
-              <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
-                <DataFilter
-                  filterRequest={request.GetFilterRequest()}
-                  loading={loading}
-                  mergeContainerState={mergeVisualizerRequestState}
-                  updateData={retrieveData}
-                />
-              </ErrorBoundary>
-          }
+          {mode === "File" ? (
+            <div className="file-upload-container">
+              <FilePicker setRawData={setRawData} />
+            </div>
+          ) : (
+            <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
+              <DataFilter
+                filterRequest={viz_request.GetFilterRequest()}
+                loading={loading}
+                mergeContainerState={mergeVisualizerRequestState}
+                updateData={retrieveData}
+              />
+            </ErrorBoundary>
+          )}
         </div>
         <div className="container left-72 border shadow-sm">
           {renderVisualizer()}
