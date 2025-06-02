@@ -9,7 +9,7 @@ import { PopulationMetricsRequest } from "../../requests/apis/population/Populat
 // import { AvailableGames } from "../../visualizers/BaseVisualizer/AvailableGames";
 import { JobGraphGames } from "./JobGraphGames";
 import ValueModes from "../../enums/ValueModes";
-import { RESTTypes } from "../../enums/RESTTypes"
+import { RESTTypes } from "../../enums/RESTTypes";
 import { JobGraphModel } from "./JobGraphModel";
 import { ISODatetimeFormat } from "../../utils/TimeFormat";
 
@@ -40,9 +40,9 @@ export default class JobGraphRequest extends VisualizerRequest {
       // if empty fields, prompt user to fill in the blanks & return
       // if (!(game && version && startDate && endDate && minPlaytime >= 0 && maxPlaytime)) {
       const startDate = vals["min"];
-      const endDate   = vals["max"];
-      const today     = new Date();
-      const queryEnd  = new Date(endDate);
+      const endDate = vals["max"];
+      const today = new Date();
+      const queryEnd = new Date(endDate);
       // console.log(today, queryEnd)
       // console.log(today - queryEnd)
       // if (startDate == null || endDate == null) {
@@ -172,7 +172,7 @@ export default class JobGraphRequest extends VisualizerRequest {
     };
     const selected_dict = requesterState["GameSelected"];
     const game =
-    JobGraphGames.FromDict(selected_dict) ?? JobGraphGames.Default();
+      JobGraphGames.FromDict(selected_dict) ?? JobGraphGames.Default();
     /** @type {Date} */
     let min_date = new Date(requesterState["DateRangeMin"]);
     min_date.setHours(0, 0, 0, 0);

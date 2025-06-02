@@ -15,7 +15,9 @@ export default function FilePicker({ setRawData }) {
   const handleButtonClick = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    fileInput.onchange = handleFileChange;
+    fileInput.onchange = async (event) => {
+      await handleFileChange(event);
+    };
     fileInput.click();
   };
 
@@ -24,7 +26,7 @@ export default function FilePicker({ setRawData }) {
       alert("No file selected");
       return false;
     }
-    console.log("file type", file.type);
+
     if (file.type !== "text/tab-separated-values") {
       alert("Only TSV files are supported");
       return false;
@@ -46,13 +48,9 @@ export default function FilePicker({ setRawData }) {
         onClick={handleButtonClick}
         selected={false}
       />
-      {selectedFile && <p>File selected: {selectedFile.name}</p>}
-
-      <LargeButton
-        label="Visualize"
-        onClick={() => console.log("1")}
-        selected={false}
-      />
+      {selectedFile && (
+        <p className="break-words">File selected: {selectedFile.name}</p>
+      )}
     </div>
   );
 }

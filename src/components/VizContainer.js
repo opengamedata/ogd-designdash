@@ -261,10 +261,10 @@ export default function VizContainer(props) {
     gridRow: props.row,
   };
   return (
-    <div className="flex-auto border-4 border-red-700" style={styling}>
+    <div className="flex-auto border-2 border-gray-300" style={styling}>
       {/* <LoadingBlur loading={loading} height={8} width={8} /> */}
-      <div className="container relative flex">
-        <div className="left-0 max-w-72 max-h-full overflow-y-auto">
+      <div className="container relative flex gap-2">
+        <div className="left-0 max-w-72 max-h-full overflow-y-auto p-4 max-w-xs">
           <EnumPicker
             adjustMode={true}
             filterItem={dropdownVizPicker}
@@ -299,9 +299,7 @@ export default function VizContainer(props) {
             </ErrorBoundary>
           )}
         </div>
-        <div className="container left-72 border shadow-sm">
-          {renderVisualizer()}
-        </div>
+        <div className="container left-72 shadow-sm">{renderVisualizer()}</div>
       </div>
     </div>
   );
