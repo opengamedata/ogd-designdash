@@ -58,9 +58,11 @@ export default function VizContainer(props) {
   // data loading vars
   const [loading, setLoading] = useState(false);
   const [rawData, setRawData] = useState(null);
+  const [mode, setMode] = useState(AvailableModes.Default().asString);
 
   // data view vars
-
+  /** @type {[Visualizers, VisualizerSetter]} */
+  const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
   /** @type {[VisualizerRequest, any]} */
   const [viz_request, _setRequest] = useState(new InitialVisualizerRequest());
   /** @type {[AnyMap, MapSetter]} */
@@ -83,8 +85,6 @@ export default function VizContainer(props) {
     setVisualizerRequestState(merged_state);
   };
 
-  /** @type {[Visualizers, VisualizerSetter]} */
-  const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
   const setVisualizer = (new_visualizer) => {
     // update the request type.
     switch (new_visualizer) {
@@ -249,7 +249,6 @@ export default function VizContainer(props) {
     visualizer
   );
 
-  const [mode, setMode] = useState(AvailableModes.Default().asString);
   const dropdownModePicker = new DropdownItem(
     "ModePicker",
     ValueModes.ENUM,
@@ -286,7 +285,7 @@ export default function VizContainer(props) {
           {/* 2. if api is chosen, data-filter-page */}
           {mode === "File" ? (
             <div className="file-upload-container">
-              <FilePicker setRawData={setRawData} />
+              <FilePicker setRawData={setRawData} visualizerType={visualizer} />
             </div>
           ) : (
             <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
