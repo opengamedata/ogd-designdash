@@ -16,11 +16,11 @@ export class JobGraphModel extends VisualizerModel {
    * @param {*} link_mode
    */
   constructor(game_name, raw_data, link_mode) {
-    console.log(
-      `In JobGraphModel, got game name of ${game_name} and raw_data with ${
-        Object.keys(raw_data ?? {}).length
-      } keys`
-    );
+    // console.log(
+    //   `In JobGraphModel, got game name of ${game_name} and raw_data with ${
+    //     Object.keys(raw_data ?? {}).length
+    //   } keys`
+    // );
     // console.log("raw_data: ", raw_data)
     super(game_name || "UNKNOWN GAME", raw_data);
     /** @type {object[]} */
@@ -50,8 +50,8 @@ export class JobGraphModel extends VisualizerModel {
   initializeFromRawData(raw_data, link_mode) {
     raw_data = raw_data[0]; // Applicable to files uploads
 
-    console.log("raw_data.PlayerSummary", raw_data.PlayerSummary);
-    console.log("raw_data.PopulationSummary", raw_data.PopulationSummary);
+    // console.log("raw_data.PlayerSummary", raw_data.PlayerSummary);
+    // console.log("raw_data.PopulationSummary", raw_data.PopulationSummary);
 
     // metadata
     /** @type JobGraphMeta */
@@ -62,17 +62,17 @@ export class JobGraphModel extends VisualizerModel {
       minAvgTime: Infinity,
     };
 
-    console.log("metadata of the job graph", meta);
+    // console.log("metadata of the job graph", meta);
 
     // nodes
     let nodeBuckets = JobGraphModel.genNodeBuckets(raw_data, meta);
 
-    console.log("nodeBuckets", nodeBuckets);
+    // console.log("nodeBuckets", nodeBuckets);
 
     // links
     let links = JobGraphModel.genLinks(raw_data, link_mode);
 
-    console.log("links", links);
+    // console.log("links", links);
 
     // filter out nodes w/ no edges
     const nodeFilter = ({ id }) =>

@@ -37,19 +37,22 @@ export default function JobGraph({ model, setVisualizer }) {
   const [playersList, setPlayerList] = useState();
   const [playerHighlight, setHighlight] = useState();
 
-  // If input model changed, need to update the local model.
-  if (model != previousModel) {
-    setLocalModel(
-      model instanceof JobGraphModel
-        ? model
-        : new JobGraphModel(null, null, null)
-    );
-    setPreviousModel(model);
-  }
+  useEffect(() => {
+    if (model !== previousModel) {
+      setLocalModel(
+        model instanceof JobGraphModel
+          ? model
+          : new JobGraphModel(null, null, null)
+      );
+      setPreviousModel(model);
+    }
+
+    console.log("localModel", localModel);
+  }, [model, previousModel]);
 
   const updateLinkMode = (value) => {
     setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, value));
-    setPlayerList([]);
+    // setPlayerList([]);
     setLinkMode(value);
   };
 
