@@ -20,8 +20,10 @@
     "zustand": "latest"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "latest",
-    "@testing-library/react": "latest",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
@@ -31,11 +33,13 @@
     "eslint-config-airbnb": "latest",
     "eslint-config-prettier": "latest",
     "eslint-plugin-react": "latest",
-    "jest": "latest",
+    "jest": "^30.0.2",
+    "jest-environment-jsdom": "^30.0.2",
     "postcss": "latest",
     "prettier": "latest",
     "tailwindcss": "latest",
     "ts-jest": "latest",
+    "ts-node": "^10.9.2",
     "typescript": "latest"
   }
 }
