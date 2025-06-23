@@ -10,31 +10,32 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.10",
+    "axios": "latest",
+    "d3": "latest",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "zustand": "latest",
-    "axios": "latest",
     "react-grid-layout": "latest",
-    "d3": "latest"
+    "zustand": "latest"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest",
+    "autoprefixer": "latest",
+    "cypress": "latest",
     "eslint": "latest",
     "eslint-config-airbnb": "latest",
     "eslint-config-prettier": "latest",
     "eslint-plugin-react": "latest",
-    "prettier": "latest",
     "jest": "latest",
-    "ts-jest": "latest",
-    "@testing-library/react": "latest",
-    "@testing-library/jest-dom": "latest",
-    "cypress": "latest",
-    "tailwindcss": "latest",
     "postcss": "latest",
-    "autoprefixer": "latest"
+    "prettier": "latest",
+    "tailwindcss": "latest",
+    "ts-jest": "latest",
+    "typescript": "latest"
   }
 }
