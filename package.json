@@ -32,6 +32,9 @@
     "ts-jest": "latest",
     "@testing-library/react": "latest",
     "@testing-library/jest-dom": "latest",
-    "cypress": "latest"
+    "cypress": "latest",
+    "tailwindcss": "latest",
+    "postcss": "latest",
+    "autoprefixer": "latest"
   }
 }
