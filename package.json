@@ -13,6 +13,7 @@
     "@tailwindcss/postcss": "^4.1.10",
     "axios": "latest",
     "d3": "latest",
+    "lucide-react": "^0.523.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",

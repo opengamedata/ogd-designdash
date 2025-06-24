@@ -1,35 +1,22 @@
-import React, { useState } from 'react';
-import {
-  WidthProvider,
-  Layout,
-  Layouts,
-  Responsive,
-  ResponsiveProps,
-} from 'react-grid-layout';
+import React, { useMemo, useRef, useState } from 'react';
+import { WidthProvider, Layout, Layouts, Responsive } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-
 import { BarChart } from '../charts/BarChart';
 import { Histogram } from '../charts/Histogram';
 import { ScatterPlot } from '../charts/ScatterPlot';
 import { Timeline } from '../charts/Timeline';
 import { ForceGraph } from '../charts/ForceGraph';
 import VizContainer from './VizContainer';
-
-const Grid = WidthProvider(Responsive);
+import GridItem from './GridItem';
 
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
 const DEFAULT_CHART_HEIGHT = 3;
 
-const chartComponents = [
-  BarChart,
-  Histogram,
-  ScatterPlot,
-  Timeline,
-  ForceGraph,
-];
-
+/**
+ * generateLayout is used to generate the initial layout for the grid.
+ */
 const generateLayout = (): Layout[] => {
   const layout: Layout[] = [];
   layout.push({
@@ -42,12 +29,17 @@ const generateLayout = (): Layout[] => {
   return layout;
 };
 
+/**
+ * GridLayout is the main component that renders the grid layout.
+ * It is used to display the grid layout and the charts.
+ */
 const GridLayout: React.FC = () => {
-  const [spawnPoint, setSpawnPoint] = useState<{ x: number; y: number }>({
-    x: 4,
-    y: 0,
-  });
+  const Grid = useMemo(() => WidthProvider(Responsive), []);
   const [layout, setLayout] = useState<Layout[]>(generateLayout());
+  const [spawnPoint, setSpawnPoint] = useState<{ x: number; y: number }>({
+    x: DEFAULT_CHART_WIDTH,
+    y: 0,
+  }); // The spawn point is the point where the next chart will be spawned.
   const [charts, setCharts] = useState<{ [key: string]: typeof VizContainer }>({
     'chart-1': VizContainer,
   });
@@ -73,6 +65,23 @@ const GridLayout: React.FC = () => {
     });
   };
 
+  const removeChart = (chartId: string) => {
+    setCharts((prev) => {
+      const newCharts = { ...prev };
+      delete newCharts[chartId];
+      return newCharts;
+    });
+    setLayout((prev) => {
+      const newLayout = prev.filter((item) => item.i !== chartId);
+      updateSpawnPoint(newLayout);
+      return newLayout;
+    });
+  };
+
+  /**
+   * updateSpawnPoint is used to update the spawn point for the next chart.
+   * It is used to ensure that the next chart is spawned in the correct position.
+   */
   const updateSpawnPoint = (layout: Layout[]) => {
     let x = -1;
     let y = -1;
@@ -86,7 +95,6 @@ const GridLayout: React.FC = () => {
         }
       }
     });
-    console.log('x: ' + x, ' y: ' + y);
     if (x > MAX_COLS - DEFAULT_CHART_WIDTH) {
       x = 0;
       y += 1;
@@ -97,10 +105,19 @@ const GridLayout: React.FC = () => {
 
   return (
     <div className="h-100vh">
+      <div className="mt-2 space-x-2">
+        <button
+          className="px-2 py-1 bg-gray-500 text-white rounded"
+          onClick={addChart}
+          type="button"
+        >
+          Add Chart
+        </button>
+      </div>
       <Grid
         layouts={{ lg: layout }}
         cols={{ lg: MAX_COLS }}
-        // isDraggable={false}
+        draggableHandle=".drag-handle"
         onLayoutChange={(l: Layout[]) => {
           setLayout(l);
           updateSpawnPoint(l);
@@ -109,14 +126,19 @@ const GridLayout: React.FC = () => {
         {layout.map((item, idx) => {
           const ChartComponent = charts[item.i];
           return (
-            <div key={item.i} className="border bg-gray-50">
+            <GridItem
+              key={item.i}
+              chartId={item.i}
+              className="border bg-gray-50 relative"
+              onRemove={removeChart}
+            >
               <p>
                 {item.i}
                 {' spawnPoint.x: ' + spawnPoint.x}
                 {' spawnPoint.y: ' + spawnPoint.y}
               </p>
               <ChartComponent />
-            </div>
+            </GridItem>
           );
         })}
       </Grid>

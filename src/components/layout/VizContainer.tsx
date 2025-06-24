@@ -17,9 +17,9 @@ const VizContainer = ({}: VizContainerProps) => {
   const [vizType, setVizType] = useState<VizType>('bar');
   const [vizData, setVizData] = useState<any>(null);
 
-  switch (containerMode) {
-    case 'settings':
-      return (
+  return (
+    <div className="h-full">
+      {containerMode === 'settings' ? (
         <VizSetup
           dataSource={dataSource}
           setDataSource={setDataSource}
@@ -27,21 +27,17 @@ const VizContainer = ({}: VizContainerProps) => {
           setVizType={setVizType}
           setContainerMode={setContainerMode}
         />
-      );
-    case 'viz':
-      switch (vizType) {
-        case 'bar':
-          return <BarChart />;
-        case 'histogram':
-          return <Histogram />;
-        case 'scatter':
-          return <ScatterPlot />;
-        case 'timeline':
-          return <Timeline />;
-        case 'forceGraph':
-          return <ForceGraph />;
-      }
-  }
+      ) : (
+        <>
+          {vizType === 'bar' && <BarChart />}
+          {vizType === 'histogram' && <Histogram />}
+          {vizType === 'scatter' && <ScatterPlot />}
+          {vizType === 'timeline' && <Timeline />}
+          {vizType === 'forceGraph' && <ForceGraph />}
+        </>
+      )}
+    </div>
+  );
 };
 
 interface VizSetupProps {
