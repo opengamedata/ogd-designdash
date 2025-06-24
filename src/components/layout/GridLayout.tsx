@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { WidthProvider, Layout, Layouts, Responsive, ResponsiveProps } from 'react-grid-layout';
+import {
+  WidthProvider,
+  Layout,
+  Layouts,
+  Responsive,
+  ResponsiveProps,
+} from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -8,100 +14,121 @@ import { Histogram } from '../charts/Histogram';
 import { ScatterPlot } from '../charts/ScatterPlot';
 import { Timeline } from '../charts/Timeline';
 import { ForceGraph } from '../charts/ForceGraph';
+import VizContainer from './VizContainer';
 
 const Grid = WidthProvider(Responsive);
 
-const MAX_ROWS = 4;
-const MAX_COLS = 4;
+const MAX_COLS = 12;
+const DEFAULT_CHART_WIDTH = 4;
+const DEFAULT_CHART_HEIGHT = 3;
 
-const chartComponents = [BarChart, Histogram, ScatterPlot, Timeline, ForceGraph];
+const chartComponents = [
+  BarChart,
+  Histogram,
+  ScatterPlot,
+  Timeline,
+  ForceGraph,
+];
 
-const generateLayout = (rows: number, cols: number): Layout[] => {
+const generateLayout = (): Layout[] => {
   const layout: Layout[] = [];
-  let index = 0;
-  for (let y = 0; y < rows; y += 1) {
-    for (let x = 0; x < cols; x += 1) {
-      layout.push({ i: `${index}`, x, y, w: 1, h: 1 });
-      index += 1;
-    }
-  }
+  layout.push({
+    i: 'chart-1',
+    x: 0,
+    y: 0,
+    w: DEFAULT_CHART_WIDTH,
+    h: DEFAULT_CHART_HEIGHT,
+  });
   return layout;
 };
 
 const GridLayout: React.FC = () => {
-  const [rows, setRows] = useState(2);
-  const [cols, setCols] = useState(2);
-  const [layout, setLayout] = useState<Layout[]>(generateLayout(2, 2));
+  const [spawnPoint, setSpawnPoint] = useState<{ x: number; y: number }>({
+    x: 4,
+    y: 0,
+  });
+  const [layout, setLayout] = useState<Layout[]>(generateLayout());
+  const [charts, setCharts] = useState<{ [key: string]: typeof VizContainer }>({
+    'chart-1': VizContainer,
+  });
 
-  const updateLayout = (r: number, c: number) => {
-    setLayout(generateLayout(r, c));
+  const addChart = () => {
+    setCharts((prev) => ({
+      ...prev,
+      [`chart-${layout.length + 1}`]: VizContainer,
+    }));
+    setLayout((prev) => {
+      const currentLayout = [
+        ...prev,
+        {
+          i: `chart-${layout.length + 1}`,
+          x: spawnPoint.x,
+          y: spawnPoint.y,
+          w: DEFAULT_CHART_WIDTH,
+          h: DEFAULT_CHART_HEIGHT,
+        },
+      ];
+      updateSpawnPoint(currentLayout);
+      return currentLayout;
+    });
   };
 
-  const addRow = () => {
-    if (rows < MAX_ROWS) {
-      const newRows = rows + 1;
-      setRows(newRows);
-      updateLayout(newRows, cols);
-    }
-  };
+  const updateSpawnPoint = (layout: Layout[]) => {
+    let x = -1;
+    let y = -1;
+    layout.forEach((item) => {
+      if (item.y + item.h >= y) {
+        y = item.y + item.h;
+        x = -1;
 
-  const removeRow = () => {
-    if (rows > 1) {
-      const newRows = rows - 1;
-      setRows(newRows);
-      updateLayout(newRows, cols);
+        if (item.x + item.w > x) {
+          x = item.x + item.w;
+        }
+      }
+    });
+    console.log('x: ' + x, ' y: ' + y);
+    if (x > MAX_COLS - DEFAULT_CHART_WIDTH) {
+      x = 0;
+      y += 1;
     }
-  };
 
-  const addCol = () => {
-    if (cols < MAX_COLS) {
-      const newCols = cols + 1;
-      setCols(newCols);
-      updateLayout(rows, newCols);
-    }
-  };
-
-  const removeCol = () => {
-    if (cols > 1) {
-      const newCols = cols - 1;
-      setCols(newCols);
-      updateLayout(rows, newCols);
-    }
+    setSpawnPoint({ x: x, y: y });
   };
 
   return (
-    <div>
-      <div className="mb-2 space-x-2">
-        <button className="px-2 py-1 bg-blue-500 text-white rounded" onClick={addRow} type="button">
-          Add Row
-        </button>
-        <button className="px-2 py-1 bg-blue-500 text-white rounded" onClick={removeRow} type="button">
-          Remove Row
-        </button>
-        <button className="px-2 py-1 bg-blue-500 text-white rounded" onClick={addCol} type="button">
-          Add Column
-        </button>
-        <button className="px-2 py-1 bg-blue-500 text-white rounded" onClick={removeCol} type="button">
-          Remove Column
-        </button>
-      </div>
+    <div className="h-100vh">
       <Grid
         layouts={{ lg: layout }}
-        cols={{ lg: cols }}
-        rowHeight={200}
-        width={cols * 200}
-        onLayoutChange={(l) => setLayout(l)}
-        isResizable={false}
+        cols={{ lg: MAX_COLS }}
+        // isDraggable={false}
+        onLayoutChange={(l: Layout[]) => {
+          setLayout(l);
+          updateSpawnPoint(l);
+        }}
       >
         {layout.map((item, idx) => {
-          const Chart = chartComponents[idx % chartComponents.length];
+          const ChartComponent = charts[item.i];
           return (
             <div key={item.i} className="border bg-gray-50">
-              <Chart />
+              <p>
+                {item.i}
+                {' spawnPoint.x: ' + spawnPoint.x}
+                {' spawnPoint.y: ' + spawnPoint.y}
+              </p>
+              <ChartComponent />
             </div>
           );
         })}
       </Grid>
+      <div className="mt-2 space-x-2">
+        <button
+          className="px-2 py-1 bg-gray-500 text-white rounded"
+          onClick={addChart}
+          type="button"
+        >
+          Add Chart
+        </button>
+      </div>
     </div>
   );
 };
