@@ -1,12 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { WidthProvider, Layout, Layouts, Responsive } from 'react-grid-layout';
+import React, { useMemo, useState } from 'react';
+import { WidthProvider, Layout, Responsive } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { BarChart } from '../charts/BarChart';
-import { Histogram } from '../charts/Histogram';
-import { ScatterPlot } from '../charts/ScatterPlot';
-import { Timeline } from '../charts/Timeline';
-import { ForceGraph } from '../charts/ForceGraph';
 import VizContainer from './VizContainer';
 import GridItem from './GridItem';
 
@@ -132,25 +127,11 @@ const GridLayout: React.FC = () => {
               className="border bg-gray-50 relative"
               onRemove={removeChart}
             >
-              <p>
-                {item.i}
-                {' spawnPoint.x: ' + spawnPoint.x}
-                {' spawnPoint.y: ' + spawnPoint.y}
-              </p>
               <ChartComponent />
             </GridItem>
           );
         })}
       </Grid>
-      <div className="mt-2 space-x-2">
-        <button
-          className="px-2 py-1 bg-gray-500 text-white rounded"
-          onClick={addChart}
-          type="button"
-        >
-          Add Chart
-        </button>
-      </div>
     </div>
   );
 };
