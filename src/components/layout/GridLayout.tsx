@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { WidthProvider, Layout, Responsive } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import VizContainer from './VizContainer';
+import VizContainer from '../viz/VizContainer';
 import GridItem from './GridItem';
+import { v4 as uuidv4 } from 'uuid';
 
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
@@ -13,9 +14,10 @@ const DEFAULT_CHART_HEIGHT = 3;
  * generateLayout is used to generate the initial layout for the grid.
  */
 const generateLayout = (): Layout[] => {
+  const initialChartId = uuidv4();
   const layout: Layout[] = [];
   layout.push({
-    i: 'chart-1',
+    i: initialChartId,
     x: 0,
     y: 0,
     w: DEFAULT_CHART_WIDTH,
@@ -30,25 +32,38 @@ const generateLayout = (): Layout[] => {
  */
 const GridLayout: React.FC = () => {
   const Grid = useMemo(() => WidthProvider(Responsive), []);
-  const [layout, setLayout] = useState<Layout[]>(generateLayout());
+
+  const [layout, setLayout] = useState<Layout[]>([]);
   const [spawnPoint, setSpawnPoint] = useState<{ x: number; y: number }>({
     x: DEFAULT_CHART_WIDTH,
     y: 0,
   }); // The spawn point is the point where the next chart will be spawned.
-  const [charts, setCharts] = useState<{ [key: string]: typeof VizContainer }>({
-    'chart-1': VizContainer,
-  });
+  const [charts, setCharts] = useState<{ [key: string]: typeof VizContainer }>(
+    {},
+  );
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize layout on client side only to prevent hydration mismatch
+  useEffect(() => {
+    if (!isInitialized) {
+      const initialLayout = generateLayout();
+      setLayout(initialLayout);
+      setCharts({ [initialLayout[0].i]: VizContainer });
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
 
   const addChart = () => {
+    const newChartId = uuidv4();
     setCharts((prev) => ({
       ...prev,
-      [`chart-${layout.length + 1}`]: VizContainer,
+      [newChartId]: VizContainer,
     }));
     setLayout((prev) => {
       const currentLayout = [
         ...prev,
         {
-          i: `chart-${layout.length + 1}`,
+          i: newChartId,
           x: spawnPoint.x,
           y: spawnPoint.y,
           w: DEFAULT_CHART_WIDTH,
@@ -109,29 +124,41 @@ const GridLayout: React.FC = () => {
           Add Chart
         </button>
       </div>
-      <Grid
-        layouts={{ lg: layout }}
-        cols={{ lg: MAX_COLS }}
-        draggableHandle=".drag-handle"
-        onLayoutChange={(l: Layout[]) => {
-          setLayout(l);
-          updateSpawnPoint(l);
-        }}
-      >
-        {layout.map((item, idx) => {
-          const ChartComponent = charts[item.i];
-          return (
-            <GridItem
-              key={item.i}
-              chartId={item.i}
-              className="border bg-gray-50 relative"
-              onRemove={removeChart}
-            >
-              <ChartComponent />
-            </GridItem>
-          );
-        })}
-      </Grid>
+      {isInitialized ? (
+        <Grid
+          layouts={{ lg: layout, md: layout, sm: layout, xs: layout }}
+          cols={{ lg: MAX_COLS, md: MAX_COLS, sm: MAX_COLS, xs: MAX_COLS }}
+          draggableHandle=".drag-handle"
+          onLayoutChange={(l: Layout[]) => {
+            setLayout(l);
+            updateSpawnPoint(l);
+          }}
+        >
+          {layout.map((item, idx) => {
+            const ChartComponent = charts[item.i];
+            if (!ChartComponent) {
+              return null; // Skip rendering if component is not found
+            }
+            return (
+              <GridItem
+                key={item.i}
+                chartId={item.i}
+                className="border bg-gray-50 relative"
+                onRemove={removeChart}
+              >
+                <p>
+                  {item.i} {spawnPoint.x} {spawnPoint.y}
+                </p>
+                <ChartComponent />
+              </GridItem>
+            );
+          })}
+        </Grid>
+      ) : (
+        <div className="flex items-center justify-center h-64">
+          <p>Loading grid layout...</p>
+        </div>
+      )}
     </div>
   );
 };
