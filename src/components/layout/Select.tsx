@@ -10,7 +10,7 @@ interface SelectProps {
 const Select = ({ label, value, onChange, options }: SelectProps) => {
   return (
     <div className="flex flex-col justify-start items-start w-full">
-      <label className="text-sm text-gray-500" htmlFor={label}>
+      <label className="text-sm text-gray-700" htmlFor={label}>
         {label}
       </label>
       <div className="relative w-full">
