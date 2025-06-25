@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 interface ChartDimensions {
@@ -7,7 +7,6 @@ interface ChartDimensions {
 }
 
 interface UseResponsiveChartOptions {
-  dependencies?: any[];
   minWidth?: number;
   minHeight?: number;
 }
@@ -19,7 +18,7 @@ export const useResponsiveChart = (
   ) => void,
   options: UseResponsiveChartOptions = {},
 ) => {
-  const { dependencies = [], minWidth = 200, minHeight = 200 } = options;
+  const { minWidth = 200, minHeight = 200 } = options;
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<ChartDimensions>({
@@ -47,7 +46,7 @@ export const useResponsiveChart = (
     };
   }, [minWidth, minHeight]);
 
-  // Render chart when dimensions or dependencies change
+  // Render chart when dimensions or renderChart changes
   useEffect(() => {
     if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0)
       return;
@@ -62,15 +61,11 @@ export const useResponsiveChart = (
 
     // Call the render function
     renderChart(d3.select(svgRef.current), dimensions);
-  }, [dimensions, renderChart, ...dependencies]);
-
-  // Memoize the render function to prevent unnecessary re-renders
-  const memoizedRenderChart = useCallback(renderChart, [renderChart]);
+  }, [dimensions, renderChart]);
 
   return {
     svgRef,
     containerRef,
     dimensions,
-    memoizedRenderChart,
   };
 };

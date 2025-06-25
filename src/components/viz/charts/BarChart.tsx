@@ -9,14 +9,10 @@ interface BarChartProps {
 }
 
 export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
-  const { getDatasetByID } = useDataStore();
-  const dataset = getDatasetByID(gameDataId);
-  const [feature, setFeature] = useState<string>('');
-
-  if (!dataset) {
-    return <div>Dataset not found</div>;
-  }
+  const dataset = useDataStore().getDatasetByID(gameDataId);
+  if (!dataset) return <div>Dataset not found</div>;
   const { data } = dataset;
+  const [feature, setFeature] = useState<string>('');
 
   const renderChart = useCallback(
     (
@@ -144,9 +140,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
     [feature, data],
   );
 
-  const { svgRef, containerRef } = useResponsiveChart(renderChart, {
-    dependencies: [feature, data],
-  });
+  const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
