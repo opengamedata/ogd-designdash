@@ -11,4 +11,6 @@ declare global {
     source: 'file' | 'api';
     data: d3.DSVRowArray<string>;
   }
+
+  type VizType = 'bar' | 'histogram' | 'scatter' | 'timeline' | 'forceGraph';
 }

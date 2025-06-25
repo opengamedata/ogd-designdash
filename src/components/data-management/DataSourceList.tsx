@@ -1,11 +1,9 @@
-'use client';
-
 import useDataStore from '../../store/useDataStore';
 import FileUpload from './FileUpload';
 
 const DataSourceList = () => {
   const { datasets } = useDataStore();
-  console.log(datasets);
+  console.log(Object.keys(datasets).length);
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
