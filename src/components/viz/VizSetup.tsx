@@ -25,7 +25,7 @@ const VizSetup = ({
   };
 
   return (
-    <div className="h-full flex flex-col gap-6 justify-center items-center">
+    <div className="h-full flex flex-col gap-6 justify-center items-start p-4">
       <Select
         label="Chart Type"
         value={vizType}
