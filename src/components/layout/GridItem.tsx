@@ -37,24 +37,27 @@ const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
       <div
         ref={ref}
         style={style}
-        className={`${className} group`}
+        className={`${className} group relative`}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onTouchEnd={onTouchEnd}
       >
+        {/* Drag Handle */}
         <div
-          className="drag-handle absolute top-2 left-2 w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="drag-handle absolute top-2 left-2 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           style={{ pointerEvents: 'auto' }}
         >
-          <GripVertical size={16} className="text-white" />
+          <GripVertical size={14} className="text-gray-600" />
         </div>
 
+        {/* Close Button */}
         <button
-          className="absolute top-2 right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-2 right-2 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
           onClick={() => onRemove(chartId)}
           type="button"
+          title="Remove chart"
         >
-          <X size={16} className="text-white" />
+          <X size={14} className="text-gray-600" />
         </button>
 
         {/* Chart content */}

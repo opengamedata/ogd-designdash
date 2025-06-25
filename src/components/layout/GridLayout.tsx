@@ -114,51 +114,56 @@ const GridLayout: React.FC = () => {
   };
 
   return (
-    <div className="h-100vh">
-      <div className="mt-2 space-x-2">
-        <button
-          className="px-2 py-1 bg-gray-500 text-white rounded"
-          onClick={addChart}
-          type="button"
-        >
-          Add Chart
-        </button>
-      </div>
-      {isInitialized ? (
-        <Grid
-          layouts={{ lg: layout, md: layout, sm: layout, xs: layout }}
-          cols={{ lg: MAX_COLS, md: MAX_COLS, sm: MAX_COLS, xs: MAX_COLS }}
-          draggableHandle=".drag-handle"
-          onLayoutChange={(l: Layout[]) => {
-            setLayout(l);
-            updateSpawnPoint(l);
-          }}
-        >
-          {layout.map((item, idx) => {
-            const ChartComponent = charts[item.i];
-            if (!ChartComponent) {
-              return null; // Skip rendering if component is not found
-            }
-            return (
-              <GridItem
-                key={item.i}
-                chartId={item.i}
-                className="border bg-gray-50 relative"
-                onRemove={removeChart}
-              >
-                <p>
-                  {item.i} {spawnPoint.x} {spawnPoint.y}
-                </p>
-                <ChartComponent />
-              </GridItem>
-            );
-          })}
-        </Grid>
-      ) : (
-        <div className="flex items-center justify-center h-64">
-          <p>Loading grid layout...</p>
+    <div className="min-h-screen p-2">
+      <div className="">
+        {/* Controls */}
+        <div className="flex items-center justify-between">
+          <button
+            className="px-2 py-1 bg-gray-300 border border-gray-200 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            onClick={addChart}
+            type="button"
+          >
+            Add Chart
+          </button>
         </div>
-      )}
+
+        {/* Grid */}
+        {isInitialized ? (
+          <Grid
+            layouts={{ lg: layout, md: layout, sm: layout, xs: layout }}
+            cols={{ lg: MAX_COLS, md: MAX_COLS, sm: MAX_COLS, xs: MAX_COLS }}
+            draggableHandle=".drag-handle"
+            onLayoutChange={(l: Layout[]) => {
+              setLayout(l);
+              updateSpawnPoint(l);
+            }}
+          >
+            {layout.map((item, idx) => {
+              const ChartComponent = charts[item.i];
+              if (!ChartComponent) {
+                return null;
+              }
+              return (
+                <GridItem
+                  key={item.i}
+                  chartId={item.i}
+                  className="bg-white border border-gray-200 rounded-md"
+                  onRemove={removeChart}
+                >
+                  <ChartComponent />
+                </GridItem>
+              );
+            })}
+          </Grid>
+        ) : (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-gray-500 text-sm">Loading...</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
