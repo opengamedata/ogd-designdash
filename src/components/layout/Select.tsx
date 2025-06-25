@@ -1,21 +1,30 @@
 import { ChevronDown } from 'lucide-react';
 
 interface SelectProps {
+  className?: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
 }
 
-const Select = ({ label, value, onChange, options }: SelectProps) => {
+const Select = ({
+  label,
+  value,
+  onChange,
+  options,
+  className,
+}: SelectProps) => {
   return (
-    <div className="flex flex-col justify-start items-start w-full">
+    <div
+      className={'flex flex-col justify-start items-start w-full ' + className}
+    >
       <label className="text-sm text-gray-700" htmlFor={label}>
         {label}
       </label>
       <div className="relative w-full">
         <select
-          className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           id={label}
           defaultValue={undefined}
           value={value}

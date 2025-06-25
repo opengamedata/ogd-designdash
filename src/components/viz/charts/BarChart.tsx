@@ -70,10 +70,10 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
 
     // Chart dimensions with responsive margins
     const margin = {
-      top: Math.max(20, dimensions.height * 0.05),
-      right: Math.max(20, dimensions.width * 0.03),
-      bottom: Math.max(60, dimensions.height * 0.15),
-      left: Math.max(60, dimensions.width * 0.1),
+      top: 20,
+      right: 20,
+      bottom: 60,
+      left: 60,
     };
     const width = dimensions.width - margin.left - margin.right;
     const height = dimensions.height - margin.top - margin.bottom;
@@ -188,6 +188,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
+        className="w-full max-w-sm"
         label="Feature"
         value={feature}
         onChange={(value) => setFeature(value)}
