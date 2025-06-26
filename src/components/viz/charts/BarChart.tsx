@@ -25,7 +25,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
       const valueCounts = d3.rollup(
         data,
         (v) => v.length,
-        (d) => d[feature as keyof typeof d],
+        (d) => (d as Record<string, any>)[feature],
       );
 
       const chartData = Array.from(valueCounts.entries()).map(
@@ -149,7 +149,9 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         label="Feature"
         value={feature}
         onChange={(value) => setFeature(value)}
-        options={data.columns}
+        options={Object.entries(dataset.columnTypes)
+          .filter(([_, value]) => value === 'string')
+          .map(([key]) => key)}
       />
 
       <div ref={containerRef} className="flex-1 min-h-0">

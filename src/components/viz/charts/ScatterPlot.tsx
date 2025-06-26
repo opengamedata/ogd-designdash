@@ -26,15 +26,6 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
     ) => {
       if (!xFeature || !yFeature || !data.length) return;
 
-      // Filter out rows with invalid numeric data
-      const validData = data.filter((d) => {
-        const xVal = parseFloat(d[xFeature as keyof typeof d] as string);
-        const yVal = parseFloat(d[yFeature as keyof typeof d] as string);
-        return !isNaN(xVal) && !isNaN(yVal);
-      });
-
-      if (validData.length === 0) return;
-
       const margin = { top: 20, right: 20, bottom: 60, left: 60 };
       const width = dimensions.width - margin.left - margin.right;
       const height = dimensions.height - margin.top - margin.bottom;
@@ -47,9 +38,10 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
       const xScale = d3
         .scaleLinear()
         .domain(
-          d3.extent(validData, (d) =>
-            parseFloat(d[xFeature as keyof typeof d] as string),
-          ) as [number, number],
+          d3.extent(data, (d) => (d as Record<string, any>)[xFeature]) as [
+            number,
+            number,
+          ],
         )
         .range([0, width])
         .nice();
@@ -57,9 +49,10 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
       const yScale = d3
         .scaleLinear()
         .domain(
-          d3.extent(validData, (d) =>
-            parseFloat(d[yFeature as keyof typeof d] as string),
-          ) as [number, number],
+          d3.extent(data, (d) => (d as Record<string, any>)[yFeature]) as [
+            number,
+            number,
+          ],
         )
         .range([height, 0])
         .nice();
@@ -67,16 +60,12 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
       // Add dots
       chartGroup
         .selectAll('.dot')
-        .data(validData)
+        .data(data)
         .enter()
         .append('circle')
         .attr('class', 'dot')
-        .attr('cx', (d) =>
-          xScale(parseFloat(d[xFeature as keyof typeof d] as string)),
-        )
-        .attr('cy', (d) =>
-          yScale(parseFloat(d[yFeature as keyof typeof d] as string)),
-        )
+        .attr('cx', (d) => xScale((d as Record<string, any>)[xFeature]))
+        .attr('cy', (d) => yScale((d as Record<string, any>)[yFeature]))
         .attr('r', 4)
         .attr('fill', '#3b82f6')
         .attr('opacity', 0.7);
@@ -132,14 +121,18 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
           label="X Feature"
           value={xFeature}
           onChange={(value) => setXFeature(value)}
-          options={data.columns}
+          options={Object.entries(dataset.columnTypes)
+            .filter(([columnName, dataType]) => dataType === 'number')
+            .map(([columnName]) => columnName)}
         />
         <Select
           className="flex-1"
           label="Y Feature"
           value={yFeature}
           onChange={(value) => setYFeature(value)}
-          options={data.columns}
+          options={Object.entries(dataset.columnTypes)
+            .filter(([columnName, dataType]) => dataType === 'number')
+            .map(([columnName]) => columnName)}
         />
       </div>
 
