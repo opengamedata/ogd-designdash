@@ -1,5 +1,5 @@
 import useDataStore from '../../store/useDataStore';
-import FileUpload from './FileUpload';
+import FilePicker from './FilePicker';
 
 const DataSourceList = () => {
   const { datasets } = useDataStore();
@@ -7,7 +7,7 @@ const DataSourceList = () => {
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
-      <FileUpload />
+      <FilePicker />
       {Object.keys(datasets).length > 0 && (
         <div className="flex flex-col gap-2 overflow-clip">
           {Object.values(datasets).map((dataset) => (

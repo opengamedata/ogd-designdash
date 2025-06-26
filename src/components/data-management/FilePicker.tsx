@@ -2,7 +2,7 @@ import { Upload } from 'lucide-react';
 import useDataStore from '../../store/useDataStore';
 import { parseTSV } from '../../adapters/tsvAdapter';
 
-const FileUpload = () => {
+const FilePicker = () => {
   const { addDataset } = useDataStore();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,4 +43,4 @@ const FileUpload = () => {
   );
 };
 
-export default FileUpload;
+export default FilePicker;
