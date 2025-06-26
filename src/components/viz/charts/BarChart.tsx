@@ -150,7 +150,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         value={feature}
         onChange={(value) => setFeature(value)}
         options={Object.entries(dataset.columnTypes)
-          .filter(([_, value]) => value === 'number')
+          .filter(([_, value]) => value === 'string')
           .map(([key]) => key)}
       />
 
