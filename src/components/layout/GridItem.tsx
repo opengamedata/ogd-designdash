@@ -1,5 +1,5 @@
 import React from 'react';
-import { GripVertical, X } from 'lucide-react';
+import { Move, Minus } from 'lucide-react';
 
 interface GridItemProps {
   style?: React.CSSProperties;
@@ -43,22 +43,24 @@ const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
         onTouchEnd={onTouchEnd}
       >
         {/* Drag Handle */}
-        <div
-          className="drag-handle absolute top-2 left-2 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          style={{ pointerEvents: 'auto' }}
-        >
-          <GripVertical size={14} className="text-gray-600" />
+        <div className=" absolute top-2 right-2 h-6 flex items-center justify-end w-full gap-2">
+          <div
+            className="drag-handle w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <Move size={14} className="text-gray-600" />
+          </div>
+          <button
+            className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
+            onClick={() => onRemove(chartId)}
+            type="button"
+            title="Remove chart"
+          >
+            <Minus size={14} className="text-gray-600" />
+          </button>
         </div>
 
         {/* Close Button */}
-        <button
-          className="absolute top-2 right-2 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
-          onClick={() => onRemove(chartId)}
-          type="button"
-          title="Remove chart"
-        >
-          <X size={14} className="text-gray-600" />
-        </button>
 
         {/* Chart content */}
         <div className="h-full w-full">{children}</div>
