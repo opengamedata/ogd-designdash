@@ -13,7 +13,15 @@ export async function parseTSV(file: File) {
   const id = `${game}_${startDate}_${endDate}_${OGDVersion}_${featureLevel}`;
 
   const url = URL.createObjectURL(file);
-  const extractedData = await d3.tsv(url);
+  const extractedData = await d3.tsv(url, d3.autoType);
+
+  const columnTypes: Record<string, string> = {};
+  if (Object.hasOwn(extractedData, '0')) {
+    const firstRow = extractedData[0];
+    for (const [key, value] of Object.entries(firstRow)) {
+      columnTypes[key] = typeof value;
+    }
+  }
 
   const dataset: GameData = {
     id,
@@ -24,6 +32,7 @@ export async function parseTSV(file: File) {
     OGDVersion,
     source: 'file',
     data: extractedData,
+    columnTypes: columnTypes,
   };
 
   return dataset;

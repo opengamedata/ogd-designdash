@@ -9,7 +9,8 @@ declare global {
     endDate: string;
     OGDVersion: string;
     source: 'file' | 'api';
-    data: d3.DSVRowArray<string>;
+    data: d3.DSVRowArray<Object>;
+    columnTypes: Record<string, string>;
   }
 
   type VizType = 'bar' | 'histogram' | 'scatter' | 'timeline' | 'forceGraph';
