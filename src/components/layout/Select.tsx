@@ -16,9 +16,7 @@ const Select = ({
   className,
 }: SelectProps) => {
   return (
-    <div
-      className={'flex flex-col justify-start items-start w-full ' + className}
-    >
+    <div className={'flex flex-col justify-start items-start ' + className}>
       <label className="text-sm text-gray-700" htmlFor={label}>
         {label}
       </label>
