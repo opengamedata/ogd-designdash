@@ -28,7 +28,7 @@ const VizContainer = () => {
         <>
           {vizType === 'bar' && <BarChart gameDataId={gameDataId} />}
           {vizType === 'histogram' && <Histogram />}
-          {vizType === 'scatter' && <ScatterPlot />}
+          {vizType === 'scatter' && <ScatterPlot gameDataId={gameDataId} />}
           {vizType === 'timeline' && <Timeline />}
           {vizType === 'forceGraph' && <ForceGraph />}
         </>
