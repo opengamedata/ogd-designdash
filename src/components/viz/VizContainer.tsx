@@ -30,7 +30,7 @@ const VizContainer = () => {
           {vizType === 'histogram' && <Histogram gameDataId={gameDataId} />}
           {vizType === 'scatter' && <ScatterPlot gameDataId={gameDataId} />}
           {vizType === 'timeline' && <Timeline />}
-          {vizType === 'forceGraph' && <ForceGraph />}
+          {vizType === 'forceGraph' && <ForceGraph gameDataId={gameDataId} />}
         </>
       )}
     </div>
