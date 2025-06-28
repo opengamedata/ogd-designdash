@@ -96,24 +96,38 @@ const GridLayout: React.FC = () => {
       return;
     }
 
-    let x = -1;
-    let y = -1;
+    // Find the bottom row (highest y + h value)
+    let bottomRow = 0;
     layout.forEach((item) => {
-      if (item.y + item.h >= y) {
-        y = item.y + item.h;
-        x = -1;
+      const itemBottom = item.y + item.h;
+      if (itemBottom > bottomRow) {
+        bottomRow = itemBottom;
+      }
+    });
 
-        if (item.x + item.w > x) {
-          x = item.x + item.w;
+    // Find the rightmost position on the bottom row
+    let rightmostX = 0;
+    layout.forEach((item) => {
+      const itemBottom = item.y + item.h;
+      if (itemBottom === bottomRow) {
+        const itemRight = item.x + item.w;
+        if (itemRight > rightmostX) {
+          rightmostX = itemRight;
         }
       }
     });
-    if (x > MAX_COLS - DEFAULT_CHART_WIDTH) {
-      x = 0;
-      y += 1;
+
+    // Calculate next spawn position
+    let nextX = rightmostX;
+    let nextY = bottomRow;
+
+    // If the next chart would overflow, move to the next row
+    if (nextX + DEFAULT_CHART_WIDTH > MAX_COLS) {
+      nextX = 0;
+      nextY = bottomRow;
     }
 
-    setSpawnPoint({ x: x, y: y });
+    setSpawnPoint({ x: nextX, y: nextY });
   };
 
   return (
