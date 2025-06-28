@@ -130,6 +130,7 @@ const GridLayout: React.FC = () => {
             layouts={{ lg: layout, md: layout, sm: layout, xs: layout }}
             cols={{ lg: MAX_COLS, md: MAX_COLS, sm: MAX_COLS, xs: MAX_COLS }}
             draggableHandle=".drag-handle"
+            isResizable={true}
             onLayoutChange={(l: Layout[]) => {
               setLayout(l);
               updateSpawnPoint(l);

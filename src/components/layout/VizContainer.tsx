@@ -15,6 +15,7 @@ interface VizContainerProps {
   onTouchEnd?: (e: React.TouchEvent) => void;
   chartId: string;
   onRemove: (chartId: string) => void;
+  children?: React.ReactNode;
 }
 
 type VizType = 'bar' | 'histogram' | 'scatter' | 'timeline' | 'forceGraph';
@@ -33,6 +34,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
       onTouchEnd,
       chartId,
       onRemove,
+      children,
     },
     ref,
   ) => {
@@ -76,7 +78,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
         onTouchEnd={onTouchEnd}
       >
         {/* Drag Handle and Control Buttons */}
-        <div className="absolute bottom-2 right-2 h-6 flex items-center justify-end w-full gap-2">
+        <div className="absolute top-2 right-2 h-6 flex items-center justify-end w-full gap-2">
           <button
             className="drag-handle w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             style={{ pointerEvents: 'auto' }}
@@ -105,6 +107,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
 
         {/* Chart content */}
         <div className="h-full w-full">{renderChartContent()}</div>
+        {children}
       </div>
     );
   },
