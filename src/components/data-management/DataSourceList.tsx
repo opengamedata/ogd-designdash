@@ -3,7 +3,6 @@ import FilePicker from './FilePicker';
 
 const DataSourceList = () => {
   const { datasets } = useDataStore();
-  console.log(Object.keys(datasets).length);
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">

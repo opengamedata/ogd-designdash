@@ -90,6 +90,12 @@ const GridLayout: React.FC = () => {
    * It is used to ensure that the next chart is spawned in the correct position.
    */
   const updateSpawnPoint = (layout: Layout[]) => {
+    // If no charts exist, set spawn point to origin
+    if (layout.length === 0) {
+      setSpawnPoint({ x: 0, y: 0 });
+      return;
+    }
+
     let x = -1;
     let y = -1;
     layout.forEach((item) => {
