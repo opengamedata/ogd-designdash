@@ -1,5 +1,5 @@
 import React from 'react';
-import { Move, Minus } from 'lucide-react';
+import { Move, Minus, Settings } from 'lucide-react';
 
 interface GridItemProps {
   style?: React.CSSProperties;
@@ -44,12 +44,20 @@ const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
       >
         {/* Drag Handle */}
         <div className=" absolute top-2 right-2 h-6 flex items-center justify-end w-full gap-2">
-          <div
+          <button
             className="drag-handle w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             style={{ pointerEvents: 'auto' }}
           >
             <Move size={14} className="text-gray-600" />
-          </div>
+          </button>
+          <button
+            className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
+            onClick={() => onRemove(chartId)}
+            type="button"
+            title="Chart settings"
+          >
+            <Settings size={14} className="text-gray-600" />
+          </button>
           <button
             className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
             onClick={() => onRemove(chartId)}
