@@ -2,8 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { WidthProvider, Layout, Responsive } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import VizContainer from '../viz/VizContainer';
-import GridItem from './GridItem';
+import VizContainer from './VizContainer';
 import { v4 as uuidv4 } from 'uuid';
 
 const MAX_COLS = 12;
@@ -38,9 +37,7 @@ const GridLayout: React.FC = () => {
     x: DEFAULT_CHART_WIDTH,
     y: 0,
   }); // The spawn point is the point where the next chart will be spawned.
-  const [charts, setCharts] = useState<{ [key: string]: typeof VizContainer }>(
-    {},
-  );
+  const [charts, setCharts] = useState<{ [key: string]: boolean }>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialize layout on client side only to prevent hydration mismatch
@@ -48,7 +45,7 @@ const GridLayout: React.FC = () => {
     if (!isInitialized) {
       const initialLayout = generateLayout();
       setLayout(initialLayout);
-      setCharts({ [initialLayout[0].i]: VizContainer });
+      setCharts({ [initialLayout[0].i]: true });
       setIsInitialized(true);
     }
   }, [isInitialized]);
@@ -57,7 +54,7 @@ const GridLayout: React.FC = () => {
     const newChartId = uuidv4();
     setCharts((prev) => ({
       ...prev,
-      [newChartId]: VizContainer,
+      [newChartId]: true,
     }));
     setLayout((prev) => {
       const currentLayout = [
@@ -139,19 +136,17 @@ const GridLayout: React.FC = () => {
             }}
           >
             {layout.map((item, idx) => {
-              const ChartComponent = charts[item.i];
-              if (!ChartComponent) {
+              const chartExists = charts[item.i];
+              if (!chartExists) {
                 return null;
               }
               return (
-                <GridItem
+                <VizContainer
                   key={item.i}
                   chartId={item.i}
                   className="bg-white border border-gray-200 rounded-md"
                   onRemove={removeChart}
-                >
-                  <ChartComponent />
-                </GridItem>
+                />
               );
             })}
           </Grid>
