@@ -2,8 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { WidthProvider, Layout, Responsive } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import VizContainer from '../viz/VizContainer';
-import GridItem from './GridItem';
+import VizContainer from './VizContainer';
 import { v4 as uuidv4 } from 'uuid';
 
 const MAX_COLS = 12;
@@ -38,9 +37,7 @@ const GridLayout: React.FC = () => {
     x: DEFAULT_CHART_WIDTH,
     y: 0,
   }); // The spawn point is the point where the next chart will be spawned.
-  const [charts, setCharts] = useState<{ [key: string]: typeof VizContainer }>(
-    {},
-  );
+  const [charts, setCharts] = useState<{ [key: string]: boolean }>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialize layout on client side only to prevent hydration mismatch
@@ -48,7 +45,7 @@ const GridLayout: React.FC = () => {
     if (!isInitialized) {
       const initialLayout = generateLayout();
       setLayout(initialLayout);
-      setCharts({ [initialLayout[0].i]: VizContainer });
+      setCharts({ [initialLayout[0].i]: true });
       setIsInitialized(true);
     }
   }, [isInitialized]);
@@ -57,7 +54,7 @@ const GridLayout: React.FC = () => {
     const newChartId = uuidv4();
     setCharts((prev) => ({
       ...prev,
-      [newChartId]: VizContainer,
+      [newChartId]: true,
     }));
     setLayout((prev) => {
       const currentLayout = [
@@ -93,24 +90,44 @@ const GridLayout: React.FC = () => {
    * It is used to ensure that the next chart is spawned in the correct position.
    */
   const updateSpawnPoint = (layout: Layout[]) => {
-    let x = -1;
-    let y = -1;
-    layout.forEach((item) => {
-      if (item.y + item.h >= y) {
-        y = item.y + item.h;
-        x = -1;
+    // If no charts exist, set spawn point to origin
+    if (layout.length === 0) {
+      setSpawnPoint({ x: 0, y: 0 });
+      return;
+    }
 
-        if (item.x + item.w > x) {
-          x = item.x + item.w;
+    // Find the bottom row (highest y + h value)
+    let bottomRow = 0;
+    layout.forEach((item) => {
+      const itemBottom = item.y + item.h;
+      if (itemBottom > bottomRow) {
+        bottomRow = itemBottom;
+      }
+    });
+
+    // Find the rightmost position on the bottom row
+    let rightmostX = 0;
+    layout.forEach((item) => {
+      const itemBottom = item.y + item.h;
+      if (itemBottom === bottomRow) {
+        const itemRight = item.x + item.w;
+        if (itemRight > rightmostX) {
+          rightmostX = itemRight;
         }
       }
     });
-    if (x > MAX_COLS - DEFAULT_CHART_WIDTH) {
-      x = 0;
-      y += 1;
+
+    // Calculate next spawn position
+    let nextX = rightmostX;
+    let nextY = bottomRow;
+
+    // If the next chart would overflow, move to the next row
+    if (nextX + DEFAULT_CHART_WIDTH > MAX_COLS) {
+      nextX = 0;
+      nextY = bottomRow;
     }
 
-    setSpawnPoint({ x: x, y: y });
+    setSpawnPoint({ x: nextX, y: nextY });
   };
 
   return (
@@ -133,25 +150,24 @@ const GridLayout: React.FC = () => {
             layouts={{ lg: layout, md: layout, sm: layout, xs: layout }}
             cols={{ lg: MAX_COLS, md: MAX_COLS, sm: MAX_COLS, xs: MAX_COLS }}
             draggableHandle=".drag-handle"
+            isResizable={true}
             onLayoutChange={(l: Layout[]) => {
               setLayout(l);
               updateSpawnPoint(l);
             }}
           >
             {layout.map((item, idx) => {
-              const ChartComponent = charts[item.i];
-              if (!ChartComponent) {
+              const chartExists = charts[item.i];
+              if (!chartExists) {
                 return null;
               }
               return (
-                <GridItem
+                <VizContainer
                   key={item.i}
                   chartId={item.i}
                   className="bg-white border border-gray-200 rounded-md"
                   onRemove={removeChart}
-                >
-                  <ChartComponent />
-                </GridItem>
+                />
               );
             })}
           </Grid>

@@ -1,8 +1,6 @@
 import * as d3 from 'd3';
 
 export async function parseTSV(file: File) {
-  // TODO: implement TSV parsing
-
   // e.g. AQUALAB_20250107_to_20250107_6ee74c3_population-features.tsv
   const [game, startDate, _, endDate, OGDVersion, feature] =
     file.name.split('_');
@@ -88,7 +86,7 @@ const getSupportedChartTypes = (
   );
 
   if (
-    featureLevel === 'player' &&
+    featureLevel === 'population' &&
     jobGraphFeaturesSupported &&
     jobGraphSubfeaturesSupported
   ) {
