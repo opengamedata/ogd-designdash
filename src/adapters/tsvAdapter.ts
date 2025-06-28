@@ -6,22 +6,18 @@ export async function parseTSV(file: File) {
   // e.g. AQUALAB_20250107_to_20250107_6ee74c3_population-features.tsv
   const [game, startDate, _, endDate, OGDVersion, feature] =
     file.name.split('_');
-  const featureLevel = feature.split('-')[0] as
-    | 'population'
-    | 'player'
-    | 'session';
+  const featureLevel = getFeatureLevel(feature);
   const id = `${game}_${startDate}_${endDate}_${OGDVersion}_${featureLevel}`;
 
   const url = URL.createObjectURL(file);
   const extractedData = await d3.tsv(url, d3.autoType);
 
-  const columnTypes: Record<string, string> = {};
-  if (Object.hasOwn(extractedData, '0')) {
-    const firstRow = extractedData[0];
-    for (const [key, value] of Object.entries(firstRow)) {
-      columnTypes[key] = typeof value;
-    }
-  }
+  const columnTypes = getColumnTypes(extractedData);
+
+  const supportedChartTypes = getSupportedChartTypes(
+    extractedData,
+    featureLevel,
+  );
 
   const dataset: GameData = {
     id,
@@ -33,7 +29,70 @@ export async function parseTSV(file: File) {
     source: 'file',
     data: extractedData,
     columnTypes: columnTypes,
+    supportedChartTypes: supportedChartTypes,
   };
 
   return dataset;
 }
+
+const getFeatureLevel = (feature: string) => {
+  if (feature.includes('population')) {
+    return 'population';
+  } else if (feature.includes('player')) {
+    return 'player';
+  } else if (feature.includes('session')) {
+    return 'session';
+  }
+  return 'unknown';
+};
+
+const getColumnTypes = (extractedData: d3.DSVParsedArray<object>) => {
+  const columnTypes: Record<string, string> = {};
+  if (Object.hasOwn(extractedData, '0')) {
+    const firstRow = extractedData[0];
+    for (const [key, value] of Object.entries(firstRow)) {
+      columnTypes[key] = typeof value;
+    }
+  }
+  return columnTypes;
+};
+
+const getSupportedChartTypes = (
+  extractedData: d3.DSVParsedArray<object>,
+  featureLevel: GameData['featureLevel'],
+) => {
+  const supportedChartTypes = ['bar', 'histogram', 'scatter'] as VizType[];
+  const columns = extractedData.columns as string[];
+
+  // Job Graph specific features
+  const jobGraphFeatures = [
+    'ActiveJobs',
+    'TopJobSwitchDestinations',
+    'TopJobCompletionDestinations',
+  ];
+  const jobGraphSubfeatures = [
+    'JobsAttempted-percent-complete',
+    'JobsAttempted-num-completes',
+    'JobsAttempted-num-starts',
+    'JobsAttempted-job-name',
+    'JobsAttempted-avg-time-per-attempt',
+    'JobsAttempted-std-dev-per-attempt',
+  ];
+
+  const jobGraphFeaturesSupported = jobGraphFeatures.every((feature) =>
+    columns.includes(feature),
+  );
+
+  const jobGraphSubfeaturesSupported = jobGraphSubfeatures.every((subfeature) =>
+    columns.some((column) => column.includes(subfeature)),
+  );
+
+  if (
+    featureLevel === 'player' &&
+    jobGraphFeaturesSupported &&
+    jobGraphSubfeaturesSupported
+  ) {
+    supportedChartTypes.push('forceGraph');
+  }
+  return supportedChartTypes;
+};
