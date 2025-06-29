@@ -40,6 +40,24 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
       // Clear previous content
       svg.selectAll('*').remove();
 
+      // Define arrow markers (outside the zoomed group)
+      svg
+        .append('defs')
+        .selectAll('marker')
+        .data(['arrow'])
+        .enter()
+        .append('marker')
+        .attr('id', 'arrow')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 9)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', '#999');
+
       // Create zoom behavior
       const zoom = d3
         .zoom<SVGSVGElement, unknown>()
@@ -106,13 +124,15 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
       // Create edges
       const link = g
         .append('g')
-        .selectAll('line')
+        .selectAll('path')
         .data(edges)
         .enter()
-        .append('line')
+        .append('path')
         .attr('stroke', '#999')
         .attr('stroke-opacity', 0.6)
-        .attr('stroke-width', (d) => widthScale(d.value || 0));
+        .attr('stroke-width', (d) => widthScale(d.value || 0))
+        .attr('fill', 'none')
+        .attr('marker-end', 'url(#arrow)');
 
       // Create nodes
       const node = g
@@ -172,11 +192,9 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
 
       // Update positions on simulation tick
       simulation.on('tick', () => {
-        link
-          .attr('x1', (d: any) => d.source.x)
-          .attr('y1', (d: any) => d.source.y)
-          .attr('x2', (d: any) => d.target.x)
-          .attr('y2', (d: any) => d.target.y);
+        link.attr('d', (d: any) => {
+          return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
+        });
 
         node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
 
