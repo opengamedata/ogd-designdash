@@ -319,6 +319,12 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
   );
 };
 
+/**
+ * Create the edges for the graph
+ * @param data - The data to get the edges from
+ * @param edgeMode - The edge mode to use
+ * @returns The edges
+ */
 const getEdges = (data: any, edgeMode: EdgeMode) => {
   let edges = [];
 
@@ -363,6 +369,11 @@ const getEdges = (data: any, edgeMode: EdgeMode) => {
   return edges;
 };
 
+/**
+ * Create the nodes for the graph
+ * @param data - The data to get the nodes from
+ * @returns The nodes
+ */
 const getNodes = (data: any) => {
   let nodes: Record<string, any> = {};
   for (const [key, value] of Object.entries(data)) {
@@ -382,6 +393,5 @@ const getNodes = (data: any) => {
       nodes[jobNumber][jobFeature] = JSON.parse(nodes[jobNumber][jobFeature]);
     }
   }
-  // console.log(nodes)
   return nodes;
 };
