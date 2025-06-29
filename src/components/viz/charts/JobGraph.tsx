@@ -40,6 +40,20 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
       // Clear previous content
       svg.selectAll('*').remove();
 
+      // Create zoom behavior
+      const zoom = d3
+        .zoom<SVGSVGElement, unknown>()
+        .scaleExtent([0.1, 4]) // Limit zoom between 0.1x and 4x
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform);
+        });
+
+      // Apply zoom to svg
+      svg.call(zoom);
+
+      // Create a group for all graph elements
+      const g = svg.append('g');
+
       // Create color scale for node colors (red to green based on percent complete)
       const colorScale = d3
         .scaleSequential()
@@ -90,7 +104,7 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         );
 
       // Create edges
-      const link = svg
+      const link = g
         .append('g')
         .selectAll('line')
         .data(edges)
@@ -101,7 +115,7 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         .attr('stroke-width', (d) => widthScale(d.value || 0));
 
       // Create nodes
-      const node = svg
+      const node = g
         .append('g')
         .selectAll('circle')
         .data(Object.values(nodes))
@@ -115,6 +129,21 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         )
         .attr('stroke', '#fff')
         .attr('stroke-width', 1.5);
+
+      // Create node labels
+      const label = g
+        .append('g')
+        .selectAll('text')
+        .data(Object.values(nodes))
+        .enter()
+        .append('text')
+        .text((d: any) => d.id)
+        .attr('text-anchor', 'start')
+        .attr('dominant-baseline', 'middle')
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .attr('fill', '#333')
+        .attr('pointer-events', 'none'); // Prevent labels from interfering with drag
 
       // Add drag behavior
       node.call(
@@ -150,6 +179,14 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
           .attr('y2', (d: any) => d.target.y);
 
         node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+
+        label
+          .attr(
+            'x',
+            (d: any) =>
+              d.x + sizeScale(d['JobsAttempted-avg-time-per-attempt'] || 0) + 8,
+          )
+          .attr('y', (d: any) => d.y);
       });
 
       // Drag functions
