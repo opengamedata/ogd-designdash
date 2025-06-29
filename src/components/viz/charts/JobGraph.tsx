@@ -40,6 +40,26 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
       // Clear previous content
       svg.selectAll('*').remove();
 
+      // Create a group for all graph elements
+      const g = svg.append('g');
+
+      // Create custom tooltip div
+      const tooltip = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('position', 'absolute')
+        .style('background', 'rgba(0, 0, 0, 0.8)')
+        .style('color', 'white')
+        .style('padding', '8px 12px')
+        .style('border-radius', '4px')
+        .style('font-size', '12px')
+        .style('font-family', 'monospace')
+        .style('pointer-events', 'none')
+        .style('z-index', '1000')
+        .style('white-space', 'pre-line')
+        .style('opacity', 0);
+
       // Define arrow markers (outside the zoomed group)
       svg
         .append('defs')
@@ -68,9 +88,6 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
 
       // Apply zoom to svg
       svg.call(zoom);
-
-      // Create a group for all graph elements
-      const g = svg.append('g');
 
       // Create color scale for node colors (red to green based on percent complete)
       const colorScale = d3
@@ -132,7 +149,24 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         .attr('stroke-opacity', 0.6)
         .attr('stroke-width', (d) => widthScale(d.value || 0))
         .attr('fill', 'none')
-        .attr('marker-end', 'url(#arrow)');
+        .attr('marker-end', 'url(#arrow)')
+        .on('mouseover', function (event, d: any) {
+          const tooltipContent = `${d.sourceName} → ${d.targetName}\nPlayers: ${d.value || 0}`;
+
+          tooltip
+            .style('opacity', 1)
+            .html(tooltipContent)
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 10 + 'px');
+        })
+        .on('mouseout', function () {
+          tooltip.style('opacity', 0);
+        })
+        .on('mousemove', function (event) {
+          tooltip
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 10 + 'px');
+        });
 
       // Create nodes
       const node = g
@@ -148,7 +182,51 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
           colorScale(d['JobsAttempted-percent-complete'] || 0),
         )
         .attr('stroke', '#fff')
-        .attr('stroke-width', 1.5);
+        .attr('stroke-width', 1.5)
+        .on('mouseover', function (event, d: any) {
+          let tooltipContent = `${d.id}\n`;
+          tooltipContent += `Avg Time: ${d['JobsAttempted-avg-time-per-attempt']?.toFixed(2) || 'N/A'}\n`;
+
+          // Add completion statistics if available
+          if (
+            d['JobsAttempted-num-completes'] !== undefined &&
+            d['JobsAttempted-num-starts'] !== undefined
+          ) {
+            tooltipContent += `${d['JobsAttempted-num-completes']} of ${d['JobsAttempted-num-starts']} (${d['JobsAttempted-percent-complete']?.toFixed(1)}%) players completed\n`;
+          }
+
+          // Add standard deviation if available
+          if (d['JobsAttempted-std-dev-per-attempt'] !== undefined) {
+            tooltipContent += `Std Dev: ${d['JobsAttempted-std-dev-per-attempt']?.toFixed(2) || 'N/A'}\n`;
+          }
+
+          // Add job difficulties if available
+          if (
+            d['JobsAttempted-job-difficulties'] &&
+            typeof d['JobsAttempted-job-difficulties'] === 'object'
+          ) {
+            const difficulties = d['JobsAttempted-job-difficulties'];
+            if (Object.keys(difficulties).length > 0) {
+              tooltipContent += `Difficulties: ${Object.entries(difficulties)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(', ')}`;
+            }
+          }
+
+          tooltip
+            .style('opacity', 1)
+            .html(tooltipContent)
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 10 + 'px');
+        })
+        .on('mouseout', function () {
+          tooltip.style('opacity', 0);
+        })
+        .on('mousemove', function (event) {
+          tooltip
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 10 + 'px');
+        });
 
       // Create node labels
       const label = g
@@ -173,22 +251,6 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
           .on('drag', dragged)
           .on('end', dragended),
       );
-
-      // Add tooltips
-      node
-        .append('title')
-        .text(
-          (d: any) =>
-            `${d.id}\n` +
-            `Avg Time: ${d['JobsAttempted-avg-time-per-attempt']?.toFixed(2) || 'N/A'}\n` +
-            `Complete: ${d['JobsAttempted-percent-complete']?.toFixed(1) || 'N/A'}%`,
-        );
-
-      link
-        .append('title')
-        .text(
-          (d) => `${d.sourceName} → ${d.targetName}\nPlayers: ${d.value || 0}`,
-        );
 
       // Update positions on simulation tick
       simulation.on('tick', () => {
@@ -224,6 +286,13 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         d.fx = null;
         d.fy = null;
       }
+
+      // Return cleanup function to stop simulation when component unmounts or dimensions change
+      return () => {
+        simulation.stop();
+        // Remove custom tooltip
+        d3.selectAll('.tooltip').remove();
+      };
     },
     [nodes, edges],
   );
