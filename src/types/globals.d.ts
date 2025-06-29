@@ -14,5 +14,5 @@ declare global {
     supportedChartTypes: VizType[];
   }
 
-  type VizType = 'bar' | 'histogram' | 'scatter' | 'timeline' | 'forceGraph';
+  type VizType = 'bar' | 'histogram' | 'scatter' | 'timeline' | 'jobGraph';
 }

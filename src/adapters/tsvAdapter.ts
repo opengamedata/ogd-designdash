@@ -90,7 +90,7 @@ const getSupportedChartTypes = (
     jobGraphFeaturesSupported &&
     jobGraphSubfeaturesSupported
   ) {
-    supportedChartTypes.push('forceGraph');
+    supportedChartTypes.push('jobGraph');
   }
   return supportedChartTypes;
 };

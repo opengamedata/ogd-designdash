@@ -15,7 +15,7 @@ export const useResponsiveChart = (
   renderChart: (
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
     dimensions: ChartDimensions,
-  ) => void,
+  ) => (() => void) | void,
   options: UseResponsiveChartOptions = {},
 ) => {
   const { minWidth = 200, minHeight = 200 } = options;
@@ -25,6 +25,7 @@ export const useResponsiveChart = (
     width: 0,
     height: 0,
   });
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   // Resize observer to handle container size changes
   useEffect(() => {
@@ -51,7 +52,12 @@ export const useResponsiveChart = (
     if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0)
       return;
 
-    // Clear previous chart
+    // Clear previous chart and run cleanup if exists
+    if (cleanupRef.current) {
+      cleanupRef.current();
+      cleanupRef.current = null;
+    }
+
     d3.select(svgRef.current).selectAll('*').remove();
 
     // Set SVG dimensions to fill container
@@ -59,9 +65,21 @@ export const useResponsiveChart = (
       .attr('width', dimensions.width)
       .attr('height', dimensions.height);
 
-    // Call the render function
-    renderChart(d3.select(svgRef.current), dimensions);
+    // Call the render function and store cleanup
+    const cleanup = renderChart(d3.select(svgRef.current), dimensions);
+    if (cleanup) {
+      cleanupRef.current = cleanup;
+    }
   }, [dimensions, renderChart]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
+    };
+  }, []);
 
   return {
     svgRef,

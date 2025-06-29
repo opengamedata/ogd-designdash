@@ -4,7 +4,7 @@ import { BarChart } from '../viz/charts/BarChart';
 import { Histogram } from '../viz/charts/Histogram';
 import { ScatterPlot } from '../viz/charts/ScatterPlot';
 import { Timeline } from '../viz/charts/Timeline';
-import { ForceGraph } from '../viz/charts/ForceGraph';
+import { JobGraph } from '../viz/charts/JobGraph';
 import VizSetup from '../viz/VizSetup';
 
 interface VizContainerProps {
@@ -17,8 +17,6 @@ interface VizContainerProps {
   onRemove: (chartId: string) => void;
   children?: React.ReactNode;
 }
-
-type VizType = 'bar' | 'histogram' | 'scatter' | 'timeline' | 'forceGraph';
 
 /**
  * VizContainer represents a single chart item in the grid layout with built-in visualization content.
@@ -63,7 +61,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
           {vizType === 'histogram' && <Histogram gameDataId={gameDataId} />}
           {vizType === 'scatter' && <ScatterPlot gameDataId={gameDataId} />}
           {vizType === 'timeline' && <Timeline />}
-          {vizType === 'forceGraph' && <ForceGraph gameDataId={gameDataId} />}
+          {vizType === 'jobGraph' && <JobGraph gameDataId={gameDataId} />}
         </>
       );
     };
