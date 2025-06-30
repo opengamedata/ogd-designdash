@@ -59,7 +59,12 @@ const getSupportedChartTypes = (
   extractedData: d3.DSVParsedArray<object>,
   featureLevel: GameData['featureLevel'],
 ) => {
-  const supportedChartTypes = ['bar', 'histogram', 'scatter'] as VizType[];
+  const supportedChartTypes = [
+    'bar',
+    'histogram',
+    'scatter',
+    'descriptiveStatistics',
+  ] as VizType[];
   const columns = extractedData.columns as string[];
 
   // Job Graph specific features

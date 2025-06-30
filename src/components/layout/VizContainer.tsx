@@ -6,6 +6,7 @@ import { ScatterPlot } from '../viz/charts/ScatterPlot';
 import { Timeline } from '../viz/charts/Timeline';
 import { JobGraph } from '../viz/charts/JobGraph';
 import VizSetup from '../viz/VizSetup';
+import DescriptiveStatistics from '../viz/charts/DescriptiveStatistics';
 
 interface VizContainerProps {
   style?: React.CSSProperties;
@@ -62,6 +63,9 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
           {vizType === 'scatter' && <ScatterPlot gameDataId={gameDataId} />}
           {vizType === 'timeline' && <Timeline />}
           {vizType === 'jobGraph' && <JobGraph gameDataId={gameDataId} />}
+          {vizType === 'descriptiveStatistics' && (
+            <DescriptiveStatistics gameDataId={gameDataId} />
+          )}
         </>
       );
     };
