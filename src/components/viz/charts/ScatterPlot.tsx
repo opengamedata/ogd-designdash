@@ -1,6 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
+import {
+  regressionLinear,
+  regressionQuad,
+  regressionExp,
+  regressionLog,
+} from 'd3-regression';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 
@@ -81,6 +87,72 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
         .attr('fill', '#3b82f6')
         .attr('opacity', 0.7);
 
+      // Add regression line
+      if (regressionLine !== RegressionLineType.None) {
+        const getRegressionFunction = () => {
+          switch (regressionLine) {
+            case RegressionLineType.Linear:
+              return regressionLinear();
+            case RegressionLineType.Quadratic:
+              return regressionQuad();
+            case RegressionLineType.Exponential:
+              return regressionExp();
+            case RegressionLineType.Logarithmic:
+              return regressionLog();
+            default:
+              return regressionLinear();
+          }
+        };
+
+        // Filter data for exponential and logarithmic regression
+        let regressionData = data.map((d) => ({
+          x: (d as Record<string, any>)[xFeature],
+          y: (d as Record<string, any>)[yFeature],
+        }));
+
+        // For exponential and logarithmic, filter out non-positive values
+        if (
+          regressionLine === RegressionLineType.Exponential ||
+          regressionLine === RegressionLineType.Logarithmic
+        ) {
+          regressionData = regressionData.filter((d) => d.x > 0 && d.y > 0);
+        }
+
+        // Only proceed if we have enough valid data points
+        if (regressionData.length < 2) {
+          return;
+        }
+
+        const regression = getRegressionFunction()
+          .x((d: any) => d.x)
+          .y((d: any) => d.y);
+
+        const result = regression(regressionData);
+
+        if (result && result.length > 0) {
+          // Generate line points from regression result
+          const linePoints = result.map((point: any) => ({
+            x: point[0],
+            y: point[1],
+          }));
+
+          const line = d3
+            .line<{ x: number; y: number }>()
+            .x((d) => xScale(d.x))
+            .y((d) => yScale(d.y));
+
+          chartGroup
+            .append('path')
+            .datum(linePoints)
+            .attr('class', 'regression-line')
+            .attr('d', line)
+            .attr('fill', 'none')
+            .attr('stroke', '#ef4444')
+            .attr('stroke-width', 2)
+            .attr('opacity', 0.8);
+        }
+      }
+
       // Add X axis
       const xAxis = d3.axisBottom(xScale);
       chartGroup
@@ -119,7 +191,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
         .attr('fill', '#374151')
         .text(xFeature);
     },
-    [xFeature, yFeature, data],
+    [xFeature, yFeature, regressionLine, data],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
