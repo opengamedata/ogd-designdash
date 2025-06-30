@@ -8,11 +8,22 @@ interface ScatterPlotProps {
   gameDataId: string;
 }
 
+enum RegressionLineType {
+  None = 'none',
+  Linear = 'linear',
+  Quadratic = 'quadratic',
+  Exponential = 'exponential',
+  Logarithmic = 'logarithmic',
+}
+
 export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
   const { getDatasetByID } = useDataStore();
   const dataset = getDatasetByID(gameDataId);
   const [xFeature, setXFeature] = useState<string>('');
   const [yFeature, setYFeature] = useState<string>('');
+  const [regressionLine, setRegressionLine] = useState<RegressionLineType>(
+    RegressionLineType.None,
+  );
 
   if (!dataset) {
     return <div>Dataset not found</div>;
@@ -115,25 +126,35 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
-      <div className="flex gap-2">
-        <Select
-          className="flex-1"
-          label="X Feature"
-          value={xFeature}
-          onChange={(value) => setXFeature(value)}
-          options={Object.entries(dataset.columnTypes)
-            .filter(([columnName, dataType]) => dataType === 'number')
-            .map(([columnName]) => columnName)}
-        />
-        <Select
-          className="flex-1"
-          label="Y Feature"
-          value={yFeature}
-          onChange={(value) => setYFeature(value)}
-          options={Object.entries(dataset.columnTypes)
-            .filter(([columnName, dataType]) => dataType === 'number')
-            .map(([columnName]) => columnName)}
-        />
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-2">
+          <Select
+            className="flex-2"
+            label="X Feature"
+            value={xFeature}
+            onChange={(value) => setXFeature(value)}
+            options={Object.entries(dataset.columnTypes)
+              .filter(([columnName, dataType]) => dataType === 'number')
+              .map(([columnName]) => columnName)}
+          />
+          <Select
+            className="flex-2"
+            label="Y Feature"
+            value={yFeature}
+            onChange={(value) => setYFeature(value)}
+            options={Object.entries(dataset.columnTypes)
+              .filter(([columnName, dataType]) => dataType === 'number')
+              .map(([columnName]) => columnName)}
+          />
+          {/* </div>
+        <div className="flex flex-row gap-2"> */}
+          <Select
+            label="Regression Line"
+            value={regressionLine}
+            onChange={(value) => setRegressionLine(value as RegressionLineType)}
+            options={Object.values(RegressionLineType)}
+          />
+        </div>
       </div>
 
       <div ref={containerRef} className="flex-1 min-h-0">
