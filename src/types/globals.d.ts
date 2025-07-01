@@ -20,6 +20,6 @@ declare global {
     | 'scatter'
     | 'timeline'
     | 'jobGraph'
-    | 'descriptiveStatistics';
+    | 'descriptiveStatistics'
     | 'boxPlot';
 }
