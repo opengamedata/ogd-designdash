@@ -21,4 +21,5 @@ declare global {
     | 'timeline'
     | 'jobGraph'
     | 'descriptiveStatistics';
+    | 'boxPlot';
 }

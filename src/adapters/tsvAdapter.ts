@@ -64,6 +64,8 @@ const getSupportedChartTypes = (
     'histogram',
     'scatter',
     'descriptiveStatistics',
+    'boxPlot',
+
   ] as VizType[];
   const columns = extractedData.columns as string[];
 
