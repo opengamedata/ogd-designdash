@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Move, Minus, Settings } from 'lucide-react';
+import { Move, Minus, Settings, Database } from 'lucide-react';
 import { BarChart } from '../viz/charts/BarChart';
 import { Histogram } from '../viz/charts/Histogram';
 import { ScatterPlot } from '../viz/charts/ScatterPlot';
@@ -83,10 +83,11 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
         onTouchEnd={onTouchEnd}
       >
         {/* Drag Handle and Control Buttons */}
-        <div className="absolute top-2 right-2 h-6 flex items-center justify-end w-full gap-2">
+        <div className="absolute bottom-2 left-2 h-6 flex items-center justify-start gap-2">
           <button
             className="drag-handle w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-move z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             style={{ pointerEvents: 'auto' }}
+            title="Drag to move"
           >
             <Move size={14} className="text-gray-600" />
           </button>
@@ -95,9 +96,9 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
               className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
               onClick={() => setContainerMode('settings')}
               type="button"
-              title="Chart settings"
+              title="Change dataset / chart type"
             >
-              <Settings size={14} className="text-gray-600" />
+              <Database size={14} className="text-gray-600" />
             </button>
           )}
           <button

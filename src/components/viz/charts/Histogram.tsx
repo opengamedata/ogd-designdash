@@ -61,7 +61,7 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
 
       // Create histogram generator
       const histogram = d3
-        .histogram()
+        .bin()
         .domain(d3.extent(values) as [number, number])
         .thresholds(
           d3.ticks(d3.min(values) || 0, d3.max(values) || 0, binCount),

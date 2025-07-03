@@ -31,7 +31,7 @@ const Input = ({
       () => {
         onChange(internalValue);
       },
-      debounce ? 200 : 0,
+      debounce ? 300 : 0,
     );
     return () => clearTimeout(timer);
   }, [internalValue, debounce]);
