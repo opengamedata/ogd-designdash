@@ -158,6 +158,33 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
             .attr('stroke', '#ef4444')
             .attr('stroke-width', 2)
             .attr('opacity', 0.8);
+
+          // show line equation
+          let equation = '';
+          switch (regressionLine) {
+            case RegressionLineType.linear:
+              equation = `y = ${result.a.toFixed(3)}x + ${result.b.toFixed(3)}`;
+              break;
+            case RegressionLineType.quadratic:
+              equation = `y = ${result.a.toFixed(3)}x² + ${result.b.toFixed(3)}x + ${result.c.toFixed(3)}`;
+              break;
+            case RegressionLineType.exponential:
+              equation = `y = ${result.a.toFixed(3)}e^(${result.b.toFixed(3)}x)`;
+              break;
+            case RegressionLineType.logarithmic:
+              equation = `y = ${result.a.toFixed(3)}ln(x) + ${result.b.toFixed(3)}`;
+              break;
+            default:
+              equation = '';
+          }
+          chartGroup
+            .append('text')
+            .attr('x', width - 10)
+            .attr('y', 20)
+            .attr('text-anchor', 'end')
+            .attr('font-size', Math.max(10, Math.min(12, height / 35)))
+            .attr('fill', '#374151')
+            .text(equation);
         }
       }
 
