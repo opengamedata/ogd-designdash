@@ -8,18 +8,19 @@ interface JobGraphProps {
   gameDataId: string;
 }
 
-type EdgeMode =
-  | 'ActiveJobs'
-  | 'TopJobCompletionDestinations'
-  | 'TopJobSwitchDestinations';
+const EdgeMode = {
+  activeJobs: 'Still in progress',
+  topJobCompletionDestinations: 'Completed the job',
+  topJobSwitchDestinations: 'Switched to another job',
+} as const;
 
 export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
   const dataset = useDataStore().getDatasetByID(gameDataId);
   if (!dataset) return <div>Dataset not found</div>;
   const { data } = dataset;
 
-  const [edgeMode, setEdgeMode] = useState<EdgeMode>(
-    'TopJobCompletionDestinations',
+  const [edgeMode, setEdgeMode] = useState<keyof typeof EdgeMode>(
+    'topJobCompletionDestinations',
   );
 
   const nodes = useMemo(() => {
@@ -305,12 +306,10 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         className="w-full max-w-sm"
         label="Edge Mode"
         value={edgeMode}
-        onChange={(value) => setEdgeMode(value as EdgeMode)}
-        options={[
-          'ActiveJobs',
-          'TopJobCompletionDestinations',
-          'TopJobSwitchDestinations',
-        ]}
+        onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
+        options={Object.fromEntries(
+          Object.entries(EdgeMode).map(([key, value]) => [key, value]),
+        )}
       />
       <div ref={containerRef} className="flex-1 min-h-0">
         <svg ref={svgRef} className="w-full h-full"></svg>
@@ -325,7 +324,7 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
  * @param edgeMode - The edge mode to use
  * @returns The edges
  */
-const getEdges = (data: any, edgeMode: EdgeMode) => {
+const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
   let edges = [];
 
   const rawLinks: Record<string, Record<string, string[]>> = JSON.parse(
@@ -333,8 +332,9 @@ const getEdges = (data: any, edgeMode: EdgeMode) => {
   );
 
   switch (edgeMode) {
-    case 'TopJobCompletionDestinations':
-    case 'TopJobSwitchDestinations':
+    case 'topJobCompletionDestinations':
+    case 'topJobSwitchDestinations':
+      console.log(edgeMode);
       for (const [sourceKey, targets] of Object.entries(rawLinks)) {
         for (const [targetKey, players] of Object.entries(targets)) {
           if (sourceKey === targetKey) continue; // omit self-pointing jobs
@@ -349,7 +349,7 @@ const getEdges = (data: any, edgeMode: EdgeMode) => {
         }
       }
       break;
-    case 'ActiveJobs':
+    case 'activeJobs':
       const activeJobs = Object.keys(rawLinks);
       for (let i = 1; i < activeJobs.length; i++) {
         const target = activeJobs[i];

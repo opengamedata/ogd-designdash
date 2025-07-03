@@ -5,7 +5,7 @@ interface SelectProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  options: string[];
+  options: Record<string, string>;
 }
 
 const Select = ({
@@ -28,9 +28,9 @@ const Select = ({
           onChange={(e) => onChange(e.target.value)}
         >
           <option value="">Select...</option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
+          {Object.entries(options).map(([key, displayName]) => (
+            <option key={key} value={key}>
+              {displayName}
             </option>
           ))}
         </select>

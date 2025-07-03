@@ -167,6 +167,14 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'number')
+        .map(([key]) => [key, key]),
+    );
+  };
+
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <div className="flex gap-2 items-end">
@@ -175,16 +183,19 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
           label="Feature"
           value={feature}
           onChange={(value) => setFeature(value)}
-          options={Object.entries(dataset.columnTypes)
-            .filter(([_, value]) => value === 'number')
-            .map(([key]) => key)}
+          options={getFeatureOptions()}
         />
         <Select
           className="w-24"
           label="Bins"
           value={binCount.toString()}
           onChange={(value) => setBinCount(parseInt(value))}
-          options={['5', '10', '15', '20', '25', '30']}
+          options={Object.fromEntries(
+            ['5', '10', '15', '20', '25', '30'].map((binCount) => [
+              binCount,
+              binCount,
+            ]),
+          )}
         />
         {/* <input
           type="number"

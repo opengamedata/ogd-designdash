@@ -65,8 +65,7 @@ const getSupportedChartTypes = (
     'scatter',
     'descriptiveStatistics',
     'boxPlot',
-
-  ] as VizType[];
+  ] as (keyof typeof VizType)[];
   const columns = extractedData.columns as string[];
 
   // Job Graph specific features

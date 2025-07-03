@@ -142,6 +142,14 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'string')
+        .map(([key]) => [key, key]),
+    );
+  };
+
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
@@ -149,9 +157,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         label="Feature"
         value={feature}
         onChange={(value) => setFeature(value)}
-        options={Object.entries(dataset.columnTypes)
-          .filter(([_, value]) => value === 'string')
-          .map(([key]) => key)}
+        options={getFeatureOptions()}
       />
 
       <div ref={containerRef} className="flex-1 min-h-0">

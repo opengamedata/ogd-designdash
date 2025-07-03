@@ -14,27 +14,35 @@ interface ScatterPlotProps {
   gameDataId: string;
 }
 
-enum RegressionLineType {
-  None = 'none',
-  Linear = 'linear',
-  Quadratic = 'quadratic',
-  Exponential = 'exponential',
-  Logarithmic = 'logarithmic',
-}
+const RegressionLineType = {
+  none: 'none',
+  linear: 'linear',
+  quadratic: 'quadratic',
+  exponential: 'exponential',
+  logarithmic: 'logarithmic',
+} as const;
 
 export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
   const { getDatasetByID } = useDataStore();
   const dataset = getDatasetByID(gameDataId);
   const [xFeature, setXFeature] = useState<string>('');
   const [yFeature, setYFeature] = useState<string>('');
-  const [regressionLine, setRegressionLine] = useState<RegressionLineType>(
-    RegressionLineType.None,
-  );
+  const [regressionLine, setRegressionLine] = useState<
+    keyof typeof RegressionLineType
+  >(RegressionLineType.none);
 
   if (!dataset) {
     return <div>Dataset not found</div>;
   }
   const { data } = dataset;
+
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'number')
+        .map(([key]) => [key, key]),
+    );
+  };
 
   const renderChart = useCallback(
     (
@@ -88,16 +96,16 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
         .attr('opacity', 0.7);
 
       // Add regression line
-      if (regressionLine !== RegressionLineType.None) {
+      if (regressionLine !== RegressionLineType.none) {
         const getRegressionFunction = () => {
           switch (regressionLine) {
-            case RegressionLineType.Linear:
+            case RegressionLineType.linear:
               return regressionLinear();
-            case RegressionLineType.Quadratic:
+            case RegressionLineType.quadratic:
               return regressionQuad();
-            case RegressionLineType.Exponential:
+            case RegressionLineType.exponential:
               return regressionExp();
-            case RegressionLineType.Logarithmic:
+            case RegressionLineType.logarithmic:
               return regressionLog();
             default:
               return regressionLinear();
@@ -112,8 +120,8 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
 
         // For exponential and logarithmic, filter out non-positive values
         if (
-          regressionLine === RegressionLineType.Exponential ||
-          regressionLine === RegressionLineType.Logarithmic
+          regressionLine === RegressionLineType.exponential ||
+          regressionLine === RegressionLineType.logarithmic
         ) {
           regressionData = regressionData.filter((d) => d.x > 0 && d.y > 0);
         }
@@ -205,26 +213,29 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
             label="X Feature"
             value={xFeature}
             onChange={(value) => setXFeature(value)}
-            options={Object.entries(dataset.columnTypes)
-              .filter(([columnName, dataType]) => dataType === 'number')
-              .map(([columnName]) => columnName)}
+            options={getFeatureOptions()}
           />
           <Select
             className="flex-2"
             label="Y Feature"
             value={yFeature}
             onChange={(value) => setYFeature(value)}
-            options={Object.entries(dataset.columnTypes)
-              .filter(([columnName, dataType]) => dataType === 'number')
-              .map(([columnName]) => columnName)}
+            options={getFeatureOptions()}
           />
           {/* </div>
         <div className="flex flex-row gap-2"> */}
           <Select
             label="Regression Line"
             value={regressionLine}
-            onChange={(value) => setRegressionLine(value as RegressionLineType)}
-            options={Object.values(RegressionLineType)}
+            onChange={(value) =>
+              setRegressionLine(value as keyof typeof RegressionLineType)
+            }
+            options={Object.fromEntries(
+              Object.entries(RegressionLineType).map(([key, value]) => [
+                key,
+                value,
+              ]),
+            )}
           />
         </div>
       </div>

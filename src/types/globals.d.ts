@@ -11,15 +11,16 @@ declare global {
     source: 'file' | 'api';
     data: d3.DSVRowArray<Object>;
     columnTypes: Record<string, string>;
-    supportedChartTypes: VizType[];
+    supportedChartTypes: (keyof typeof VizType)[];
   }
 
-  type VizType =
-    | 'bar'
-    | 'histogram'
-    | 'scatter'
-    | 'timeline'
-    | 'jobGraph'
-    | 'descriptiveStatistics'
-    | 'boxPlot';
+  const VizType = {
+    bar: 'Bar Chart',
+    histogram: 'Histogram',
+    scatter: 'Scatter Plot',
+    timeline: 'Timeline',
+    jobGraph: 'Job Graph',
+    descriptiveStatistics: 'Descriptive Statistics',
+    boxPlot: 'Box Plot',
+  } as const;
 }

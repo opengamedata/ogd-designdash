@@ -51,6 +51,14 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
     };
   }, [feature, data]);
 
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'number')
+        .map(([key]) => [key, key]),
+    );
+  };
+
   return (
     <div className="flex flex-col gap-2 p-2 h-full ">
       <Select
@@ -58,9 +66,7 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
         label="Feature"
         value={feature}
         onChange={(value) => setFeature(value)}
-        options={Object.entries(dataset.columnTypes)
-          .filter(([_, value]) => value === 'number')
-          .map(([key]) => key)}
+        options={getFeatureOptions()}
       />
       <div className="flex flex-col gap-2 h-full justify-center">
         {Object.entries(stats).map(([key, value]) => (

@@ -41,7 +41,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
     const [containerMode, setContainerMode] = useState<'settings' | 'viz'>(
       'settings',
     );
-    const [vizType, setVizType] = useState<VizType>('bar');
+    const [vizType, setVizType] = useState<keyof typeof VizType>('bar');
     const [gameDataId, setGameDataId] = useState<string>('');
 
     const renderChartContent = () => {

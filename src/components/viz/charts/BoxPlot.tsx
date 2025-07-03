@@ -193,6 +193,14 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'number')
+        .map(([key]) => [key, key]),
+    );
+  };
+
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
@@ -200,9 +208,7 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
         label="Feature"
         value={feature}
         onChange={(value) => setFeature(value)}
-        options={Object.entries(dataset.columnTypes)
-          .filter(([_, value]) => value === 'number')
-          .map(([key]) => key)}
+        options={getFeatureOptions()}
       />
 
       <div ref={containerRef} className="flex-1 min-h-0">
