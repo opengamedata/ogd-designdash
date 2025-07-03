@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import { Minus, Plus } from 'lucide-react';
+import Input from '../../layout/Input';
 
 interface HistogramProps {
   gameDataId: string;
@@ -15,6 +16,14 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
   const { data } = dataset;
   const [feature, setFeature] = useState<string>('');
   const [binCount, setBinCount] = useState<number>(10);
+  const [rangeFilter, setRangeFilter] = useState({
+    min: -Infinity,
+    max: Infinity,
+  });
+
+  useEffect(() => {
+    setRangeFilter({ min: -Infinity, max: Infinity });
+  }, [feature]);
 
   const renderChart = useCallback(
     (
@@ -26,7 +35,13 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
       // Extract numeric values for the selected feature
       const values = data
         .map((d) => (d as Record<string, any>)[feature])
-        .filter((value) => typeof value === 'number' && !isNaN(value));
+        .filter(
+          (value) =>
+            typeof value === 'number' &&
+            !isNaN(value) &&
+            value >= rangeFilter.min &&
+            value <= rangeFilter.max,
+        );
 
       if (values.length === 0) return;
 
@@ -143,6 +158,8 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
       // Add statistics info
       const mean = d3.mean(values) || 0;
       const std = d3.deviation(values) || 0;
+      const median = d3.median(values) || 0;
+      const mode = d3.mode(values) || 0;
 
       chartGroup
         .append('text')
@@ -161,8 +178,26 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
         .attr('font-size', Math.max(10, Math.min(12, height / 35)))
         .attr('fill', '#6b7280')
         .text(`Std: ${std.toFixed(2)}`);
+
+      chartGroup
+        .append('text')
+        .attr('x', width - 10)
+        .attr('y', 50)
+        .attr('text-anchor', 'end')
+        .attr('font-size', Math.max(10, Math.min(12, height / 35)))
+        .attr('fill', '#6b7280')
+        .text(`Median: ${median.toFixed(2)}`);
+
+      chartGroup
+        .append('text')
+        .attr('x', width - 10)
+        .attr('y', 65)
+        .attr('text-anchor', 'end')
+        .attr('font-size', Math.max(10, Math.min(12, height / 35)))
+        .attr('fill', '#6b7280')
+        .text(`Mode: ${mode.toFixed(2)}`);
     },
-    [feature, binCount, data],
+    [feature, binCount, data, rangeFilter],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
@@ -197,25 +232,32 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
             ]),
           )}
         />
-        {/* <input
-          type="number"
-          className="w-12 h-6 bg-gray-200 rounded flex items-center justify-center cursor-pointer hover:bg-gray-300"
-          value={binCount}
-          onChange={(e) => setBinCount(parseInt(e.target.value))}
+      </div>
+      <div className="flex gap-2 items-end">
+        <Input
+          label="Min"
+          value={
+            rangeFilter.min === -Infinity ? '' : rangeFilter.min.toString()
+          }
+          onChange={(value) =>
+            setRangeFilter({
+              ...rangeFilter,
+              min: value === '' ? -Infinity : parseFloat(value),
+            })
+          }
+          debounce
         />
-        <button
-          className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center cursor-pointer hover:bg-gray-300"
-          onClick={() => setBinCount(binCount + 1)}
-        >
-          <Plus size={16} />
-        </button>
-        <button
-          className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center cursor-pointer hover:bg-gray-300"
-          onClick={() => setBinCount(binCount - 1)}
-          disabled={binCount <= 1}
-        >
-          <Minus size={16} />
-        </button> */}
+        <Input
+          label="Max"
+          value={rangeFilter.max === Infinity ? '' : rangeFilter.max.toString()}
+          onChange={(value) =>
+            setRangeFilter({
+              ...rangeFilter,
+              max: value === '' ? Infinity : parseFloat(value),
+            })
+          }
+          debounce
+        />
       </div>
 
       <div ref={containerRef} className="flex-1 min-h-0">
