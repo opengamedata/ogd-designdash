@@ -1,0 +1,11 @@
+export const VizType = {
+  bar: 'Bar Chart',
+  histogram: 'Histogram',
+  scatter: 'Scatter Plot',
+  timeline: 'Timeline',
+  jobGraph: 'Job Graph',
+  descriptiveStatistics: 'Descriptive Statistics',
+  boxPlot: 'Box Plot',
+} as const;
+
+export type VizTypeKey = keyof typeof VizType;

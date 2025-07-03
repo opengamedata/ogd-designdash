@@ -8,6 +8,7 @@ import { JobGraph } from '../viz/charts/JobGraph';
 import VizSetup from '../viz/VizSetup';
 import DescriptiveStatistics from '../viz/charts/DescriptiveStatistics';
 import BoxPlot from '../viz/charts/BoxPlot';
+import { VizType, VizTypeKey } from '../../constants/vizTypes';
 
 interface VizContainerProps {
   style?: React.CSSProperties;
@@ -41,7 +42,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
     const [containerMode, setContainerMode] = useState<'settings' | 'viz'>(
       'settings',
     );
-    const [vizType, setVizType] = useState<keyof typeof VizType>('bar');
+    const [vizType, setVizType] = useState<VizTypeKey>('bar');
     const [gameDataId, setGameDataId] = useState<string>('');
 
     const renderChartContent = () => {

@@ -77,7 +77,7 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
             <span className="">
               {key === 'range'
                 ? `${(value as [number, number])[0]} ~ ${(value as [number, number])[1]}`
-                : (value as number).toFixed(2)}
+                : (value as number)?.toFixed(2)}
             </span>
           </div>
         ))}

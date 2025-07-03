@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import useDataStore from '../../store/useDataStore';
 import Select from '../layout/Select';
+import { VizType, VizTypeKey } from '../../constants/vizTypes';
 
 interface VizSetupProps {
   gameDataId: string;
   setGameDataId: (gameDataId: string) => void;
-  vizType: keyof typeof VizType;
-  setVizType: (vizType: keyof typeof VizType) => void;
+  vizType: VizTypeKey;
+  setVizType: (vizType: VizTypeKey) => void;
   setContainerMode: (containerMode: 'settings' | 'viz') => void;
 }
 
@@ -19,9 +20,9 @@ const VizSetup = ({
   setContainerMode,
 }: VizSetupProps) => {
   const { datasets } = useDataStore();
-  const [supportedChartTypes, setSupportedChartTypes] = useState<
-    (keyof typeof VizType)[]
-  >([]);
+  const [supportedChartTypes, setSupportedChartTypes] = useState<VizTypeKey[]>(
+    [],
+  );
 
   useEffect(() => {
     if (!gameDataId) return;
@@ -55,9 +56,9 @@ const VizSetup = ({
         className="w-full"
         label="Chart Type"
         value={vizType}
-        onChange={(value) => setVizType(value as keyof typeof VizType)}
+        onChange={(value) => setVizType(value as VizTypeKey)}
         options={Object.fromEntries(
-          supportedChartTypes.map((type) => [type, type]),
+          supportedChartTypes.map((type) => [type, VizType[type]]),
         )}
       />
       <button

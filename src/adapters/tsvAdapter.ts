@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { VizTypeKey } from '../constants/vizTypes';
 
 export async function parseTSV(file: File) {
   // e.g. AQUALAB_20250107_to_20250107_6ee74c3_population-features.tsv
@@ -65,7 +66,7 @@ const getSupportedChartTypes = (
     'scatter',
     'descriptiveStatistics',
     'boxPlot',
-  ] as (keyof typeof VizType)[];
+  ] as VizTypeKey[];
   const columns = extractedData.columns as string[];
 
   // Job Graph specific features
