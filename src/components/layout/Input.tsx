@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 interface InputProps {
+  className?: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -9,6 +10,7 @@ interface InputProps {
 }
 
 const Input = ({
+  className,
   label,
   value,
   onChange,
@@ -35,7 +37,7 @@ const Input = ({
   }, [internalValue, debounce]);
 
   return (
-    <div>
+    <div className={'flex flex-col justify-start items-start ' + className}>
       <label className="text-sm text-gray-700" htmlFor={label}>
         {label}
       </label>

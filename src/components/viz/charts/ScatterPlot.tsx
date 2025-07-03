@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import {
@@ -9,6 +9,7 @@ import {
 } from 'd3-regression';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
+import Input from '../../layout/Input';
 
 interface ScatterPlotProps {
   gameDataId: string;
@@ -26,10 +27,31 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
   const { getDatasetByID } = useDataStore();
   const dataset = getDatasetByID(gameDataId);
   const [xFeature, setXFeature] = useState<string>('');
+  const [xRangeFilter, setXRangeFilter] = useState<{
+    min: number;
+    max: number;
+  }>({
+    min: -Infinity,
+    max: Infinity,
+  });
   const [yFeature, setYFeature] = useState<string>('');
+  const [yRangeFilter, setYRangeFilter] = useState<{
+    min: number;
+    max: number;
+  }>({
+    min: -Infinity,
+    max: Infinity,
+  });
   const [regressionLine, setRegressionLine] = useState<
     keyof typeof RegressionLineType
   >(RegressionLineType.none);
+
+  useEffect(() => {
+    setXRangeFilter({ min: -Infinity, max: Infinity });
+  }, [xFeature]);
+  useEffect(() => {
+    setYRangeFilter({ min: -Infinity, max: Infinity });
+  }, [yFeature]);
 
   if (!dataset) {
     return <div>Dataset not found</div>;
@@ -59,11 +81,24 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
+      const dots = data.filter((d) => {
+        const xValue = (d as Record<string, any>)[xFeature];
+        const yValue = (d as Record<string, any>)[yFeature];
+        return (
+          xValue >= xRangeFilter.min &&
+          xValue <= xRangeFilter.max &&
+          yValue >= yRangeFilter.min &&
+          yValue <= yRangeFilter.max
+        );
+      });
+
+      if (dots.length === 0) return;
+
       // Create scales
       const xScale = d3
         .scaleLinear()
         .domain(
-          d3.extent(data, (d) => (d as Record<string, any>)[xFeature]) as [
+          d3.extent(dots.map((d) => (d as Record<string, any>)[xFeature])) as [
             number,
             number,
           ],
@@ -74,7 +109,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
       const yScale = d3
         .scaleLinear()
         .domain(
-          d3.extent(data, (d) => (d as Record<string, any>)[yFeature]) as [
+          d3.extent(dots.map((d) => (d as Record<string, any>)[yFeature])) as [
             number,
             number,
           ],
@@ -85,7 +120,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
       // Add dots
       chartGroup
         .selectAll('.dot')
-        .data(data)
+        .data(dots)
         .enter()
         .append('circle')
         .attr('class', 'dot')
@@ -113,7 +148,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
         };
 
         // Filter data for exponential and logarithmic regression
-        let regressionData = data.map((d) => ({
+        let regressionData = dots.map((d) => ({
           x: (d as Record<string, any>)[xFeature],
           y: (d as Record<string, any>)[yFeature],
         }));
@@ -226,7 +261,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
         .attr('fill', '#374151')
         .text(xFeature);
     },
-    [xFeature, yFeature, regressionLine, data],
+    [xFeature, yFeature, regressionLine, data, xRangeFilter, yRangeFilter],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
@@ -236,21 +271,79 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
           <Select
-            className="flex-2"
+            className="flex-3"
             label="X Feature"
             value={xFeature}
             onChange={(value) => setXFeature(value)}
             options={getFeatureOptions()}
           />
+          <Input
+            className="flex-1"
+            label="X Min"
+            value={
+              xRangeFilter.min === -Infinity ? '' : xRangeFilter.min.toString()
+            }
+            onChange={(value) =>
+              setXRangeFilter({
+                ...xRangeFilter,
+                min: value === '' ? -Infinity : parseFloat(value),
+              })
+            }
+            debounce
+          />
+          <Input
+            className="flex-1"
+            label="X Max"
+            value={
+              xRangeFilter.max === Infinity ? '' : xRangeFilter.max.toString()
+            }
+            onChange={(value) =>
+              setXRangeFilter({
+                ...xRangeFilter,
+                max: value === '' ? Infinity : parseFloat(value),
+              })
+            }
+            debounce
+          />
+        </div>
+        <div className="flex flex-row gap-2">
           <Select
-            className="flex-2"
+            className="flex-3"
             label="Y Feature"
             value={yFeature}
             onChange={(value) => setYFeature(value)}
             options={getFeatureOptions()}
           />
-          {/* </div>
-        <div className="flex flex-row gap-2"> */}
+          <Input
+            className="flex-1"
+            label="Y Min"
+            value={
+              yRangeFilter.min === -Infinity ? '' : yRangeFilter.min.toString()
+            }
+            onChange={(value) =>
+              setYRangeFilter({
+                ...yRangeFilter,
+                min: value === '' ? -Infinity : parseFloat(value),
+              })
+            }
+            debounce
+          />
+          <Input
+            className="flex-1"
+            label="Y Max"
+            value={
+              yRangeFilter.max === Infinity ? '' : yRangeFilter.max.toString()
+            }
+            onChange={(value) =>
+              setYRangeFilter({
+                ...yRangeFilter,
+                max: value === '' ? Infinity : parseFloat(value),
+              })
+            }
+            debounce
+          />
+        </div>
+        <div className="flex flex-row gap-2">
           <Select
             label="Regression Line"
             value={regressionLine}
