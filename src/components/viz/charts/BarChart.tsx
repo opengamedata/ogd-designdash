@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
@@ -15,6 +15,10 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
   const { data } = dataset;
   const [feature, setFeature] = useState<string>('');
   const [filter, setFilter] = useState<string[]>([]);
+
+  useEffect(() => {
+    setFilter([]);
+  }, [feature]);
 
   const renderChart = useCallback(
     (
@@ -35,7 +39,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
           value: String(value),
           count,
         }))
-        .filter((d) => filter.includes(d.value));
+        .filter((d) => filter.length === 0 || filter.includes(d.value));
 
       // Sort by count descending
       // chartData.sort((a, b) => b.count - a.count);
@@ -173,7 +177,9 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
       />
       {feature && (
         <SearchableSelect
-          label="Filter"
+          className="w-fit"
+          label="Categories to include"
+          placeholder="All"
           value={filter}
           onChange={(value) => setFilter(value)}
           options={filterOptions}

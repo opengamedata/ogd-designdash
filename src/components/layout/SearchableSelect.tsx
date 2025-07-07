@@ -5,6 +5,7 @@ interface BaseSearchableSelectProps {
   className?: string;
   label: string;
   options: Record<string, string>;
+  placeholder?: string;
 }
 
 interface SingleSelectProps extends BaseSearchableSelectProps {
@@ -24,6 +25,7 @@ type SearchableSelectProps = SingleSelectProps | MultiSelectProps;
 const SearchableSelect = ({
   label,
   value,
+  placeholder = 'Select...',
   selectMultiple = false,
   onChange,
   options,
@@ -127,7 +129,7 @@ const SearchableSelect = ({
             <span
               className={getDisplayValue() ? 'text-gray-900' : 'text-gray-500'}
             >
-              {getDisplayValue() || 'Select...'}
+              {getDisplayValue() || placeholder}
             </span>
           )}
         </div>
