@@ -9,9 +9,9 @@ interface JobGraphProps {
 }
 
 const EdgeMode = {
-  activeJobs: 'Still in progress',
-  topJobCompletionDestinations: 'Completed the job',
-  topJobSwitchDestinations: 'Switched to another job',
+  ActiveJobs: 'Still in progress',
+  TopJobCompletionDestinations: 'Completed the job',
+  TopJobSwitchDestinations: 'Switched to another job',
 } as const;
 
 export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
@@ -20,7 +20,7 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
   const { data } = dataset;
 
   const [edgeMode, setEdgeMode] = useState<keyof typeof EdgeMode>(
-    'topJobCompletionDestinations',
+    'TopJobCompletionDestinations',
   );
 
   const nodes = useMemo(() => {
@@ -69,14 +69,14 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         .enter()
         .append('marker')
         .attr('id', 'arrow')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 9)
+        .attr('viewBox', '0 -.5 1 1')
+        .attr('refX', 2)
         .attr('refY', 0)
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 6)
+        .attr('markerWidth', 2)
+        .attr('markerHeight', 2)
         .attr('orient', 'auto')
         .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('d', 'M0,-.5L1,0L0,.5')
         .attr('fill', '#999');
 
       // Create zoom behavior
@@ -148,9 +148,9 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
         .append('path')
         .attr('stroke', '#999')
         .attr('stroke-opacity', 0.6)
+        .attr('marker-end', 'url(#arrow)')
         .attr('stroke-width', (d) => widthScale(d.value || 0))
         .attr('fill', 'none')
-        .attr('marker-end', 'url(#arrow)')
         .on('mouseover', function (event, d: any) {
           const tooltipContent = `${d.sourceName} → ${d.targetName}\nPlayers: ${d.value || 0}`;
 
@@ -327,13 +327,15 @@ export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
 const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
   let edges = [];
 
+  console.log(data);
+
   const rawLinks: Record<string, Record<string, string[]>> = JSON.parse(
     data[edgeMode],
   );
 
   switch (edgeMode) {
-    case 'topJobCompletionDestinations':
-    case 'topJobSwitchDestinations':
+    case 'TopJobCompletionDestinations':
+    case 'TopJobSwitchDestinations':
       console.log(edgeMode);
       for (const [sourceKey, targets] of Object.entries(rawLinks)) {
         for (const [targetKey, players] of Object.entries(targets)) {
@@ -349,7 +351,7 @@ const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
         }
       }
       break;
-    case 'activeJobs':
+    case 'ActiveJobs':
       const activeJobs = Object.keys(rawLinks);
       for (let i = 1; i < activeJobs.length; i++) {
         const target = activeJobs[i];
@@ -366,6 +368,7 @@ const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
       alert('Something went wrong. Plase refresh the page and try again');
       break;
   }
+  // console.log('edges', edges);
   return edges;
 };
 
@@ -377,7 +380,11 @@ const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
 const getNodes = (data: any) => {
   let nodes: Record<string, any> = {};
   for (const [key, value] of Object.entries(data)) {
-    if (key.substring(0, 3) !== 'job' && key.substring(0, 7) !== 'mission')
+    if (
+      key.substring(0, 3) !== 'job' &&
+      key.substring(0, 6) !== 'county' &&
+      key.substring(0, 7) !== 'mission'
+    )
       continue;
 
     const [jobNumber, jobFeature] = key.split('_');
@@ -393,5 +400,6 @@ const getNodes = (data: any) => {
       nodes[jobNumber][jobFeature] = JSON.parse(nodes[jobNumber][jobFeature]);
     }
   }
+  // console.log('nodes', nodes);
   return nodes;
 };
