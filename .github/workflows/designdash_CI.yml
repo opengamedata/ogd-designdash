@@ -1,5 +1,7 @@
 # Workflow to build and deploy designer dashboard to server.
-name: OpenGameData-DesignDash CI
+name: OGD Designer Dashboard - CI Script
+run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'push' && github.event.head_commit.message || 'Manual Run') }}
+
 on:
   workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
   push:
