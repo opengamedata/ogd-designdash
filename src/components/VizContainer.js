@@ -22,7 +22,7 @@ import InitialVisualizer from "../visualizers/InitialVisualizer/InitialVisualize
 import JobGraph from "../visualizers/JobGraph/JobGraph";
 import PlayerTimeline from "../visualizers/PlayerTimeline/PlayerTimeline";
 import { DropdownItem } from "../requests/FilterRequest";
-import { ResultStatus } from "../apis/APIResponse";
+import { ResponseStatus } from "../apis/APIResponse";
 import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramRequest";
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
 import ScatterplotVisualizer from "../visualizers/ScatterplotVisualizer/ScatterplotVisualizer";
@@ -145,7 +145,7 @@ export default function VizContainer(props) {
         console.log(`Fetching into ${api_request.LocalStorageKey}`);
         OGDAPI.fetch(api_request)
           .then((result) => {
-            if (result.Status !== ResultStatus.SUCCESS) throw result.Message;
+            if (result.Status !== ResponseStatus.SUCCESS) throw result.Message;
             console.log(result.asDict);
             // store data locally and in the state variable
             localStorage.setItem(
