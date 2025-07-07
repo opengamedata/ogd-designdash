@@ -123,7 +123,7 @@ export class JobGraphModel extends VisualizerModel {
    * @returns {object[]}
    */
    static genLinks(rawData, linkMode) {
-      let l = []
+      let l = [];
       const rawLinks = JSON.parse(rawData[linkMode])
       
       switch (linkMode) {
@@ -142,7 +142,7 @@ export class JobGraphModel extends VisualizerModel {
             }
          }
          break;
-         case 'TopJobSwitchDestinations':
+         case "TopJobSwitchDestinations":
          for (const [sourceKey, targets] of Object.entries(rawLinks)) {
             for (const [targetKey, players] of Object.entries(targets)) {
                if (sourceKey === targetKey) continue // omit self-pointing jobs
@@ -157,7 +157,7 @@ export class JobGraphModel extends VisualizerModel {
             }
          }
          break;
-         case 'ActiveJobs':
+         case "ActiveJobs":
          const activeJobs = Object.keys(rawLinks)
          for (let i = 1; i < activeJobs.length; i++) {
             const target = activeJobs[i];

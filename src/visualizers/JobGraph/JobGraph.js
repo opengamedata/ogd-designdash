@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useD3 } from "../../hooks/useD3";
 import { JobGraphModel } from "./JobGraphModel";
 import PlayersList from "./PlayersList";
-import ForceGraph from './forceGraph'
+import ForceGraph from "./forceGraph";
 import JobGraphLegend from "./JobGraphLegend";
 import { Visualizers } from "../../enums/Visualizers";
 import RadioPicker from "../../components/pickers/RadioPicker";
@@ -20,173 +20,230 @@ import RadioPicker from "../../components/pickers/RadioPicker";
 
 /**
  * force directed graph component for job/mission level data
- * @param {object} props raw data JSON object 
+ * @param {object} props raw data JSON object
  * @param {VisualizerModel} props.model
  * @param {SetterCallback} props.setVisualizer
- * @returns 
+ * @returns
  */
 export default function JobGraph({ model, setVisualizer }) {
-    /** @type {[JobGraphModel, JobGraphSetter]} data */
-    const [localModel, setLocalModel] = useState(model instanceof JobGraphModel ? model : new JobGraphModel(null, null, null));
-    const [previousModel, setPreviousModel] = useState(model);
-    /** @type {[string, StringSetter]} data */
-    const [linkMode, setLinkMode] = useState('TopJobCompletionDestinations')
-    /** @type {[string[] | undefined, StringListSetter]} data */
-    const [playersList, setPlayerList] = useState()
-    const [playerHighlight, setHighlight] = useState()
+  /** @type {[JobGraphModel, JobGraphSetter]} data */
+  const [localModel, setLocalModel] = useState(
+    model instanceof JobGraphModel ? model : new JobGraphModel(null, null, null)
+  );
+  const [previousModel, setPreviousModel] = useState(model);
+  /** @type {[string, StringSetter]} data */
+  const [linkMode, setLinkMode] = useState("TopJobCompletionDestinations");
+  /** @type {[string[] | undefined, StringListSetter]} data */
+  const [playersList, setPlayerList] = useState();
+  const [playerHighlight, setHighlight] = useState();
 
-    // If input model changed, need to update the local model.
-    if (model != previousModel) {
-        setLocalModel(model instanceof JobGraphModel ? model : new JobGraphModel(null, null, null));
-        setPreviousModel(model);
+  useEffect(() => {
+    if (model !== previousModel) {
+      setLocalModel(
+        model instanceof JobGraphModel
+          ? model
+          : new JobGraphModel(null, null, null)
+      );
+      setPreviousModel(model);
     }
 
-    const updateLinkMode = (value) => {
-        setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, value))
-        setPlayerList([])
-        setLinkMode(value);
+    console.log("localModel", localModel);
+  }, [model, previousModel]);
+
+  const updateLinkMode = (value) => {
+    setLocalModel(new JobGraphModel(localModel.Game, localModel.Data, value));
+    // setPlayerList([]);
+    setLinkMode(value);
+  };
+
+  // useEffect(() => {
+  //     console.log(data)
+  // }, [data])
+
+  /* manipulate raw data to a format to be used by the vis views */
+
+  const showPlayersList = (link) => {
+    let players, title;
+    if (linkMode === "ActiveJobs") {
+      players = localModel.Nodes.find((n) => n.id === link.id).players;
+      title = `${link.id} (${players.length} in progress)`;
+    } else {
+      players = localModel.Links.find(
+        (l) => l.source === link.source.id && l.target === link.target.id
+      ).players;
+      title =
+        `${link.source.id}\n` +
+        `➔ ${link.target.id}\n` +
+        `(${players.length} ${
+          linkMode === "TopJobSwitchDestinations" ? "switched" : "completed"
+        })`;
     }
+    setPlayerList({ players, title });
+  };
 
-    // useEffect(() => {
-    //     console.log(data)
-    // }, [data])
+  /**
+   * draw the force directed graph on jobs/missions
+   */
+  const ref = useD3(
+    (svg) => {
+      if (localModel) {
+        /**
+         * utility function that maps average complete time to node radius
+         */
+        const projectRadius = d3
+          .scaleLinear()
+          .domain([localModel.Meta.minAvgTime, localModel.Meta.maxAvgTime])
+          .range([3, 20]);
 
-    /* manipulate raw data to a format to be used by the vis views */
+        /**
+         * generates node details to be displayed when hover over a job node
+         * contains game specific settings
+         * @param {*} d data of a particular node (aka an element of the data obj)
+         * @returns node details
+         */
+        const getNodeDetails = (d) => {
+          const generic =
+            `${d["JobsAttempted-num-completes"]} of ${
+              d["JobsAttempted-num-starts"]
+            } (${parseFloat(d["JobsAttempted-percent-complete"]).toFixed(
+              2
+            )}%) players completed\n` +
+            `Average Time on Job: ${parseFloat(
+              d["JobsAttempted-avg-time-per-attempt"]
+            ).toFixed()}s\n` +
+            `Standard Deviation: ${parseFloat(
+              d["JobsAttempted-std-dev-per-attempt"]
+            ).toFixed(2)}`;
 
-    const showPlayersList = (link) => {
-        let players, title
-        if (linkMode === 'ActiveJobs') {
-            players = localModel.Nodes.find(n => n.id === link.id).players
-            title = `${link.id} (${players.length} in progress)`
-        }
-        else {
-            players = localModel.Links.find(l => l.source === link.source.id && l.target === link.target.id).players
-            title = `${link.source.id}\n` + `➔ ${link.target.id}\n` +
-                `(${players.length} ${linkMode === 'TopJobSwitchDestinations' ? 'switched' : 'completed'})`          
-        }
-        setPlayerList({ players, title })
-    }
+          let gameSpecific = "";
+          switch (localModel.Game) {
+            case "AQUALAB":
+              gameSpecific =
+                "\n" +
+                `Experimentation: ${
+                  d["JobsAttempted-job-difficulties"]
+                    ? d["JobsAttempted-job-difficulties"].experimentation
+                    : "N/A"
+                }\n` +
+                `Modeling: ${
+                  d["JobsAttempted-job-difficulties"]
+                    ? d["JobsAttempted-job-difficulties"].modeling
+                    : "N/A"
+                }\n` +
+                `Argumentation: ${
+                  d["JobsAttempted-job-difficulties"]
+                    ? d["JobsAttempted-job-difficulties"].argumentation
+                    : "N/A"
+                }`;
+              break;
+            default:
+              break;
+          }
 
-    /**
-     * draw the force directed graph on jobs/missions
-     */
-    const ref = useD3((svg) => {
-        if (localModel) {
-            /**
-                * utility function that maps average complete time to node radius
-            */
-            const projectRadius = d3.scaleLinear()
-                .domain([localModel.Meta.minAvgTime, localModel.Meta.maxAvgTime])
-                .range([3, 20])
+          return generic + gameSpecific;
+        };
 
-            /**
-             * generates node details to be displayed when hover over a job node
-             * contains game specific settings
-             * @param {*} d data of a particular node (aka an element of the data obj)
-             * @returns node details
-             */
-            const getNodeDetails = (d) => {
-                const generic = `${d['JobsAttempted-num-completes']} of ${d['JobsAttempted-num-starts']} (${parseFloat(d['JobsAttempted-percent-complete']).toFixed(2)}%) players completed\n` +
-                    `Average Time on Job: ${parseFloat(d['JobsAttempted-avg-time-per-attempt']).toFixed()}s\n` +
-                    `Standard Deviation: ${parseFloat(d['JobsAttempted-std-dev-per-attempt']).toFixed(2)}`
+        const getLinkColor = (l) => {
+          if (linkMode === "ActiveJobs") return "#fff0";
+          if (l.players.includes(playerHighlight)) return "blue";
+          return "#999";
+        };
 
-                let gameSpecific = ''
-                switch (localModel.Game) {
-                    case 'AQUALAB':
-                        gameSpecific = '\n' +
-                            `Experimentation: ${d['JobsAttempted-job-difficulties'] ? d['JobsAttempted-job-difficulties'].experimentation : 'N/A'}\n` +
-                            `Modeling: ${d['JobsAttempted-job-difficulties'] ? d['JobsAttempted-job-difficulties'].modeling : 'N/A'}\n` +
-                            `Argumentation: ${d['JobsAttempted-job-difficulties'] ? d['JobsAttempted-job-difficulties'].argumentation : 'N/A'}`
-                        break;
-                    default:
-                        break;
-                }
+        const fGraphModel = {
+          nodes: localModel.Nodes,
+          links: localModel.Links,
+        };
+        console.log(
+          `About to create a forceGraph with model ${JSON.stringify(
+            fGraphModel
+          )}`
+        );
+        const fGraphAttribs = {
+          nodeId: (d) => d.id,
+          nodeGroup: (d) =>
+            d["JobsAttempted-num-completes"] /
+            (d["JobsAttempted-num-starts"] === "0"
+              ? 1
+              : d["JobsAttempted-num-starts"]),
+          nodeTitle: (d) => d.id,
+          nodeDetail: (d) => getNodeDetails(d),
+          nodeRadius: (d) =>
+            projectRadius(d["JobsAttempted-avg-time-per-attempt"]),
+          linkStrokeWidth: (l) => l.value,
+          linkDetail: (l) =>
+            `${l.value} players moved from ${l.sourceName} to ${l.targetName}`,
+          linkStrength: 1,
+          linkDistance: 100,
+          nodeStrength: -1000,
+          linkStroke: (l) => getLinkColor(l), // link stroke color, no color when showing jobs in progress
+          outLinks: linkMode === "ActiveJobs",
+          outLinkWidth:
+            linkMode === "ActiveJobs" ? (d) => d.players.length : null,
+          outLinkDetail:
+            linkMode === "ActiveJobs"
+              ? (d) => `${d.players.length} players in progress`
+              : null,
+          parent: svg,
+          nodeClick: "",
+        };
+        const chart = ForceGraph(fGraphModel, fGraphAttribs, showPlayersList);
+      } else {
+        console.warn("JobGraph has no localModel to render!");
+      }
+    },
+    [localModel, playerHighlight]
+  ); // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
 
-                return generic + gameSpecific
-            }
+  const pickerItems = [
+    { name: "TopJobCompletionDestinations", readable: "finished the job" },
+    { name: "TopJobSwitchDestinations", readable: "left the job" },
+    { name: "ActiveJobs", readable: "still in progress" },
+  ];
+  // render component
+  if (model instanceof JobGraphModel) {
+    return (
+      <div className="p-2 ">
+        <svg ref={ref} className="w-full bg-white" />
 
-            const getLinkColor = (l) => {
-                if (linkMode === 'ActiveJobs')
-                    return "#fff0"
-                if (l.players.includes(playerHighlight))
-                    return 'blue'
-                return "#999"
-            }
+        {playersList ? (
+          <PlayersList
+            data={playersList}
+            playerSummary={localModel.Meta.playerSummary}
+            redirect={() => {
+              setVisualizer(Visualizers.PLAYER_TIMELINE);
+            }}
+            playerHighlight={playerHighlight}
+            setHighlight={setHighlight}
+            setPlayerList={setPlayerList}
+          />
+        ) : (
+          <></>
+        )}
+        <div className="flex justify-between mt-2">
+          {/* bottom right section: path type and player count */}
+          <div className="bottom-3 right-3 font-light text-sm">
+            {/* path type 3-way selection */}
+            <fieldset className="block">
+              <legend>Show paths of players who</legend>
+              <RadioPicker
+                items={pickerItems}
+                linkMode={linkMode}
+                updateLinkMode={updateLinkMode}
+              />
+            </fieldset>
+            {/* <p className="mt-2">Player Count: {data && data.meta.PlayerCount} </p> */}
+          </div>
 
-            const fGraphModel = {
-                nodes: localModel.Nodes,
-                links: localModel.Links
-            };
-            console.log(`About to create a forceGraph with model ${JSON.stringify(fGraphModel)}`);
-            const fGraphAttribs = {
-                nodeId: d => d.id,
-                nodeGroup: d => d['JobsAttempted-num-completes'] / (d['JobsAttempted-num-starts'] === '0' ? 1 : d['JobsAttempted-num-starts']),
-                nodeTitle: d => d.id,
-                nodeDetail: d => getNodeDetails(d),
-                nodeRadius: d => projectRadius(d['JobsAttempted-avg-time-per-attempt']),
-                linkStrokeWidth: l => l.value,
-                linkDetail: l => `${l.value} players moved from ${l.sourceName} to ${l.targetName}`,
-                linkStrength: 1,
-                linkDistance: 100,
-                nodeStrength: -1000,
-                linkStroke: l => getLinkColor(l), // link stroke color, no color when showing jobs in progress
-                outLinks: linkMode === 'ActiveJobs',
-                outLinkWidth: linkMode === 'ActiveJobs' ? d => d.players.length : null,
-                outLinkDetail: linkMode === 'ActiveJobs' ? d => `${d.players.length} players in progress` : null,
-                parent: svg,
-                nodeClick: ''
-            }
-            const chart = ForceGraph( fGraphModel, fGraphAttribs, showPlayersList )
-        }
-        else {
-            console.warn("JobGraph has no localModel to render!")
-        }
-    }, [localModel, playerHighlight]) // dependency -> data: change in linkMode will trigger data recalculation (@useEffect)
-
-    const pickerItems = [
-        { "name" : "TopJobCompletionDestinations", "readable" : "finished the job"  },
-        { "name" : "TopJobSwitchDestinations",     "readable" : "left the job"      },
-        { "name" : "ActiveJobs",                   "readable" : "still in progress" }
-    ];
-    // render component
-    if (model instanceof JobGraphModel) {
-        return (
-            <>
-                <svg ref={ref} className="w-full border border-green-700" />
-
-                {playersList ?
-                    <PlayersList
-                        data={playersList}
-                        playerSummary={localModel.Meta.playerSummary}
-                        redirect={() => { setVisualizer(Visualizers.PLAYER_TIMELINE); }}
-                        playerHighlight={playerHighlight}
-                        setHighlight={setHighlight}
-                        setPlayerList={setPlayerList}
-                    /> :
-                    <></>
-                }
-
-                {/* bottom right section: path type and player count */}
-                <div className=" bottom-3 right-3 font-light text-sm">
-                    {/* path type 3-way selection */}
-                    <fieldset className="block">
-                        <legend >Show paths of players who</legend>
-                        <RadioPicker
-                            items={pickerItems}
-                            linkMode={linkMode}
-                            updateLinkMode={updateLinkMode}
-                        />
-                    </fieldset>
-                    {/* <p className="mt-2">Player Count: {data && data.meta.PlayerCount} </p> */}
-                </div>
-
-                {/* bottom left section: chart legend */}
-                {localModel && <JobGraphLegend populationSummary={localModel.Meta.populationSummary} />}
-            </>
-        )
-    }
-    else {
-        return <div>Wrong kind of VisualizerModel for JobGraph</div>
-    }
-
+          {/* bottom left section: chart legend */}
+          {localModel && (
+            <JobGraphLegend
+              populationSummary={localModel.Meta.populationSummary}
+            />
+          )}
+        </div>
+      </div>
+    );
+  } else {
+    return <div>Wrong kind of VisualizerModel for JobGraph</div>;
+  }
 }

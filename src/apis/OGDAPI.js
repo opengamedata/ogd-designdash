@@ -1,101 +1,81 @@
-import { API_ORIGIN, API_PATH } from '../config';
-import APIResponse from "../apis/APIResponse";
+import { API_ORIGIN, API_PATH } from "../config";
+import APIResponse, { ResultStatus } from "../apis/APIResponse";
 
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  */
 
 export class OGDAPI {
-   /**
-    * Getter for a default response when the API interface received a null request.
-    * @returns {Response}
-    */
-   static get NoRequest() {
-      return new Response(
-         JSON.stringify(
-            {
-               result: "No Data Requested",
-               status: "SUCCESS",
-               val: "{}"
-            }),
-         {status:400}
-      );
-   } 
-   /**
-    * Getter for a default response when the cached API response did not have valid JSON data.
-    * @returns {Response}
-    */
-   static get BadCache() {
-      return new Response(
-         JSON.stringify(
-            {
-               result: "Locally-cached data did not contain valid JSON.",
-               status: "FAILURE",
-               val: "{}"
-         }),
-         {status:500}
-      );
-   }
-   /**
-    * Getter for a default response when the API interface had an error sending the request to the server.
-    * @returns {Response}
-    */
-   static get FailedRequest() {
-      return new Response(
-         JSON.stringify(
-            {
-               result: "Sending request to API Failed",
-               status: "FAILURE",
-               val: "{}"
-         }),
-         {status:500}
-      );
-   }
-   /**
-    * Getter for a default response when the API gave a response containing invalid JSON data.
-    * @returns {Response}
-    */
-   static get BadResponse() {
-      return new Response(
-         JSON.stringify(
-            {
-               result: "API response did not contain valid JSON data",
-               status: "FAILURE",
-               val: "{}"
-         }),
-         {status:500}
-      );
-   }
-   /**
-    * Getter for a default response when the API interface had an error sending the request to the server.
-    * @returns {Response}
-    */
-   static get BadConversion() {
-      return new Response(
-         JSON.stringify(
-            {
-               result: "Error converting API server response to APIResponse class.",
-               status: "FAILURE",
-               val: "{}"
-         }),
-         {status:500}
-      );
-   }
-   /**
-    * Getter for a default response when the OGD API code got an error for reasons unknown
-    * @returns {Response}
-    */
-   static get UnknownError() {
-      return new Response(
-         JSON.stringify(
-            {
-               result: "An unknown error occured during request processing.",
-               status: "FAILURE",
-               val: "{}"
-         }),
-         {status:500}
-      );
-   }
+  /**
+   * Getter for a default response when the API interface received a null request.
+   * @returns {Response}
+   */
+  static get NoRequest() {
+    return new Response(
+      JSON.stringify({
+        result: "No Data Requested",
+        status: "SUCCESS",
+        val: "{}",
+      }),
+      { status: 400 }
+    );
+  }
+  /**
+   * Getter for a default response when the cached API response did not have valid JSON data.
+   * @returns {Response}
+   */
+  static get BadCache() {
+    return new Response(
+      JSON.stringify({
+        result: "Locally-cached data did not contain valid JSON.",
+        status: "FAILURE",
+        val: "{}",
+      }),
+      { status: 500 }
+    );
+  }
+  /**
+   * Getter for a default response when the API interface had an error sending the request to the server.
+   * @returns {Response}
+   */
+  static get FailedRequest() {
+    return new Response(
+      JSON.stringify({
+        result: "Sending request to API Failed",
+        status: "FAILURE",
+        val: "{}",
+      }),
+      { status: 500 }
+    );
+  }
+  /**
+   * Getter for a default response when the API gave a response containing invalid JSON data.
+   * @returns {Response}
+   */
+  static get BadResponse() {
+    return new Response(
+      JSON.stringify({
+        result: "API response did not contain valid JSON data",
+        status: "FAILURE",
+        val: "{}",
+      }),
+      { status: 500 }
+    );
+  }
+  /**
+   * Getter for a default response when the API interface had an error sending the request to the server.
+   * @returns {Response}
+   */
+  static get BadConversion() {
+    return new Response(
+      JSON.stringify({
+        result: "Error converting API server response to APIResponse class.",
+        status: "FAILURE",
+        val: "{}",
+      }),
+      { status: 500 }
+    );
+  }
 
    /**
     * @param {Promise<APIRequest>! | APIRequest!} api_request

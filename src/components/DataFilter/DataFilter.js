@@ -16,13 +16,13 @@ import ValueModes from '../../enums/ValueModes';
  * @typedef {import("../../requests/FilterRequest").FilterItem} FilterItem
  */
 
- /**
- * @param {object} props
- * @param {FilterRequest} props.filterRequest
- * @param {boolean}       props.loading
- * @param {MapSetter}     props.mergeContainerState
- * @param {function}      props.updateData
- */
+/**
+* @param {object} props
+* @param {FilterRequest} props.filterRequest
+* @param {boolean}       props.loading
+* @param {MapSetter}     props.mergeContainerState
+* @param {function}      props.updateData
+*/
 export default function DataFilter(props) {
    const {
       filterRequest,
@@ -72,11 +72,11 @@ export default function DataFilter(props) {
                   key={key}
                />
             );
-         break;
+            break;
          case ValueModes.ENUM:
          default:
             return (<div key={key}>Value Mode not supported for Range: {item.ValueMode.asString}</div>);
-         break;
+            break;
       }
    }
 
@@ -96,14 +96,14 @@ export default function DataFilter(props) {
                   key={key}
                />
             )
-         break;
+            break;
          case ValueModes.DATE:
          case ValueModes.NUMBER:
          case ValueModes.TEXT:
          case ValueModes.TIME:
          default:
             return (<div key={key}>Value Mode not supported for Dropdown: {item.ValueMode.asString}</div>)
-         break;
+            break;
       }
    }
 
@@ -121,7 +121,7 @@ export default function DataFilter(props) {
          case ValueModes.TIME:
          default:
             return (<div key={key}>Value Mode not supported for Input: {item.ValueMode.asString}</div>)
-         break;
+            break;
       }
    }
 
@@ -133,20 +133,20 @@ export default function DataFilter(props) {
       switch (item.InputMode) {
          case InputModes.DROPDOWN:
             return RenderDropdown(item);
-         break;
+            break;
          case InputModes.INPUT:
             return RenderInput(item);
-         break;
+            break;
          case InputModes.RANGE:
             return RenderRange(item)
-         break;
+            break;
          case InputModes.SEPARATOR:
-            return ( <hr key={`${item.Name}Separator`} style={{margin: "10px 0px"}}/> )
-         break;
+            return (<hr key={`${item.Name}Separator`} style={{ margin: "10px 0px" }} />)
+            break;
          default:
             const key = `${filterRequest.Name}${item.Name}Invalid`;
-            return ( <div key={key}>Invalid Input Mode: {item.InputMode.asString}</div> );
-         break;
+            return (<div key={key}>Invalid Input Mode: {item.InputMode.asString}</div>);
+            break;
       }
    }
 
@@ -154,7 +154,7 @@ export default function DataFilter(props) {
       if (adjustMode) {
          if (!loading) {
             // If in adjustment mode, and not currently loading, then we'll have expanded view so show an X.
-            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={ () => {setLocalState({}); setAdjustMode(false)} } />);
+            return (<XMarkIcon className="cursor-pointer h-5 w-5" onClick={() => { setLocalState({}); setAdjustMode(false) }} />);
          }
          else {
             return (<></>);
@@ -162,7 +162,7 @@ export default function DataFilter(props) {
       }
       else {
          // If not in adjustment mode, show "adjustments" button to expand the filter.
-         return (<AdjustmentsVerticalIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(true) } />);
+         return (<AdjustmentsVerticalIcon className="cursor-pointer h-5 w-5" onClick={() => setAdjustMode(true)} />);
       }
    }
 
@@ -170,17 +170,17 @@ export default function DataFilter(props) {
    return (
       <div className='bg-white border shadow-sm px-4'>
          <div className='flex justify-between mb-2'>
-            { renderToggleButton() }
+            {renderToggleButton()}
          </div>
-         { filterRequest.Items.map((item) => RenderItem(item)) }
+         {filterRequest.Items.map((item) => RenderItem(item))}
          <div className='flex space-x-2 items-center'>
             {loading ?
                <><Cog6ToothIcon className='animate-spin h-2 w-2' /> &nbsp;Please wait...</>
                :
-               adjustMode ? 
-               <LargeButton label='save' onClick={ (e) => {mergeContainerState(localState); setAdjustMode(false)} } selected={false}/>
-               :
-               <LargeButton label='visualize' onClick={updateData} selected={false}/>
+               adjustMode ?
+                  <LargeButton label='save' onClick={(e) => { mergeContainerState(localState); setAdjustMode(false) }} selected={false} />
+                  :
+                  <LargeButton label='visualize' onClick={updateData} selected={false} />
             }
          </div>
       </div>

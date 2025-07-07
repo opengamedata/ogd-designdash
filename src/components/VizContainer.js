@@ -22,13 +22,16 @@ import InitialVisualizer from "../visualizers/InitialVisualizer/InitialVisualize
 import JobGraph from "../visualizers/JobGraph/JobGraph";
 import PlayerTimeline from "../visualizers/PlayerTimeline/PlayerTimeline";
 import { DropdownItem } from "../requests/FilterRequest";
-import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
+import { ResultStatus } from "../apis/APIResponse";
 import HistogramRequest from "../visualizers/HistogramVisualizer/HistogramRequest";
 import HistogramVisualizer from "../visualizers/HistogramVisualizer/HistogramVisualizer";
 import ScatterplotVisualizer from "../visualizers/ScatterplotVisualizer/ScatterplotVisualizer";
 import ScatterplotRequest from "../visualizers/ScatterplotVisualizer/ScatterplotRequest";
 import BarplotVisualizer from "../visualizers/BarplotVisualizer/BarplotVisualizer";
 import BarplotRequest from "../visualizers/BarplotVisualizer/BarplotRequest";
+import { AvailableModes } from "../visualizers/BaseVisualizer/AvailableModes";
+import FilePicker from "./pickers/FilePicker";
+import VisualizerRequest from "../visualizers/BaseVisualizer/VisualizerRequest";
 /**
  * @typedef {import('../requests/APIRequest').APIRequest} APIRequest
  * @typedef {import('../typedefs').AnyMap} AnyMap
@@ -54,20 +57,21 @@ import BarplotRequest from "../visualizers/BarplotVisualizer/BarplotRequest";
 export default function VizContainer(props) {
   // data loading vars
   const [loading, setLoading] = useState(false);
-
   const [rawData, setRawData] = useState(null);
+  const [mode, setMode] = useState(AvailableModes.Default().asString);
 
   // data view vars
-
+  /** @type {[Visualizers, VisualizerSetter]} */
+  const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
   /** @type {[VisualizerRequest, any]} */
   const [viz_request, _setRequest] = useState(new InitialVisualizerRequest());
   /** @type {[AnyMap, MapSetter]} */
   const [visualizerRequestState, setVisualizerRequestState] = useState(
     viz_request.GetFilterRequest().InitialState
   );
-  // console.log(
-  //   `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
-  // );
+  console.log(
+    `In VizContainer, state is ${JSON.stringify(visualizerRequestState)}`
+  );
 
   const setRequest = (request) => {
     // clear state from last viz.
@@ -81,8 +85,6 @@ export default function VizContainer(props) {
     setVisualizerRequestState(merged_state);
   };
 
-  /** @type {[Visualizers, VisualizerSetter]} */
-  const [visualizer, _setVisualizer] = useState(Visualizers.INITIAL);
   const setVisualizer = (new_visualizer) => {
     // update the request type.
     switch (new_visualizer) {
@@ -122,14 +124,46 @@ export default function VizContainer(props) {
     /** @type {APIRequest?} */
     const api_request = viz_request.GetAPIRequest(visualizerRequestState);
     if (api_request != null) {
-      OGDAPI.fetch(api_request)
-            .then((result) => {
-              setRawData(result.Values)
-            });
+      setLoading(true);
+      const localData = localStorage.getItem(api_request.LocalStorageKey);
+      // console.log(localData)
+      if (localData) {
+        try {
+          console.log(`Found ${api_request.LocalStorageKey} in the cache`);
+          // if query found in storage, retreive JSON
+          setRawData(JSON.parse(localData));
+        } catch (err) {
+          console.error(
+            `Local data (${localData}) was not valid JSON!\nResulted in error ${err}`
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+      // if not found in storage, request dataset
+      else {
+        console.log(`Fetching into ${api_request.LocalStorageKey}`);
+        OGDAPI.fetch(api_request)
+          .then((result) => {
+            if (result.Status !== ResultStatus.SUCCESS) throw result.Message;
+            console.log(result.asDict);
+            // store data locally and in the state variable
+            localStorage.setItem(
+              api_request.LocalStorageKey,
+              JSON.stringify(result.Values)
+            );
+            setRawData(result.Values);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error(error);
+            setLoading(false);
+            alert(error);
+          });
+      }
     } else {
       console.log(`No API request for ${viz_request}`);
     }
-    setLoading(false);
   };
 
   const renderVisualizer = () => {
@@ -137,18 +171,17 @@ export default function VizContainer(props) {
       case Visualizers.JOB_GRAPH:
         return (
           <ErrorBoundary childName={"JobVisualizer"}>
-            {
-              loading ?
-                <LoadingBlur loading={loading} />
-                :
-                <JobGraph
-                  model={viz_request.GetVisualizerModel(
-                    visualizerRequestState,
-                    rawData
-                  )}
-                  setVisualizer={setVisualizer}
-                />
-            }
+            {loading ? (
+              <LoadingBlur loading={loading} />
+            ) : (
+              <JobGraph
+                model={viz_request.GetVisualizerModel(
+                  visualizerRequestState,
+                  rawData
+                )}
+                setVisualizer={setVisualizer}
+              />
+            )}
           </ErrorBoundary>
         );
       case Visualizers.HISTOGRAM:
@@ -162,7 +195,7 @@ export default function VizContainer(props) {
               setVisualizer={setVisualizer}
             />
           </ErrorBoundary>
-        )
+        );
       case Visualizers.SCATTERPLOT:
         return (
           <ErrorBoundary childName={"ScatterplotVisualizer"}>
@@ -174,7 +207,7 @@ export default function VizContainer(props) {
               setVisualizer={setVisualizer}
             />
           </ErrorBoundary>
-        )
+        );
       case Visualizers.BARPLOT:
         return (
           <ErrorBoundary childName={"BarplotVisualizer"}>
@@ -186,7 +219,7 @@ export default function VizContainer(props) {
               setVisualizer={setVisualizer}
             />
           </ErrorBoundary>
-        )
+        );
       case Visualizers.PLAYER_TIMELINE:
         return (
           <ErrorBoundary childName={"PlayerVisualizer"}>
@@ -209,41 +242,63 @@ export default function VizContainer(props) {
     }
   };
 
-  const dropdownFilterItem = new DropdownItem(
+  const dropdownVizPicker = new DropdownItem(
     "VizPicker",
     ValueModes.ENUM,
     Visualizers,
     visualizer
+  );
+
+  const dropdownModePicker = new DropdownItem(
+    "ModePicker",
+    ValueModes.ENUM,
+    AvailableModes,
+    AvailableModes.Default()
   );
   const styling = {
     gridColumn: props.column,
     gridRow: props.row,
   };
   return (
-    <div className="flex-auto border-4 border-red-700" style={styling}>
+    <div className="flex-auto border-2 border-gray-300" style={styling}>
       {/* <LoadingBlur loading={loading} height={8} width={8} /> */}
-      <div className="container relative flex">
-        <div className="left-0 max-w-72 max-h-full overflow-y-auto">
+      <div className="container relative flex gap-2">
+        <div className="left-0 max-w-72 max-h-full overflow-y-auto p-4 max-w-xs">
           <EnumPicker
             adjustMode={true}
-            filterItem={dropdownFilterItem}
+            filterItem={dropdownVizPicker}
             mergeContainerState={(new_state) => {
-              setVisualizer(new_state[`${dropdownFilterItem.Name}Selected`]);
+              setVisualizer(new_state[`${dropdownVizPicker.Name}Selected`]);
             }}
             key="VizTypeDropdown"
           />
-          <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
-            <DataFilter
-              filterRequest={viz_request.GetFilterRequest()}
-              loading={loading}
-              mergeContainerState={mergeVisualizerRequestState}
-              updateData={retrieveData}
-            />
-          </ErrorBoundary>
+          <EnumPicker
+            adjustMode={true}
+            filterItem={dropdownModePicker}
+            mergeContainerState={(new_state) => {
+              setMode(new_state[`${dropdownModePicker.Name}Selected`].asString);
+            }}
+            key="dropdownModePicker"
+          />
+          {/* Add a dropdown for users to choose file or api */}
+          {/* 1. if File is chosen, file-upload-button-page */}
+          {/* 2. if api is chosen, data-filter-page */}
+          {mode === "File" ? (
+            <div className="file-upload-container">
+              <FilePicker setRawData={setRawData} visualizerType={visualizer} />
+            </div>
+          ) : (
+            <ErrorBoundary childName={"DataFilter or LoadingBlur"}>
+              <DataFilter
+                filterRequest={viz_request.GetFilterRequest()}
+                loading={loading}
+                mergeContainerState={mergeVisualizerRequestState}
+                updateData={retrieveData}
+              />
+            </ErrorBoundary>
+          )}
         </div>
-        <div className="container left-72 border shadow-sm">
-          {renderVisualizer()}
-        </div>
+        <div className="container left-72 shadow-sm">{renderVisualizer()}</div>
       </div>
     </div>
   );
