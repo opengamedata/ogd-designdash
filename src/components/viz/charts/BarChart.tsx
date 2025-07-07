@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
+import SearchableSelect from '../../layout/SearchableSelect';
 
 interface BarChartProps {
   gameDataId: string;
@@ -13,6 +14,11 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
   if (!dataset) return <div>Dataset not found</div>;
   const { data } = dataset;
   const [feature, setFeature] = useState<string>('');
+  const [filter, setFilter] = useState<string[]>([]);
+
+  useEffect(() => {
+    setFilter([]);
+  }, [feature]);
 
   const renderChart = useCallback(
     (
@@ -28,12 +34,12 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         (d) => (d as Record<string, any>)[feature],
       );
 
-      const chartData = Array.from(valueCounts.entries()).map(
-        ([value, count]) => ({
+      const chartData = Array.from(valueCounts.entries())
+        .map(([value, count]) => ({
           value: String(value),
           count,
-        }),
-      );
+        }))
+        .filter((d) => filter.length === 0 || filter.includes(d.value));
 
       // Sort by count descending
       // chartData.sort((a, b) => b.count - a.count);
@@ -137,7 +143,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         .attr('fill', '#374151')
         .text(feature);
     },
-    [feature, data],
+    [feature, data, filter],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
@@ -150,6 +156,16 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
     );
   };
 
+  const filterOptions = useMemo(() => {
+    if (!feature) return {};
+    const categories = Array.from(
+      new Set(data.map((d) => (d as Record<string, any>)[feature].toString())),
+    );
+    return Object.fromEntries(
+      categories.map((category) => [category, category]),
+    );
+  }, [feature, data]);
+
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
@@ -159,6 +175,17 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         onChange={(value) => setFeature(value)}
         options={getFeatureOptions()}
       />
+      {feature && (
+        <SearchableSelect
+          className="w-fit"
+          label="Categories to include"
+          placeholder="All"
+          value={filter}
+          onChange={(value) => setFilter(value)}
+          options={filterOptions}
+          selectMultiple
+        />
+      )}
 
       <div ref={containerRef} className="flex-1 min-h-0">
         <svg ref={svgRef} className="w-full h-full"></svg>

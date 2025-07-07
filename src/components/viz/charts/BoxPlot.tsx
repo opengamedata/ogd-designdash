@@ -146,26 +146,6 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
         .call(yAxis)
         .attr('font-size', Math.max(10, Math.min(12, height / 30)));
 
-      // Add X axis
-      const xAxis = d3.axisBottom(xScale);
-      chartGroup
-        .append('g')
-        .attr('transform', `translate(0,${height})`)
-        .call(xAxis)
-        .attr('font-size', Math.max(10, Math.min(12, width / 50)));
-
-      // Add axis labels
-      chartGroup
-        .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 0 - margin.left)
-        .attr('x', 0 - height / 2)
-        .attr('dy', '1em')
-        .style('text-anchor', 'middle')
-        .attr('font-size', Math.max(12, Math.min(14, height / 25)))
-        .attr('fill', '#374151')
-        .text('Value');
-
       chartGroup
         .append('text')
         .attr(
@@ -178,15 +158,41 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
         .text(feature);
 
       // Add statistics text
-      const statsText = `Q1: ${q1.toFixed(2)} | Q2: ${q2.toFixed(2)} | Q3: ${q3.toFixed(2)} | IQR: ${iqr.toFixed(2)}`;
       chartGroup
         .append('text')
-        .attr('x', width / 2)
-        .attr('y', -5)
-        .style('text-anchor', 'middle')
+        .attr('x', width - 10)
+        .attr('y', 20)
+        .attr('text-anchor', 'end')
         .attr('font-size', Math.max(10, Math.min(12, height / 35)))
         .attr('fill', '#6b7280')
-        .text(statsText);
+        .text(`Q1: ${q1.toFixed(2)}`);
+
+      chartGroup
+        .append('text')
+        .attr('x', width - 10)
+        .attr('y', 35)
+        .attr('text-anchor', 'end')
+        .attr('font-size', Math.max(10, Math.min(12, height / 35)))
+        .attr('fill', '#6b7280')
+        .text(`Q2: ${q2.toFixed(2)}`);
+
+      chartGroup
+        .append('text')
+        .attr('x', width - 10)
+        .attr('y', 50)
+        .attr('text-anchor', 'end')
+        .attr('font-size', Math.max(10, Math.min(12, height / 35)))
+        .attr('fill', '#6b7280')
+        .text(`Q3: ${q3.toFixed(2)}`);
+
+      chartGroup
+        .append('text')
+        .attr('x', width - 10)
+        .attr('y', 65)
+        .attr('text-anchor', 'end')
+        .attr('font-size', Math.max(10, Math.min(12, height / 35)))
+        .attr('fill', '#6b7280')
+        .text(`IQR: ${iqr.toFixed(2)}`);
     },
     [feature, data],
   );

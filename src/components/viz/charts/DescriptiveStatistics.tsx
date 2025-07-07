@@ -7,7 +7,7 @@ interface DescriptiveStatisticsProps {
   gameDataId: string;
 }
 
-const statNames = {
+const measures = {
   mean: 'Mean',
   median: 'Median',
   mode: 'Mode',
@@ -23,6 +23,8 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
   if (!dataset) return <div>Dataset not found</div>;
   const { data } = dataset;
   const [feature, setFeature] = useState<string>('');
+  const [measureSelected, setMeasureSelected] =
+    useState<keyof typeof measures>('mean');
 
   const stats = useMemo(() => {
     if (!feature || !data.length) return {};
@@ -32,12 +34,12 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
       .filter((value) => typeof value === 'number' && !isNaN(value));
 
     // Calculate the mean, median, mode, range, variance, standard deviation, skewness, and kurtosis
-    const mean = d3.mean(values);
+    const mean = d3.mean(values)?.toFixed(2);
     const median = d3.median(values);
     const mode = d3.mode(values);
     const range = d3.extent(values);
-    const variance = d3.variance(values);
-    const standardDeviation = d3.deviation(values);
+    const variance = d3.variance(values)?.toFixed(2);
+    const standardDeviation = d3.deviation(values)?.toFixed(2);
     // const skewness =
     // const kurtosis = d3.kurtosis(values);
 
@@ -61,26 +63,41 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full ">
-      <Select
-        className="w-full max-w-sm"
-        label="Feature"
-        value={feature}
-        onChange={(value) => setFeature(value)}
-        options={getFeatureOptions()}
-      />
-      <div className="flex flex-col gap-2 h-full justify-center">
-        {Object.entries(stats).map(([key, value]) => (
-          <div key={key} className="flex flex-row gap-2">
-            <span className=" min-w-[80px]">
-              {statNames[key as keyof typeof statNames]}:
+      <div className="flex flex-row gap-2">
+        <Select
+          className="w-full max-w-sm"
+          label="Feature"
+          value={feature}
+          onChange={(value) => setFeature(value)}
+          options={getFeatureOptions()}
+        />
+        <Select
+          className="w-full max-w-sm"
+          label="Measure"
+          value={measureSelected}
+          onChange={(value) =>
+            setMeasureSelected(value as keyof typeof measures)
+          }
+          options={measures}
+        />
+      </div>
+      <div className="flex flex-row gap-2 w-full justify-center h-full">
+        {feature && measureSelected && (
+          <div className="flex flex-col h-full justify-center items-center gap-6">
+            <span className="text-6xl font-bold">
+              {measureSelected === 'range' && stats[measureSelected]
+                ? `${stats[measureSelected][0]} ~ ${stats[measureSelected][1]}`
+                : stats[measureSelected]}
             </span>
-            <span className="">
-              {key === 'range'
-                ? `${(value as [number, number])[0]} ~ ${(value as [number, number])[1]}`
-                : (value as number)?.toFixed(2)}
+            <span className="text-lg">
+              <strong>
+                {measures[measureSelected as keyof typeof measures]}
+              </strong>
+              {' of '}
+              <strong>{feature}</strong>
             </span>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
