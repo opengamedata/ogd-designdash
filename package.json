@@ -4,7 +4,6 @@
   "description": "This project provides a general-use visualization dashboard for exploring game data feature datasets from OpenGameData.",
   "author": "Yuheng Chen, Luke Swanson, Yucheng Lin",
   "license": "MIT",
-  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/opengamedata/opengamedata-designdash.git"
