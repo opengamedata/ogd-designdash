@@ -3,7 +3,9 @@ import * as d3 from "d3";
 
 function HistogramVisualizer({ model, setVisualizer }) {
   const svgRef = useRef(null);
-  var data = model.Data;
+  const data = model.Data;
+
+  const feature = "SessionCount";
 
   const svgWidth = 450;
   const svgHeight = 400;
@@ -17,21 +19,31 @@ function HistogramVisualizer({ model, setVisualizer }) {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const x = d3.scaleLinear().domain([1, 100]).range([0, width]);
-    const bins = d3.histogram().domain(x.domain()).thresholds(x.ticks(100))(data);
-    const y = d3.scaleLinear().domain([0, d3.max(bins, d => d.length)]).nice().range([height, 0]);
+    const x = d3.scaleLinear().domain([0, 50]).range([0, width]);
+    const bins = d3
+      .histogram()
+      .domain(x.domain())
+      .thresholds(x.ticks(50))
+      .value((d) => d[feature])(data);
+    const y = d3
+      .scaleLinear()
+      .domain([0, d3.max(bins, (d) => d.length)])
+      .nice()
+      .range([height, 0]);
 
-    const bar = g.selectAll(".bar")
+    const bar = g
+      .selectAll(".bar")
       .data(bins)
       .enter()
       .append("g")
       .attr("class", "bar")
-      .attr("transform", d => `translate(${x(d.x0)},${y(d.length)})`);
+      .attr("transform", (d) => `translate(${x(d.x0)},${y(d.length)})`);
 
-    bar.append("rect")
+    bar
+      .append("rect")
       .attr("x", 1)
       .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
-      .attr("height", d => height - y(d.length))
+      .attr("height", (d) => height - y(d.length))
       .attr("fill", "#69b3a2");
 
     g.append("g")
@@ -42,27 +54,27 @@ function HistogramVisualizer({ model, setVisualizer }) {
     g.append("text")
       .attr("transform", `translate(${width / 2}, ${height + margin.top - 10})`)
       .style("text-anchor", "middle")
-      .text("Number");
+      .text(feature);
 
-    g.append("g")
-      .call(d3.axisLeft(y));
+    g.append("g").call(d3.axisLeft(y));
 
     // Y-axis Title
     g.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left)
-      .attr("x", 0 - (height / 2))
+      .attr("x", 0 - height / 2)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
       .text("Frequency");
 
     // Main Title
-    svg.append("text")
+    svg
+      .append("text")
       .attr("x", svgWidth / 2)
       .attr("y", margin.top / 2)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
-      .text("Frequency of 1000 Random Values");
+      .text("Frequency of " + feature);
   }, []);
 
   return (
@@ -71,6 +83,5 @@ function HistogramVisualizer({ model, setVisualizer }) {
     </div>
   );
 }
-
 
 export default HistogramVisualizer;
