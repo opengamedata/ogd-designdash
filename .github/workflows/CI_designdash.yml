@@ -31,20 +31,22 @@ jobs:
     steps:
 
   # 1. Local checkout & config
+    - name: Announce deploy
+      run: echo "Deploying to ${{ env.DEPLOY_URL }} from ${{ github.repository }} via ${{ github.actor }}"
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Set up Config File
       uses: ./.github/actions/DesignDash_config
       with:
-        api_origin:   ${{ vars.OGD_API_HOST }}
-        api_path:     ${{ vars.OGD_API_PATH }}
+        api_origin:   ${{ env.API_HOST }}
+        api_path:     ${{ env.API_PATH }}
         package_home: ${{ env.URL_PATH }}
 
   # 2. Build 
     - name: Install Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4.4.0
       with:
-        node-version: 16
+        node-version: 22
     - name: Install libraries
       run: npm clean-install
         npm ci
