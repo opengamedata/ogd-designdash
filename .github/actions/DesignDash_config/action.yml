@@ -1,4 +1,4 @@
-name: "Set up config file for a run"
+name: "Set up config files for Design Dashboard"
 author: Luke Swanson
 description: "Given a set of appropriate inputs, this action prepares a config.js file for a data export."
 branding:

@@ -6,9 +6,10 @@ on:
      branches: [ production ]
 
 env:
-  TARGET_HOST: ${{ vars.OGD_SERVICES_HOST }}
-  TARGET_PATH: ${{ vars.WEB_PATH }}designer-dashboard/${{ github.ref_name }}
-  TARGET_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
+  DEPLOY_HOST: ${{ vars.OGD_SERVICES_HOST }}
+  DEPLOY_DIR: ${{ vars.WEB_PATH }}/designer-dashboard/${{ github.ref_name }}
+  DEPLOY_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
+  URL_PATH:    /designer-dashboard/${{ github.ref_name }}
 
 jobs:
   release_deploy:
@@ -20,7 +21,7 @@ jobs:
 
     steps:
 
-    # 1. Local checkout & config
+  # 1. Local checkout & config
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Set up Config File
@@ -30,7 +31,7 @@ jobs:
         api_path:     ${{ vars.OGD_API_PATH }}
         package_home: ${{ env.URL_PATH }}
 
-    # 2. Build 
+  # 2. Build 
     - name: Install Node
       uses: actions/setup-node@v3
       with:
@@ -41,7 +42,7 @@ jobs:
     - name: Build
       run: npm run build
 
-    # 3. Remote config & deploy
+  # 3. Remote config & deploy
     - name: Install OpenConnect
       run: sudo apt-get -q update && sudo apt-get -q install openconnect
     - name: Connect VPN
@@ -53,16 +54,16 @@ jobs:
         echo '${{secrets.DEPLOY_KEY}}' >> ./key.txt
         chmod 600 ./key.txt
     - name: Ensure directory exists
-      run: ssh -o StrictHostKeyChecking=no -T -i ./key.txt ${{ secrets.DEPLOY_USER }}@${{ env.TARGET_HOST }} "mkdir -p ${{ env.TARGET_PATH }}"
+      run: ssh -o StrictHostKeyChecking=no -T -i ./key.txt ${{ secrets.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
 
     - name: Upload to web server via rsync
       uses: burnett01/rsync-deployments@5.2
       with:
         switches: -vrc --exclude-from rsync-exclude
         path: build/*
-        remote_path: ${{ env.TARGET_PATH }}
-        remote_host: ${{ env.TARGET_HOST }}
+        remote_path: ${{ env.DEPLOY_DIR }}
+        remote_host: ${{ env.DEPLOY_HOST }}
         remote_user: ${{ secrets.DEPLOY_USER }}
         remote_key:  ${{ secrets.DEPLOY_KEY  }}
     - name: Announce deploy
-      run: echo "Deployed to ${{ env.TARGET_URL }}"
+      run: echo "Deployed to ${{ env.DEPLOY_URL }}"

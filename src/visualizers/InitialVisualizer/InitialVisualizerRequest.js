@@ -29,7 +29,7 @@ export default class InitialVisualizerRequest extends VisualizerRequest {
 
    /**
     * @param {object} requesterState
-    * @returns {APIRequest?} The API request that gets the visualizer's required data.
+    * @returns {APIRequest | Promise<APIRequest>?} The API request that gets the visualizer's required data.
     */
    GetAPIRequest(requesterState) {
       return null;

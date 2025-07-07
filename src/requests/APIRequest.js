@@ -59,40 +59,46 @@ export class APIRequest {
    get RequestType() {
       return this.request_type
    }
+
    /**
     * @returns {string}
     */
    get Game() {
       return this.game_name;
    }
+
    get LocalStorageKey() {
       return this.genLocalStorageKey();
    }
 
    /**
-    * 
-    * @param {string} api_host 
-    * @param {string} api_path
-    * @returns {URL}
+    * Use the path and params for a given APIRequest to generate an object of JS `Request` type.
+    * This is generally for use with JS `fetch` API.
+    * @param {string} api_host The base URL of the API host
+    * @param {string} api_path The path on the API host to the wsgi app itself.
+    * @returns {Request}
     */
-   FetchURL(api_host, api_path) {
-      let searchParams = null;
+   ToRequest(api_host, api_path) {
+
+      let ret_val = null;
+
+      let _search_params = null;
       if (Object.keys(this.HeaderParams()).length > 0) {
-         searchParams = []
-         let callback = (key) => searchParams.push(`${key}=${encodeURIComponent(this.HeaderParams()[key])}`);
+         _search_params = []
+         let callback = (key) => _search_params.push(`${key}=${encodeURIComponent(this.HeaderParams()[key])}`);
          Object.keys(this.HeaderParams()).forEach( callback );
       }
 
       // fetch by url
-      const _path = searchParams ? `${this.URLPath()}?${searchParams.join("&")}` : this.URLPath()
+      const _path = _search_params ? `${this.URLPath()}?${_search_params.join("&")}` : this.URLPath()
       console.log(`Got a FetchURL with base "${api_host}" and path "${api_path}${_path}"`)
-      return new URL(api_path + _path, "https://" + api_host);
-   }
-   FetchOptions() {
-      let options = {
+      let _url = new URL(api_path + _path, "https://" + api_host);
+      let _options = {
          method : this.RequestType.asString,
          body   : this.BodyParams()
       };
-      return options
+      ret_val = new Request(_url, _options)
+
+      return ret_val
    }
 }
