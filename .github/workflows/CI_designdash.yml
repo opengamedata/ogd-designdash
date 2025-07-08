@@ -50,6 +50,8 @@ jobs:
     - name: Install libraries
       run: npm clean-install
         npm ci
+    - name: Install NextJS
+      run: npm install -g next
     - name: Build
       run: next build
 
