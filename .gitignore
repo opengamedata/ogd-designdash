@@ -1,6 +1,5 @@
 node_modules
 .next
-out
 coverage# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -14,6 +13,7 @@ src/config/config.js
 
 # production
 /build
+/out
 
 # misc
 .DS_Store
