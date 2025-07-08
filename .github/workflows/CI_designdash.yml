@@ -51,7 +51,7 @@ jobs:
       run: npm clean-install
         npm ci
     - name: Build
-      run: npm run build
+      run: next build
 
   # 3. Remote config & deploy
     - name: Connect to VPN
