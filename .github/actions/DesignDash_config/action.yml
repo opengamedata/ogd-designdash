@@ -21,16 +21,16 @@ runs:
   using: "composite"
   steps:
     - name: Set up config
-      run: cp src/config.js.template src/config.js 
+      run: cp src/config/config.js.template src/config/config.js 
       shell: bash
     - name: Set API origin server
-      run: sed -i 's@API_ORIGIN_DEFAULT@${{inputs.api_origin}}@g' src/config.js
+      run: sed -i 's@API_ORIGIN_DEFAULT@${{inputs.api_origin}}@g' src/config/config.js
       shell: bash
     - name: Set API path on server
-      run: sed -i 's@API_PATH_DEFAULT@${{inputs.api_path}}@g' src/config.js
+      run: sed -i 's@API_PATH_DEFAULT@${{inputs.api_path}}@g' src/config/config.js
       shell: bash
     - name: Set dashboard base directory
-      run: sed -i 's@BASE_URL@${{inputs.package_home}}@g' src/config.js
+      run: sed -i 's@BASE_URL@${{inputs.package_home}}@g' src/config/config.js
       shell: bash
     - name: Set package homepage
       run: sed -i 's@PACKAGE_HOMEPAGE@${{inputs.package_home}}@g' package.json
