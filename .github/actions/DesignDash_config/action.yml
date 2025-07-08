@@ -37,5 +37,5 @@ runs:
       run: sed -i 's@BASE_URL@${{inputs.package_home}}@g' ${{inputs.config_base}}/config.js
       shell: bash
     - name: Set package homepage
-      run: sed -i 's@PACKAGE_HOMEPAGE@${{inputs.package_home}}@g' package.json
+      run: sed -i 's@BASE_PATH@${{inputs.package_home}}@g' next.config.js
       shell: bash
