@@ -50,10 +50,10 @@ jobs:
     - name: Install libraries
       run: npm clean-install
         npm ci
-    - name: Install NextJS
-      run: npm install -g next
+    # - name: Install NextJS
+    #   run: npm install -g next
     - name: Build
-      run: next build
+      run: npm run build
 
   # 3. Remote config & deploy
     - name: Connect to VPN
