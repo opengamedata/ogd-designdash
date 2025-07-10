@@ -98,6 +98,7 @@ const getSupportedChartTypes = (
     jobGraphSubfeaturesSupported
   ) {
     supportedChartTypes.push('jobGraph');
+    supportedChartTypes.push('sankey');
   }
   return supportedChartTypes;
 };
