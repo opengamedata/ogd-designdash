@@ -5,6 +5,7 @@ import { Histogram } from '../viz/charts/Histogram';
 import { ScatterPlot } from '../viz/charts/ScatterPlot';
 import { Timeline } from '../viz/charts/Timeline';
 import { JobGraph } from '../viz/charts/JobGraph';
+import { Sankey } from '../viz/charts/Sankey';
 import VizSetup from '../viz/VizSetup';
 import DescriptiveStatistics from '../viz/charts/DescriptiveStatistics';
 import BoxPlot from '../viz/charts/BoxPlot';
@@ -65,6 +66,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
           {vizType === 'scatter' && <ScatterPlot gameDataId={gameDataId} />}
           {vizType === 'timeline' && <Timeline />}
           {vizType === 'jobGraph' && <JobGraph gameDataId={gameDataId} />}
+          {vizType === 'sankey' && <Sankey gameDataId={gameDataId} />}
           {vizType === 'descriptiveStatistics' && (
             <DescriptiveStatistics gameDataId={gameDataId} />
           )}
