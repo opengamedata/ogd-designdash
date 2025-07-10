@@ -1,11 +1,9 @@
 {
-  "name": "ogd-react",
+  "name": "ogd-design-dashboard",
   "version": "0.1.0",
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "description": "This project provides a general-use visualization dashboard for exploring game data feature datasets from OpenGameData.",
   "author": "Yuheng Chen, Luke Swanson, Yucheng Lin",
   "license": "MIT",
-  "main": "src/index.js",
-  "homepage": "/home",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/opengamedata/opengamedata-designdash.git"
@@ -14,52 +12,52 @@
     "url": "https://github.com/opengamedata/opengamedata-designdash/issues"
   },
   "private": true,
-  "dependencies": {
-    "@heroicons/react": "^2.0.13",
-    "@tailwindcss/forms": "^0.5.3",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.4.3",
-    "c3": "^0.7.20",
-    "d3": "^7.8.0",
-    "d3-selection-multi": "^1.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.6.2",
-    "react-scripts": "^5.0.1",
-    "sass": "^1.57.1",
-    "web-vitals": "^3.1.0"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest",
+    "lint": "eslint . --ext .ts,.tsx"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.10",
+    "axios": "latest",
+    "d3": "latest",
+    "d3-regression": "^1.3.10",
+    "d3-sankey": "^0.12.3",
+    "lucide-react": "^0.523.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-grid-layout": "^1.5.1",
+    "zustand": "latest"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18",
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.10",
-    "jsdoc-typeof-plugin": "^1.0.0",
-    "tailwindcss": "^3.2.4",
-    "typescript": "^4.9.4"
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/d3": "^7.4.3",
+    "@types/d3-sankey": "^0.12.4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/react-grid-layout": "^1.3.5",
+    "@types/uuid": "^10.0.0",
+    "autoprefixer": "latest",
+    "cypress": "latest",
+    "eslint": "latest",
+    "eslint-config-airbnb": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-react": "latest",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^30.0.2",
+    "jest-environment-jsdom": "^30.0.2",
+    "postcss": "latest",
+    "prettier": "latest",
+    "tailwindcss": "latest",
+    "ts-jest": "latest",
+    "ts-node": "^10.9.2",
+    "typescript": "latest"
   }
 }

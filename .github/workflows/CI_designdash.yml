@@ -10,6 +10,7 @@ on:
     - '.github/actions/**'
     - 'src/**'
     - 'package.json'
+    - 'next.config.js'
 
 env:
   # Environment has variables for the host, the path on the host filesystem, the path in the URL, and the full deploy URL
@@ -50,6 +51,8 @@ jobs:
     - name: Install libraries
       run: npm clean-install
         npm ci
+    # - name: Install NextJS
+    #   run: npm install -g next
     - name: Build
       run: npm run build
 
