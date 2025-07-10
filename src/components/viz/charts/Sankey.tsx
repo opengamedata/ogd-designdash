@@ -4,7 +4,12 @@ import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import * as d3 from 'd3';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import Select from '../../layout/Select';
-import { EdgeMode, getNodes, getEdges } from './progressionGraphsUtil';
+import {
+  EdgeMode,
+  getNodes,
+  getEdges,
+  detectGraphCycles,
+} from './progressionGraphsUtil';
 
 interface SankeyProps {
   gameDataId: string;
@@ -46,8 +51,6 @@ export const Sankey: React.FC<SankeyProps> = ({ gameDataId }) => {
       dimensions: { width: number; height: number },
     ) => {
       if (!sankeyData || sankeyData.nodes.length === 0) return;
-
-      console.log('sankeyData', sankeyData);
 
       // Clear previous content
       svg.selectAll('*').remove();
@@ -91,9 +94,6 @@ export const Sankey: React.FC<SankeyProps> = ({ gameDataId }) => {
           [1, 1],
           [width - 1, height - 1],
         ]);
-
-      console.log('sankeyLayout', sankeyLayout);
-      console.trace();
 
       // Process data for Sankey
       const { nodes, links } = sankeyLayout({
@@ -236,13 +236,19 @@ function processDataForSankey(
   data: any,
   edgeMode: keyof typeof EdgeMode,
 ): SankeyData {
-  const nodes: SankeyNode[] = [];
-  const links: SankeyLink[] = [];
-  const nodeMap = new Map<string, number>();
-
   // Get nodes and edges using the existing utility functions
   const rawNodes = getNodes(data);
   const rawEdges = getEdges(data, edgeMode);
+
+  // Use utility to check for cycles
+  if (detectGraphCycles(rawNodes, rawEdges)) {
+    console.error('Graph contains a cycle (circular links detected)');
+    alert('Graph contains a cycle (circular links detected)');
+    return { nodes: [], links: [] };
+  }
+
+  const nodes: SankeyNode[] = [];
+  const links: SankeyLink[] = [];
 
   // Convert nodes to Sankey format
   Object.values(rawNodes).forEach((node: any) => {

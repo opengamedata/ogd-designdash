@@ -13,8 +13,6 @@ export const EdgeMode = {
 export const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
   let edges = [];
 
-  console.log(data);
-
   const rawLinks: Record<string, Record<string, string[]>> = JSON.parse(
     data[edgeMode],
   );
@@ -22,7 +20,6 @@ export const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
   switch (edgeMode) {
     case 'TopJobCompletionDestinations':
     case 'TopJobSwitchDestinations':
-      console.log(edgeMode);
       for (const [sourceKey, targets] of Object.entries(rawLinks)) {
         for (const [targetKey, players] of Object.entries(targets)) {
           if (sourceKey === targetKey) continue; // omit self-pointing jobs
@@ -54,7 +51,6 @@ export const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
       alert('Something went wrong. Plase refresh the page and try again');
       break;
   }
-  console.log('edges', edges);
   return edges;
 };
 
@@ -86,6 +82,66 @@ export const getNodes = (data: any) => {
       nodes[jobNumber][jobFeature] = JSON.parse(nodes[jobNumber][jobFeature]);
     }
   }
-  console.log('nodes', nodes);
   return nodes;
 };
+
+/**
+ * Detect cycles in a directed graph (for Sankey)
+ * Logs errors for direct self-links and longer cycles
+ * Returns true if a cycle is found, false otherwise
+ */
+export function detectGraphCycles(
+  nodes: Record<string, any>,
+  links: { source: string; target: string }[],
+): boolean {
+  // For each node in nodes, transform the key to the value.id
+  if (nodes && typeof nodes === 'object') {
+    const newNodes: Record<string, any> = {};
+    for (const [key, value] of Object.entries(nodes)) {
+      if (value && typeof value === 'object' && value.id !== undefined) {
+        newNodes[value.id] = value;
+      } else {
+        newNodes[key] = value;
+      }
+    }
+    nodes = newNodes;
+  }
+
+  // 1. Direct self-links
+  let hasDirectSelfLink = false;
+  links.forEach((link) => {
+    if (link.source === link.target) {
+      hasDirectSelfLink = true;
+      console.error('Direct self-link (circular):', link);
+    }
+  });
+
+  // 2. Longer cycles (simple DFS for small graphs)
+  const adj = new Map<string, string[]>();
+  Object.keys(nodes).forEach((n) => adj.set(n, []));
+  links.forEach((l) => adj.get(l.source)?.push(l.target));
+  const visited = new Set<string>(); // track visited nodes
+  const stack = new Set<string>(); // track nodes in current path
+
+  function dfs(node: string): boolean {
+    if (stack.has(node)) return true; // cycle found
+    if (visited.has(node)) return false;
+    visited.add(node);
+    stack.add(node);
+    for (const neighbor of adj.get(node) || []) {
+      if (dfs(neighbor)) return true;
+    }
+    stack.delete(node);
+    return false;
+  }
+
+  let hasLongerCycle = false;
+  for (const n of Object.keys(nodes)) {
+    if (dfs(n)) {
+      hasLongerCycle = true;
+      break;
+    }
+  }
+
+  return hasDirectSelfLink || hasLongerCycle;
+}
