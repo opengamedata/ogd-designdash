@@ -24,7 +24,7 @@ const RegressionLineType = {
 } as const;
 
 export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
-  const { getDatasetByID } = useDataStore();
+  const { getDatasetByID, hasHydrated } = useDataStore();
   const dataset = getDatasetByID(gameDataId);
   const [xFeature, setXFeature] = useState<string>('');
   const [xRangeFilter, setXRangeFilter] = useState<{
@@ -54,7 +54,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
   }, [yFeature]);
 
   if (!dataset) {
-    return <div>Dataset not found</div>;
+    return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
   }
   const { data } = dataset;
 

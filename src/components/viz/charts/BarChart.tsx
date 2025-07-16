@@ -10,8 +10,9 @@ interface BarChartProps {
 }
 
 export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
-  const dataset = useDataStore().getDatasetByID(gameDataId);
-  if (!dataset) return <div>Dataset not found</div>;
+  const { getDatasetByID, hasHydrated } = useDataStore();
+  const dataset = getDatasetByID(gameDataId);
+  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
   const { data } = dataset;
   const [feature, setFeature] = useState<string>('');
   const [filter, setFilter] = useState<string[]>([]);
