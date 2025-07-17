@@ -19,21 +19,23 @@ const VizSetup = ({
   setVizType,
   setContainerMode,
 }: VizSetupProps) => {
-  const { datasets } = useDataStore();
+  const { datasets, hasHydrated } = useDataStore();
   const [supportedChartTypes, setSupportedChartTypes] = useState<VizTypeKey[]>(
     [],
   );
 
   useEffect(() => {
     if (!gameDataId) return;
-    const supportedChartTypes = datasets[gameDataId].supportedChartTypes;
+    const dataset = datasets[gameDataId];
+    if (!dataset) return;
+    const supportedChartTypes = dataset.supportedChartTypes;
     if (supportedChartTypes) {
       setSupportedChartTypes(supportedChartTypes);
     }
     if (!supportedChartTypes.includes(vizType)) {
       setVizType(supportedChartTypes[0]);
     }
-  }, [gameDataId]);
+  }, [gameDataId, datasets]);
 
   const visualize = () => {
     if (gameDataId) {
@@ -43,13 +45,14 @@ const VizSetup = ({
 
   return (
     <div className="h-full flex flex-col gap-6 justify-center items-start p-4">
+      {!hasHydrated && <div>Loading datasets...</div>}
       <Select
         className="w-full"
         label="Dataset"
         value={gameDataId}
         onChange={(value) => setGameDataId(value as string)}
         options={Object.fromEntries(
-          Object.entries(datasets).map(([key, value]) => [key, key]),
+          Object.entries(datasets).map(([key]) => [key, key]),
         )}
       />
       <Select

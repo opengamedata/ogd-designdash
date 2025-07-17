@@ -10,8 +10,9 @@ interface JobGraphProps {
 }
 
 export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
-  const dataset = useDataStore().getDatasetByID(gameDataId);
-  if (!dataset) return <div>Dataset not found</div>;
+  const { getDatasetByID, hasHydrated } = useDataStore();
+  const dataset = getDatasetByID(gameDataId);
+  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
   const { data } = dataset;
 
   const [edgeMode, setEdgeMode] = useState<keyof typeof EdgeMode>(

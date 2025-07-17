@@ -19,8 +19,9 @@ const measures = {
 const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
   gameDataId,
 }) => {
-  const dataset = useDataStore().getDatasetByID(gameDataId);
-  if (!dataset) return <div>Dataset not found</div>;
+  const { getDatasetByID, hasHydrated } = useDataStore();
+  const dataset = getDatasetByID(gameDataId);
+  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
   const { data } = dataset;
   const [feature, setFeature] = useState<string>('');
   const [measureSelected, setMeasureSelected] =
