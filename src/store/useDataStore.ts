@@ -18,15 +18,22 @@ interface DataStore {
   ) => GameData[];
 }
 
-// IndexedDB storage for larger datasets
-const dbPromise = openDB('ogd-data-store', 1, {
-  upgrade(db) {
-    db.createObjectStore('store');
-  },
-});
+// IndexedDB storage for larger datasets - only initialize in browser
+const dbPromise =
+  typeof window !== 'undefined'
+    ? openDB('ogd-data-store', 1, {
+        upgrade(db) {
+          db.createObjectStore('store');
+        },
+      })
+    : null;
 
-const idbStorage: PersistStorage<DataStore> = {
+const idbStorage: PersistStorage<{
+  datasets: Record<string, GameData>;
+  hasHydrated: boolean;
+}> = {
   getItem: async (name: string) => {
+    if (!dbPromise) return null;
     try {
       const db = await dbPromise;
       const item = await db.get('store', name);
@@ -42,6 +49,7 @@ const idbStorage: PersistStorage<DataStore> = {
     }
   },
   setItem: async (name: string, value: any) => {
+    if (!dbPromise) return;
     try {
       const db = await dbPromise;
       await db.put('store', value, name);
@@ -51,6 +59,7 @@ const idbStorage: PersistStorage<DataStore> = {
     }
   },
   removeItem: async (name: string) => {
+    if (!dbPromise) return;
     try {
       const db = await dbPromise;
       await db.delete('store', name);
@@ -101,8 +110,15 @@ const useDataStore = create<DataStore>()(
       name: 'ogd-data-store',
       version: 1,
       storage: idbStorage,
-      onRehydrateStorage: () => () => {
-        set({ hasHydrated: true });
+      partialize: (state) => ({
+        datasets: state.datasets,
+        hasHydrated: state.hasHydrated,
+      }),
+      onRehydrateStorage: () => (state) => {
+        // This callback is called after rehydration
+        if (state) {
+          state.hasHydrated = true;
+        }
       },
     },
   ),
