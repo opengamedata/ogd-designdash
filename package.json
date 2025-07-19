@@ -30,7 +30,8 @@
     "react": "latest",
     "react-dom": "latest",
     "react-grid-layout": "^1.5.1",
-    "zustand": "latest"
+    "zustand": "latest",
+    "idb": "latest"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
