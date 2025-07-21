@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
                 onClick={() => setActiveTab(1)}
                 aria-selected={activeTab === 1}
               >
-                Layouts
+                Dashboards
               </button>
             </nav>
           </div>

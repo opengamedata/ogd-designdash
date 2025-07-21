@@ -77,8 +77,11 @@ const LayoutManager = () => {
                 </>
               ) : (
                 <>
-                  <div className="font-medium text-sm text-gray-800 w-full">
+                  <div className="flex items-center gap-2 font-medium text-sm text-gray-800 w-full">
                     {layout.name}
+                    <span className="text-xs text-gray-500">
+                      {currentLayout === id ? '(current)' : ''}
+                    </span>
                   </div>
                   <button
                     className="text-gray-400 hover:text-blue-500"

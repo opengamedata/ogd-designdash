@@ -190,7 +190,7 @@ const GridLayout: React.FC = () => {
             draggableHandle=".drag-handle"
             isResizable={true}
             onLayoutChange={(l: Layout[]) => {
-              // setLayout(l); // This line is removed
+              saveCurrentLayout(l, charts);
               updateSpawnPoint(l);
             }}
           >
