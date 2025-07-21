@@ -1,22 +1,36 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import { Minus, Plus } from 'lucide-react';
 import Input from '../../layout/Input';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface HistogramProps {
   gameDataId: string;
+  chartId: string;
 }
 
-export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
+export const Histogram: React.FC<HistogramProps> = ({
+  gameDataId,
+  chartId,
+}) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const [binCount, setBinCount] = useChartOption<number>(
+    chartId,
+    'binCount',
+    10,
+  );
   const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
   const { data } = dataset;
-  const [feature, setFeature] = useState<string>('');
-  const [binCount, setBinCount] = useState<number>(10);
   const [rangeFilter, setRangeFilter] = useState({
     min: -Infinity,
     max: Infinity,

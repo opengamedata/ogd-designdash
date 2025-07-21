@@ -1,25 +1,29 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useCallback, useMemo, useEffect } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import SearchableSelect from '../../layout/SearchableSelect';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface BarChartProps {
   gameDataId: string;
+  chartId: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
+export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const [filter, setFilter] = useChartOption<string[]>(chartId, 'filter', []);
   const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
-  const { data } = dataset;
-  const [feature, setFeature] = useState<string>('');
-  const [filter, setFilter] = useState<string[]>([]);
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
 
-  useEffect(() => {
-    setFilter([]);
-  }, [feature]);
+  const { data } = dataset;
 
   const renderChart = useCallback(
     (
@@ -167,13 +171,19 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
     );
   }, [feature, data]);
 
+  const handleFeatureChange = (value: string) => {
+    if (value === feature) return;
+    setFeature(value);
+    setFilter([]);
+  };
+
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
         className="w-full max-w-sm"
         label="Feature"
         value={feature}
-        onChange={(value) => setFeature(value)}
+        onChange={handleFeatureChange}
         options={getFeatureOptions()}
       />
       {feature && (

@@ -4,6 +4,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import VizContainer from './VizContainer';
 import { v4 as uuidv4 } from 'uuid';
+import useLayoutStore, { ChartConfig } from '../../store/useLayoutStore';
 
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
@@ -32,57 +33,92 @@ const generateLayout = (): Layout[] => {
 const GridLayout: React.FC = () => {
   const Grid = useMemo(() => WidthProvider(Responsive), []);
 
-  const [layout, setLayout] = useState<Layout[]>([]);
+  // Remove local state for layout and charts
+  // const [layout, setLayout] = useState<Layout[]>([]);
   const [spawnPoint, setSpawnPoint] = useState<{ x: number; y: number }>({
     x: DEFAULT_CHART_WIDTH,
     y: 0,
-  }); // The spawn point is the point where the next chart will be spawned.
-  const [charts, setCharts] = useState<{ [key: string]: boolean }>({});
+  });
+  // const [charts, setCharts] = useState<Record<string, ChartConfig>>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize layout on client side only to prevent hydration mismatch
+  // Use layout and charts from store
+  const {
+    layouts,
+    currentLayout,
+    createLayout,
+    saveCurrentLayout,
+    hasHydrated,
+  } = useLayoutStore();
+  const layout =
+    currentLayout && layouts[currentLayout]
+      ? layouts[currentLayout].layout
+      : [];
+  const charts =
+    currentLayout && layouts[currentLayout]
+      ? layouts[currentLayout].charts
+      : {};
+
+  // Initialize from persisted layout
   useEffect(() => {
-    if (!isInitialized) {
-      const initialLayout = generateLayout();
-      setLayout(initialLayout);
-      setCharts({ [initialLayout[0].i]: true });
+    if (!hasHydrated) return;
+    if (!currentLayout) {
+      createLayout();
+      return;
+    }
+    const stored = layouts[currentLayout];
+    if (!isInitialized && stored) {
+      const initialLayout =
+        stored.layout.length > 0 ? stored.layout : generateLayout();
+      let initialCharts = stored.charts;
+      if (Object.keys(initialCharts).length === 0 && initialLayout.length > 0) {
+        const firstId = initialLayout[0].i;
+        initialCharts = {
+          [firstId]: {
+            id: firstId,
+            datasetId: '',
+            vizType: 'bar' as const,
+            options: {},
+          },
+        };
+      }
+      saveCurrentLayout(initialLayout, initialCharts);
+      updateSpawnPoint(initialLayout);
       setIsInitialized(true);
     }
-  }, [isInitialized]);
+  }, [hasHydrated, currentLayout, layouts, isInitialized]);
 
   const addChart = () => {
     const newChartId = uuidv4();
-    setCharts((prev) => ({
-      ...prev,
-      [newChartId]: true,
-    }));
-    setLayout((prev) => {
-      const currentLayout = [
-        ...prev,
-        {
-          i: newChartId,
-          x: spawnPoint.x,
-          y: spawnPoint.y,
-          w: DEFAULT_CHART_WIDTH,
-          h: DEFAULT_CHART_HEIGHT,
-        },
-      ];
-      updateSpawnPoint(currentLayout);
-      return currentLayout;
-    });
+    const newCharts = {
+      ...charts,
+      [newChartId]: {
+        id: newChartId,
+        datasetId: '',
+        vizType: 'bar' as const,
+        options: {},
+      },
+    };
+    const newLayout = [
+      ...layout,
+      {
+        i: newChartId,
+        x: spawnPoint.x,
+        y: spawnPoint.y,
+        w: DEFAULT_CHART_WIDTH,
+        h: DEFAULT_CHART_HEIGHT,
+      },
+    ];
+    saveCurrentLayout(newLayout, newCharts);
+    updateSpawnPoint(newLayout);
   };
 
   const removeChart = (chartId: string) => {
-    setCharts((prev) => {
-      const newCharts = { ...prev };
-      delete newCharts[chartId];
-      return newCharts;
-    });
-    setLayout((prev) => {
-      const newLayout = prev.filter((item) => item.i !== chartId);
-      updateSpawnPoint(newLayout);
-      return newLayout;
-    });
+    const newCharts = { ...charts };
+    delete newCharts[chartId];
+    const newLayout = layout.filter((item) => item.i !== chartId);
+    saveCurrentLayout(newLayout, newCharts);
+    updateSpawnPoint(newLayout);
   };
 
   /**
@@ -131,19 +167,21 @@ const GridLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-2">
-      <div className="">
-        {/* Controls */}
-        <div className="flex items-center justify-between">
-          <button
-            className="px-2 py-1 bg-gray-300 border border-gray-200 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            onClick={addChart}
-            type="button"
-          >
-            Add Chart
-          </button>
+    <div className="min-h-screen">
+      <div className="flex items-center gap-8 mb-2">
+        <div className="text-lg font-bold">
+          {currentLayout && layouts[currentLayout]?.name}
         </div>
+        <button
+          className="px-2 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200 focus:outline-none  focus:ring-gray-300"
+          onClick={addChart}
+          type="button"
+        >
+          Add Chart
+        </button>
+      </div>
 
+      <div className="">
         {/* Grid */}
         {isInitialized ? (
           <Grid
@@ -152,13 +190,13 @@ const GridLayout: React.FC = () => {
             draggableHandle=".drag-handle"
             isResizable={true}
             onLayoutChange={(l: Layout[]) => {
-              setLayout(l);
+              // setLayout(l); // This line is removed
               updateSpawnPoint(l);
             }}
           >
-            {layout.map((item, idx) => {
-              const chartExists = charts[item.i];
-              if (!chartExists) {
+            {layout.map((item) => {
+              const chartConfig = charts[item.i];
+              if (!chartConfig) {
                 return null;
               }
               return (

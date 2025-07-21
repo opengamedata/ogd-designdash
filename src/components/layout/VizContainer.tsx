@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Move, Minus, Settings, Database } from 'lucide-react';
 import { BarChart } from '../viz/charts/BarChart';
 import { Histogram } from '../viz/charts/Histogram';
@@ -10,6 +10,7 @@ import VizSetup from '../viz/VizSetup';
 import DescriptiveStatistics from '../viz/charts/DescriptiveStatistics';
 import BoxPlot from '../viz/charts/BoxPlot';
 import { VizType, VizTypeKey } from '../../constants/vizTypes';
+import useLayoutStore from '../../store/useLayoutStore';
 
 interface VizContainerProps {
   style?: React.CSSProperties;
@@ -40,11 +41,38 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
     },
     ref,
   ) => {
-    const [containerMode, setContainerMode] = useState<'settings' | 'viz'>(
-      'settings',
+    const chartConfig = useLayoutStore((state) => {
+      const cur = state.currentLayout;
+      return cur ? state.layouts[cur]?.charts[chartId] : undefined;
+    });
+    const updateChartConfig = useLayoutStore(
+      (state) => state.updateChartConfig,
     );
-    const [vizType, setVizType] = useState<VizTypeKey>('bar');
-    const [gameDataId, setGameDataId] = useState<string>('');
+
+    const [containerMode, setContainerMode] = useState<'settings' | 'viz'>(
+      chartConfig?.vizType && chartConfig?.datasetId ? 'viz' : 'settings',
+    );
+    const [vizType, setVizType] = useState<VizTypeKey>(
+      chartConfig?.vizType || 'bar',
+    );
+    const [gameDataId, setGameDataId] = useState<string>(
+      chartConfig?.datasetId || '',
+    );
+
+    useEffect(() => {
+      if (chartConfig) {
+        setVizType(chartConfig.vizType);
+        setGameDataId(chartConfig.datasetId);
+      }
+    }, [chartConfig]);
+
+    useEffect(() => {
+      updateChartConfig(chartId, { vizType });
+    }, [vizType]);
+
+    useEffect(() => {
+      updateChartConfig(chartId, { datasetId: gameDataId });
+    }, [gameDataId]);
 
     const renderChartContent = () => {
       if (containerMode === 'settings') {
@@ -61,16 +89,42 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
 
       return (
         <>
-          {vizType === 'bar' && <BarChart gameDataId={gameDataId} />}
-          {vizType === 'histogram' && <Histogram gameDataId={gameDataId} />}
-          {vizType === 'scatter' && <ScatterPlot gameDataId={gameDataId} />}
-          {vizType === 'timeline' && <Timeline />}
-          {vizType === 'jobGraph' && <JobGraph gameDataId={gameDataId} />}
-          {vizType === 'sankey' && <Sankey gameDataId={gameDataId} />}
-          {vizType === 'descriptiveStatistics' && (
-            <DescriptiveStatistics gameDataId={gameDataId} />
+          {vizType === 'bar' && (
+            <BarChart key={chartId} chartId={chartId} gameDataId={gameDataId} />
           )}
-          {vizType === 'boxPlot' && <BoxPlot gameDataId={gameDataId} />}
+          {vizType === 'histogram' && (
+            <Histogram
+              key={chartId}
+              chartId={chartId}
+              gameDataId={gameDataId}
+            />
+          )}
+          {vizType === 'scatter' && (
+            <ScatterPlot
+              key={chartId}
+              chartId={chartId}
+              gameDataId={gameDataId}
+            />
+          )}
+          {vizType === 'timeline' && (
+            <Timeline key={chartId} chartId={chartId} gameDataId={gameDataId} />
+          )}
+          {vizType === 'jobGraph' && (
+            <JobGraph key={chartId} chartId={chartId} gameDataId={gameDataId} />
+          )}
+          {vizType === 'sankey' && (
+            <Sankey key={chartId} chartId={chartId} gameDataId={gameDataId} />
+          )}
+          {vizType === 'descriptiveStatistics' && (
+            <DescriptiveStatistics
+              key={chartId}
+              chartId={chartId}
+              gameDataId={gameDataId}
+            />
+          )}
+          {vizType === 'boxPlot' && (
+            <BoxPlot key={chartId} chartId={chartId} gameDataId={gameDataId} />
+          )}
         </>
       );
     };

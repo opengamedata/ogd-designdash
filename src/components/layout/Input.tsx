@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 
 interface InputProps {
   className?: string;
-  label: string;
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   debounce?: boolean;
+  autoFocus?: boolean;
 }
 
 const Input = ({
@@ -16,6 +17,7 @@ const Input = ({
   onChange,
   placeholder,
   debounce = false,
+  autoFocus = false,
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
 
@@ -38,9 +40,11 @@ const Input = ({
 
   return (
     <div className={'flex flex-col justify-start items-start ' + className}>
-      <label className="text-sm text-gray-700" htmlFor={label}>
-        {label}
-      </label>
+      {label && (
+        <label className="text-sm text-gray-700" htmlFor={label}>
+          {label}
+        </label>
+      )}
       <input
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         type="text"
@@ -49,6 +53,7 @@ const Input = ({
         placeholder={placeholder ?? 'Type...'}
         onChange={(e) => setInternalValue(e.target.value)}
         onBlur={() => onChange(internalValue)}
+        autoFocus={autoFocus}
       />
     </div>
   );

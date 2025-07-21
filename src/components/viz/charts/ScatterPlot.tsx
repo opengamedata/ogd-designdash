@@ -10,9 +10,11 @@ import {
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import Input from '../../layout/Input';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface ScatterPlotProps {
   gameDataId: string;
+  chartId: string;
 }
 
 const RegressionLineType = {
@@ -23,28 +25,33 @@ const RegressionLineType = {
   logarithmic: 'logarithmic',
 } as const;
 
-export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
+export const ScatterPlot: React.FC<ScatterPlotProps> = ({
+  gameDataId,
+  chartId,
+}) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
-  const dataset = getDatasetByID(gameDataId);
-  const [xFeature, setXFeature] = useState<string>('');
+  const [xFeature, setXFeature] = useChartOption<string>(
+    chartId,
+    'xFeature',
+    '',
+  );
   const [xRangeFilter, setXRangeFilter] = useState<{
     min: number;
     max: number;
-  }>({
-    min: -Infinity,
-    max: Infinity,
-  });
-  const [yFeature, setYFeature] = useState<string>('');
+  }>({ min: -Infinity, max: Infinity });
+  const [yFeature, setYFeature] = useChartOption<string>(
+    chartId,
+    'yFeature',
+    '',
+  );
   const [yRangeFilter, setYRangeFilter] = useState<{
     min: number;
     max: number;
-  }>({
-    min: -Infinity,
-    max: Infinity,
-  });
-  const [regressionLine, setRegressionLine] = useState<
+  }>({ min: -Infinity, max: Infinity });
+  const [regressionLine, setRegressionLine] = useChartOption<
     keyof typeof RegressionLineType
-  >(RegressionLineType.none);
+  >(chartId, 'regressionLine', RegressionLineType.none);
+  const dataset = getDatasetByID(gameDataId);
 
   useEffect(() => {
     setXRangeFilter({ min: -Infinity, max: Infinity });
@@ -54,7 +61,11 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({ gameDataId }) => {
   }, [yFeature]);
 
   if (!dataset) {
-    return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
   }
   const { data } = dataset;
 

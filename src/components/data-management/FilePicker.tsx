@@ -34,6 +34,7 @@ const FilePicker = () => {
       </label>
       <input
         type="file"
+        multiple
         id="file-upload"
         className="hidden"
         onChange={handleFileChange}

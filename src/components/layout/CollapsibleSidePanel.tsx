@@ -8,7 +8,6 @@ interface CollapsibleSidePanelProps {
 
 const CollapsibleSidePanel: React.FC<CollapsibleSidePanelProps> = ({
   children,
-  title = 'Data Sources',
 }) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -17,7 +16,7 @@ const CollapsibleSidePanel: React.FC<CollapsibleSidePanelProps> = ({
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -left-8 top-0 bg-white border border-gray-200 rounded-l-lg p-2 shadow-md hover:bg-gray-50 transition-colors"
+        className="absolute -left-8.5 top-0 bg-white border border-gray-200 rounded-l-lg p-2 shadow-sm hover:bg-gray-50 transition-colors"
         aria-label={isOpen ? 'Close panel' : 'Open panel'}
       >
         {isOpen ? (
@@ -34,13 +33,7 @@ const CollapsibleSidePanel: React.FC<CollapsibleSidePanelProps> = ({
         } overflow-clip`}
       >
         <div className="h-full w-80 flex flex-col">
-          {/* Header */}
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4">{children}</div>
+          <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
         </div>
       </div>
     </div>
