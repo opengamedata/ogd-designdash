@@ -6,6 +6,7 @@ export const VizType = {
   jobGraph: 'Job Graph',
   descriptiveStatistics: 'Descriptive Statistics',
   boxPlot: 'Box Plot',
+  sankey: 'Sankey Diagram',
 } as const;
 
 export type VizTypeKey = keyof typeof VizType;

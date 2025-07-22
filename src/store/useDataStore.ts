@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 import { persist, PersistStorage } from 'zustand/middleware';
+import { openDB } from 'idb';
 
 interface DataStore {
   // states
   datasets: Record<string, GameData>;
+  hasHydrated: boolean;
   // actions
   addDataset: (dataset: GameData) => void;
   removeDataset: (id: string) => void;
@@ -14,77 +16,56 @@ interface DataStore {
     endDate?: string,
     featureLevel?: string,
   ) => GameData[];
+  setHasHydrated: (value: boolean) => void;
 }
 
-// Custom storage with error handling and size limits
-const customStorage: PersistStorage<DataStore> = {
-  getItem: (name: string) => {
+// IndexedDB storage for larger datasets - only initialize in browser
+const dbPromise =
+  typeof window !== 'undefined'
+    ? openDB('ogd-data-store', 1, {
+        upgrade(db) {
+          db.createObjectStore('store');
+        },
+      })
+    : null;
+
+const idbStorage: PersistStorage<{
+  datasets: Record<string, GameData>;
+  hasHydrated: boolean;
+}> = {
+  getItem: async (name: string) => {
+    if (!dbPromise) return null;
     try {
-      const item = localStorage.getItem(name);
+      const db = await dbPromise;
+      const item = await db.get('store', name);
       console.log(
-        '🔍 Attempting to load from localStorage:',
+        '🔍 Attempting to load from idb:',
         name,
         item ? 'Found data' : 'No data found',
       );
-      if (item) {
-        const parsed = JSON.parse(item);
-        console.log('📦 Loaded data:', parsed);
-        return parsed;
-      }
-      return null;
+      return item ?? null;
     } catch (error) {
-      console.warn('Failed to read from localStorage:', error);
+      console.warn('Failed to read from idb:', error);
       return null;
     }
   },
-  setItem: (name: string, value: any) => {
+  setItem: async (name: string, value: any) => {
+    if (!dbPromise) return;
     try {
-      const valueString = JSON.stringify(value);
-      console.log(
-        '💾 Attempting to save to localStorage:',
-        name,
-        'Size:',
-        new Blob([valueString]).size,
-        'bytes',
-      );
-
-      // Check if data is too large (localStorage typically has 5-10MB limit)
-      const sizeInBytes = new Blob([valueString]).size;
-      const sizeInMB = sizeInBytes / (1024 * 1024);
-
-      if (sizeInMB > 4) {
-        // 4MB limit to be safe
-        console.warn('Data too large for localStorage, skipping persistence');
-        return;
-      }
-
-      localStorage.setItem(name, valueString);
-      console.log('✅ Successfully saved to localStorage');
+      const db = await dbPromise;
+      await db.put('store', value, name);
+      console.log('✅ Successfully saved to idb');
     } catch (error) {
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        console.warn(
-          'localStorage quota exceeded, clearing old data and retrying',
-        );
-        try {
-          // Clear all localStorage and retry
-          localStorage.clear();
-          localStorage.setItem(name, JSON.stringify(value));
-        } catch (retryError) {
-          console.error(
-            'Failed to persist data even after clearing localStorage:',
-            retryError,
-          );
-        }
-      } else {
-        console.error('Failed to write to localStorage:', error);
-      }
+      console.error('Failed to write to idb:', error);
     }
   },
-  removeItem: (name: string) => {
+  removeItem: async (name: string) => {
+    if (!dbPromise) return;
     try {
-      localStorage.removeItem(name);
+      const db = await dbPromise;
+      await db.delete('store', name);
     } catch (error) {
-      console.warn('Failed to remove from localStorage:', error);
+      console.warn('Failed to remove from idb:', error);
     }
   },
 };
@@ -94,6 +75,7 @@ const useDataStore = create<DataStore>()(
     (set, get) => ({
       // states
       datasets: {},
+      hasHydrated: false,
       // actions
       addDataset: (dataset: GameData) => {
         console.log('➕ Adding dataset:', dataset.id);
@@ -124,11 +106,21 @@ const useDataStore = create<DataStore>()(
             return false;
           return true;
         }),
+      setHasHydrated: (value: boolean) => set({ hasHydrated: value }),
     }),
     {
       name: 'ogd-data-store',
       version: 1,
-      storage: customStorage,
+      storage: idbStorage,
+      partialize: (state) => ({
+        datasets: state.datasets,
+        hasHydrated: state.hasHydrated,
+      }),
+      onRehydrateStorage: (state) => {
+        return () => {
+          state?.setHasHydrated(true);
+        };
+      },
     },
   ),
 );

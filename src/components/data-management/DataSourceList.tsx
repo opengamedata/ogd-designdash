@@ -3,12 +3,18 @@ import FilePicker from './FilePicker';
 import { ScissorsLineDashed, X } from 'lucide-react';
 
 const DataSourceList = () => {
-  const { datasets, removeDataset } = useDataStore();
+  const { datasets, removeDataset, hasHydrated } = useDataStore();
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
-      <FilePicker />
-      {Object.keys(datasets).length > 0 && (
+      <div className="my-2">
+        <FilePicker />
+      </div>
+      {!hasHydrated && <div>Loading datasets...</div>}
+      {hasHydrated && Object.keys(datasets).length === 0 && (
+        <div className="text-sm text-gray-500">No datasets loaded</div>
+      )}
+      {hasHydrated && Object.keys(datasets).length > 0 && (
         <div className="flex flex-col gap-2 overflow-clip">
           {Object.values(datasets).map((dataset) => (
             <div
