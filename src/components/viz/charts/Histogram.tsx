@@ -31,14 +31,10 @@ export const Histogram: React.FC<HistogramProps> = ({
       <div>Loading dataset...</div>
     );
   const { data } = dataset;
-  const [rangeFilter, setRangeFilter] = useState({
-    min: -Infinity,
-    max: Infinity,
-  });
-
-  useEffect(() => {
-    setRangeFilter({ min: -Infinity, max: Infinity });
-  }, [feature]);
+  const [rangeFilter, setRangeFilter] = useChartOption<{
+    min: number;
+    max: number;
+  }>(chartId, 'rangeFilter', { min: -Infinity, max: Infinity });
 
   const renderChart = useCallback(
     (
@@ -48,14 +44,18 @@ export const Histogram: React.FC<HistogramProps> = ({
       if (!feature || !data.length) return;
 
       // Extract numeric values for the selected feature
+      const safeMin =
+        typeof rangeFilter.min === 'number' ? rangeFilter.min : -Infinity;
+      const safeMax =
+        typeof rangeFilter.max === 'number' ? rangeFilter.max : Infinity;
       const values = data
         .map((d) => (d as Record<string, any>)[feature])
         .filter(
           (value) =>
             typeof value === 'number' &&
             !isNaN(value) &&
-            value >= rangeFilter.min &&
-            value <= rangeFilter.max,
+            value >= safeMin &&
+            value <= safeMax,
         );
 
       if (values.length === 0) return;
@@ -252,7 +252,9 @@ export const Histogram: React.FC<HistogramProps> = ({
         <Input
           label="Min"
           value={
-            rangeFilter.min === -Infinity ? '' : rangeFilter.min.toString()
+            rangeFilter.min === -Infinity || rangeFilter.min == null
+              ? ''
+              : rangeFilter.min.toString()
           }
           onChange={(value) =>
             setRangeFilter({
@@ -264,7 +266,11 @@ export const Histogram: React.FC<HistogramProps> = ({
         />
         <Input
           label="Max"
-          value={rangeFilter.max === Infinity ? '' : rangeFilter.max.toString()}
+          value={
+            rangeFilter.max === Infinity || rangeFilter.max == null
+              ? ''
+              : rangeFilter.max.toString()
+          }
           onChange={(value) =>
             setRangeFilter({
               ...rangeFilter,

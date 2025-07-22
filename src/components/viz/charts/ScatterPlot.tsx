@@ -30,35 +30,34 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
   chartId,
 }) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
+
   const [xFeature, setXFeature] = useChartOption<string>(
     chartId,
     'xFeature',
     '',
   );
-  const [xRangeFilter, setXRangeFilter] = useState<{
-    min: number;
-    max: number;
-  }>({ min: -Infinity, max: Infinity });
+
+  const [xRangeFilter, setXRangeFilter] = useChartOption(
+    chartId,
+    'xRangeFilter',
+    { min: -Infinity, max: Infinity },
+  );
   const [yFeature, setYFeature] = useChartOption<string>(
     chartId,
     'yFeature',
     '',
   );
-  const [yRangeFilter, setYRangeFilter] = useState<{
-    min: number;
-    max: number;
-  }>({ min: -Infinity, max: Infinity });
+
+  const [yRangeFilter, setYRangeFilter] = useChartOption(
+    chartId,
+    'yRangeFilter',
+    { min: -Infinity, max: Infinity },
+  );
+
   const [regressionLine, setRegressionLine] = useChartOption<
     keyof typeof RegressionLineType
   >(chartId, 'regressionLine', RegressionLineType.none);
   const dataset = getDatasetByID(gameDataId);
-
-  useEffect(() => {
-    setXRangeFilter({ min: -Infinity, max: Infinity });
-  }, [xFeature]);
-  useEffect(() => {
-    setYRangeFilter({ min: -Infinity, max: Infinity });
-  }, [yFeature]);
 
   if (!dataset) {
     return hasHydrated ? (
@@ -92,14 +91,23 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
+      const safeMin =
+        typeof xRangeFilter.min === 'number' ? xRangeFilter.min : -Infinity;
+      const safeMax =
+        typeof xRangeFilter.max === 'number' ? xRangeFilter.max : Infinity;
+      const safeMinY =
+        typeof yRangeFilter.min === 'number' ? yRangeFilter.min : -Infinity;
+      const safeMaxY =
+        typeof yRangeFilter.max === 'number' ? yRangeFilter.max : Infinity;
+
       const dots = data.filter((d) => {
         const xValue = (d as Record<string, any>)[xFeature];
         const yValue = (d as Record<string, any>)[yFeature];
         return (
-          xValue >= xRangeFilter.min &&
-          xValue <= xRangeFilter.max &&
-          yValue >= yRangeFilter.min &&
-          yValue <= yRangeFilter.max
+          xValue >= safeMin &&
+          xValue <= safeMax &&
+          yValue >= safeMinY &&
+          yValue <= safeMaxY
         );
       });
 
@@ -285,14 +293,22 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
             className="flex-3"
             label="X Feature"
             value={xFeature}
-            onChange={(value) => setXFeature(value)}
+            onChange={(value) => {
+              setXFeature(value);
+              setXRangeFilter({
+                min: -Infinity,
+                max: Infinity,
+              });
+            }}
             options={getFeatureOptions()}
           />
           <Input
             className="flex-1"
             label="X Min"
             value={
-              xRangeFilter.min === -Infinity ? '' : xRangeFilter.min.toString()
+              xRangeFilter.min === -Infinity || xRangeFilter.min == null
+                ? ''
+                : xRangeFilter.min.toString()
             }
             onChange={(value) =>
               setXRangeFilter({
@@ -306,7 +322,9 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
             className="flex-1"
             label="X Max"
             value={
-              xRangeFilter.max === Infinity ? '' : xRangeFilter.max.toString()
+              xRangeFilter.max === Infinity || xRangeFilter.max == null
+                ? ''
+                : xRangeFilter.max.toString()
             }
             onChange={(value) =>
               setXRangeFilter({
@@ -322,14 +340,19 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
             className="flex-3"
             label="Y Feature"
             value={yFeature}
-            onChange={(value) => setYFeature(value)}
+            onChange={(value) => {
+              setYFeature(value);
+              setYRangeFilter({ min: -Infinity, max: Infinity });
+            }}
             options={getFeatureOptions()}
           />
           <Input
             className="flex-1"
             label="Y Min"
             value={
-              yRangeFilter.min === -Infinity ? '' : yRangeFilter.min.toString()
+              yRangeFilter.min === -Infinity || yRangeFilter.min == null
+                ? ''
+                : yRangeFilter.min.toString()
             }
             onChange={(value) =>
               setYRangeFilter({
@@ -343,7 +366,9 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
             className="flex-1"
             label="Y Max"
             value={
-              yRangeFilter.max === Infinity ? '' : yRangeFilter.max.toString()
+              yRangeFilter.max === Infinity || yRangeFilter.max == null
+                ? ''
+                : yRangeFilter.max.toString()
             }
             onChange={(value) =>
               setYRangeFilter({
