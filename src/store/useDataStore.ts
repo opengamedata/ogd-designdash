@@ -16,6 +16,7 @@ interface DataStore {
     endDate?: string,
     featureLevel?: string,
   ) => GameData[];
+  setHasHydrated: (value: boolean) => void;
 }
 
 // IndexedDB storage for larger datasets - only initialize in browser
@@ -105,6 +106,7 @@ const useDataStore = create<DataStore>()(
             return false;
           return true;
         }),
+      setHasHydrated: (value: boolean) => set({ hasHydrated: value }),
     }),
     {
       name: 'ogd-data-store',
@@ -114,11 +116,10 @@ const useDataStore = create<DataStore>()(
         datasets: state.datasets,
         hasHydrated: state.hasHydrated,
       }),
-      onRehydrateStorage: () => (state) => {
-        // This callback is called after rehydration
-        if (state) {
-          state.hasHydrated = true;
-        }
+      onRehydrateStorage: (state) => {
+        return () => {
+          state?.setHasHydrated(true);
+        };
       },
     },
   ),
