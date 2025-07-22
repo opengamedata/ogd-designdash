@@ -6,6 +6,7 @@ const FilePicker = () => {
   const { addDataset } = useDataStore();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const newFiles = Array.from(e.target.files || []);
     if (validateFiles(newFiles)) {
       newFiles.forEach(async (file) => {
@@ -16,7 +17,15 @@ const FilePicker = () => {
   };
 
   const validateFiles = (files: File[]) => {
-    if (!files.every((file) => file.type === 'text/tab-separated-values')) {
+    if (
+      !files.every(
+        (file) =>
+          file.type === 'text/tab-separated-values' ||
+          file.type === 'text/tsv' ||
+          file.name.toLowerCase().endsWith('.tsv')
+      )
+    ) {
+      console.log(files);
       alert('Please upload valid Open Game Data TSV files');
       return false;
     }
