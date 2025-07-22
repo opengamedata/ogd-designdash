@@ -7,7 +7,9 @@ const DataSourceList = () => {
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
-      <FilePicker />
+      <div className="my-2">
+        <FilePicker />
+      </div>
       {!hasHydrated && <div>Loading datasets...</div>}
       {hasHydrated && Object.keys(datasets).length === 0 && (
         <div className="text-sm text-gray-500">No datasets loaded</div>

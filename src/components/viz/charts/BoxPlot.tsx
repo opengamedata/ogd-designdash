@@ -3,18 +3,24 @@ import useDataStore from '../../../store/useDataStore';
 import Select from '../../layout/Select';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface BoxPlotProps {
   gameDataId: string;
+  chartId: string;
 }
 
-const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
+const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId, chartId }) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
   const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
   const { data } = dataset;
-
-  const [feature, setFeature] = useState<string>('');
 
   const renderChart = useCallback(
     (

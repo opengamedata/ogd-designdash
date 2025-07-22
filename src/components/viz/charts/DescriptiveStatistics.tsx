@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import Select from '../../layout/Select';
 import * as d3 from 'd3';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface DescriptiveStatisticsProps {
   gameDataId: string;
+  chartId: string;
 }
 
 const measures = {
@@ -18,14 +20,21 @@ const measures = {
 
 const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
   gameDataId,
+  chartId,
 }) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const [measureSelected, setMeasureSelected] = useChartOption<
+    keyof typeof measures
+  >(chartId, 'measureSelected', 'mean');
   const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
   const { data } = dataset;
-  const [feature, setFeature] = useState<string>('');
-  const [measureSelected, setMeasureSelected] =
-    useState<keyof typeof measures>('mean');
 
   const stats = useMemo(() => {
     if (!feature || !data.length) return {};

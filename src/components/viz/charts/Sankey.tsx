@@ -10,9 +10,11 @@ import {
   getEdges,
   detectGraphCycles,
 } from './progressionGraphsUtil';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface SankeyProps {
   gameDataId: string;
+  chartId: string;
 }
 
 interface SankeyNode {
@@ -32,15 +34,21 @@ interface SankeyData {
   links: SankeyLink[];
 }
 
-export const Sankey: React.FC<SankeyProps> = ({ gameDataId }) => {
+export const Sankey: React.FC<SankeyProps> = ({ gameDataId, chartId }) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
-  const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
-  const { data } = dataset;
-
-  const [edgeMode, setEdgeMode] = useState<keyof typeof EdgeMode>(
+  const [edgeMode, setEdgeMode] = useChartOption<keyof typeof EdgeMode>(
+    chartId,
+    'edgeMode',
     'TopJobCompletionDestinations',
   );
+  const dataset = getDatasetByID(gameDataId);
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
+  const { data } = dataset;
 
   const sankeyData = useMemo(() => {
     return processDataForSankey(data[0], edgeMode);

@@ -1,23 +1,31 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { getNodes, getEdges, EdgeMode } from './progressionGraphsUtil';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface JobGraphProps {
   gameDataId: string;
+  chartId: string;
 }
 
-export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId }) => {
+export const JobGraph: React.FC<JobGraphProps> = ({ gameDataId, chartId }) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
-  const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
-  const { data } = dataset;
-
-  const [edgeMode, setEdgeMode] = useState<keyof typeof EdgeMode>(
+  const [edgeMode, setEdgeMode] = useChartOption<keyof typeof EdgeMode>(
+    chartId,
+    'edgeMode',
     'TopJobCompletionDestinations',
   );
+  const dataset = getDatasetByID(gameDataId);
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
+  const { data } = dataset;
 
   const nodes = useMemo(() => {
     const nodes = getNodes(data[0]);
