@@ -1,30 +1,40 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import { Minus, Plus } from 'lucide-react';
 import Input from '../../layout/Input';
+import useChartOption from '../../../hooks/useChartOption';
 
 interface HistogramProps {
   gameDataId: string;
+  chartId: string;
 }
 
-export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
+export const Histogram: React.FC<HistogramProps> = ({
+  gameDataId,
+  chartId,
+}) => {
   const { getDatasetByID, hasHydrated } = useDataStore();
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const [binCount, setBinCount] = useChartOption<number>(
+    chartId,
+    'binCount',
+    10,
+  );
   const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
+  if (!dataset)
+    return hasHydrated ? (
+      <div>Dataset not found</div>
+    ) : (
+      <div>Loading dataset...</div>
+    );
   const { data } = dataset;
-  const [feature, setFeature] = useState<string>('');
-  const [binCount, setBinCount] = useState<number>(10);
-  const [rangeFilter, setRangeFilter] = useState({
-    min: -Infinity,
-    max: Infinity,
-  });
-
-  useEffect(() => {
-    setRangeFilter({ min: -Infinity, max: Infinity });
-  }, [feature]);
+  const [rangeFilter, setRangeFilter] = useChartOption<{
+    min: number;
+    max: number;
+  }>(chartId, 'rangeFilter', { min: -Infinity, max: Infinity });
 
   const renderChart = useCallback(
     (
@@ -34,14 +44,18 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
       if (!feature || !data.length) return;
 
       // Extract numeric values for the selected feature
+      const safeMin =
+        typeof rangeFilter.min === 'number' ? rangeFilter.min : -Infinity;
+      const safeMax =
+        typeof rangeFilter.max === 'number' ? rangeFilter.max : Infinity;
       const values = data
         .map((d) => (d as Record<string, any>)[feature])
         .filter(
           (value) =>
             typeof value === 'number' &&
             !isNaN(value) &&
-            value >= rangeFilter.min &&
-            value <= rangeFilter.max,
+            value >= safeMin &&
+            value <= safeMax,
         );
 
       if (values.length === 0) return;
@@ -238,7 +252,9 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
         <Input
           label="Min"
           value={
-            rangeFilter.min === -Infinity ? '' : rangeFilter.min.toString()
+            rangeFilter.min === -Infinity || rangeFilter.min == null
+              ? ''
+              : rangeFilter.min.toString()
           }
           onChange={(value) =>
             setRangeFilter({
@@ -250,7 +266,11 @@ export const Histogram: React.FC<HistogramProps> = ({ gameDataId }) => {
         />
         <Input
           label="Max"
-          value={rangeFilter.max === Infinity ? '' : rangeFilter.max.toString()}
+          value={
+            rangeFilter.max === Infinity || rangeFilter.max == null
+              ? ''
+              : rangeFilter.max.toString()
+          }
           onChange={(value) =>
             setRangeFilter({
               ...rangeFilter,
