@@ -1,9 +1,15 @@
 import useDataStore from '../../store/useDataStore';
 import FilePicker from './FilePicker';
 import { ScissorsLineDashed, X } from 'lucide-react';
+import Dialog from '../layout/Dialog';
+import { useState } from 'react';
+import Select from '../layout/Select';
+import Input from '../layout/Input';
+import DatasetSplitter from './DatasetSplitter';
 
 const DataSourceList = () => {
   const { datasets, removeDataset, hasHydrated } = useDataStore();
+  const [datasetIdToSplit, setDatasetIdToSplit] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto">
@@ -15,7 +21,7 @@ const DataSourceList = () => {
         <div className="text-sm text-gray-500">No datasets loaded</div>
       )}
       {hasHydrated && Object.keys(datasets).length > 0 && (
-        <div className="flex flex-col gap-2 overflow-clip">
+        <div className="flex flex-col gap-2 overflow-y-auto">
           {Object.values(datasets).map((dataset) => (
             <div
               key={dataset.id}
@@ -32,9 +38,16 @@ const DataSourceList = () => {
                   <div className="text-xs text-gray-500 mt-1">
                     {dataset.featureLevel}
                   </div>
+                  {dataset.additionalDetails && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      {dataset.additionalDetails.split}
+                    </div>
+                  )}
                 </div>
                 <button
-                  onClick={() => removeDataset(dataset.id)}
+                  onClick={() => {
+                    setDatasetIdToSplit(dataset.id);
+                  }}
                   className="ml-2 p-1 text-gray-400 hover:text-blue-500 transition-colors"
                   title="Split dataset"
                 >
@@ -52,6 +65,10 @@ const DataSourceList = () => {
           ))}
         </div>
       )}
+      <DatasetSplitter
+        datasetIdToSplit={datasetIdToSplit}
+        setDatasetIdToSplit={setDatasetIdToSplit}
+      />
     </div>
   );
 };

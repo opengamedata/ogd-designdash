@@ -12,5 +12,6 @@ declare global {
     data: d3.DSVRowArray<Object>;
     columnTypes: Record<string, string>;
     supportedChartTypes: VizTypeKey[];
+    additionalDetails?: Record<string, any>;
   }
 }
