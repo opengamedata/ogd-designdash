@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
@@ -8,15 +7,11 @@ import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
 
 interface HistogramProps {
-  gameDataId: string;
+  dataset: GameData;
   chartId: string;
 }
 
-export const Histogram: React.FC<HistogramProps> = ({
-  gameDataId,
-  chartId,
-}) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
+export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
   const [binCount, setBinCount] = useChartOption<number>(
     chartId,
@@ -27,16 +22,6 @@ export const Histogram: React.FC<HistogramProps> = ({
     min: number;
     max: number;
   }>(chartId, 'rangeFilter', { min: -Infinity, max: Infinity });
-
-  const dataset = getDatasetByID(gameDataId);
-
-  if (!dataset) {
-    return hasHydrated ? (
-      <div>Dataset not found</div>
-    ) : (
-      <div>Loading dataset...</div>
-    );
-  }
 
   const { data } = dataset;
 

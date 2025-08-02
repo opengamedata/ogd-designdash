@@ -5,18 +5,16 @@ import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import SearchableSelect from '../../layout/SearchableSelect';
 import useChartOption from '../../../hooks/useChartOption';
+import DatasetNotFound from '../DatasetNotFound';
 
 interface BarChartProps {
-  gameDataId: string;
+  dataset: GameData;
   chartId: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
+export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
   const [filter, setFilter] = useChartOption<string[]>(chartId, 'filter', []);
-
-  const dataset = getDatasetByID(gameDataId);
 
   // Create a safe data reference that won't cause issues if dataset is null
   const data = dataset?.data || [];
@@ -26,7 +24,24 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
       svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
       dimensions: { width: number; height: number },
     ) => {
-      if (!feature || !data.length) return;
+      // Clear any existing content
+      svg.selectAll('*').remove();
+
+      if (!feature || !data.length) {
+        // Render empty chart with placeholder text
+        svg
+          .append('text')
+          .attr('x', dimensions.width / 2)
+          .attr('y', dimensions.height / 2)
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#6b7280')
+          .text(
+            !feature
+              ? 'Select a feature to display chart'
+              : 'No data available',
+          );
+        return;
+      }
 
       // Get unique values and their counts for the selected feature
       const valueCounts = d3.rollup(
@@ -158,14 +173,6 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
       categories.map((category) => [category, category]),
     );
   }, [feature, data, dataset]);
-
-  if (!dataset) {
-    return hasHydrated ? (
-      <div>Dataset not found</div>
-    ) : (
-      <div>Loading dataset...</div>
-    );
-  }
 
   const getFeatureOptions = () => {
     return Object.fromEntries(

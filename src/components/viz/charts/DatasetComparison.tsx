@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import useDataStore from '../../../store/useDataStore';
 import Select from '../../layout/Select';
 import * as d3 from 'd3';
 import useChartOption from '../../../hooks/useChartOption';
 import { tTestTwoSample } from 'simple-statistics';
 
-interface DescriptiveStatisticsProps {
-  gameDataIds: string[];
+interface DatasetComparisonProps {
+  datasets: GameData[];
   chartId: string;
 }
 
@@ -15,28 +14,21 @@ const measures = {
   diff: 'Difference',
 };
 
-const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
-  gameDataIds,
+const DatasetComparison: React.FC<DatasetComparisonProps> = ({
+  datasets,
   chartId,
 }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
 
-  const dataset1 = getDatasetByID(gameDataIds[0]);
-  const dataset2 = getDatasetByID(gameDataIds[1]);
-  if (!dataset1 || !dataset2)
-    return hasHydrated ? (
-      <div>Dataset(s) not found</div>
-    ) : (
-      <div>Loading dataset...</div>
-    );
+  const dataset1 = datasets[0];
+  const dataset2 = datasets[1];
   const { data: data1 } = dataset1;
   const { data: data2 } = dataset2;
 
   const stats = useMemo(() => {
     if (
       !feature ||
-      gameDataIds.length !== 2 ||
+      datasets.length !== 2 ||
       !data1.length ||
       !data2.length ||
       !data1[0]
@@ -95,4 +87,4 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
   );
 };
 
-export default DescriptiveStatistics;
+export default DatasetComparison;
