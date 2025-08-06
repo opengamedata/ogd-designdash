@@ -1,0 +1,91 @@
+# Workflow to build and deploy designer dashboard to server.
+name: OGD Designer Dashboard - Release Script
+run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'push' && github.ref || 'Manual Run') }}
+on:
+  workflow_dispatch:
+  push: # Trigger automatically when we do a merge to production
+     branches: [ production ]
+
+env:
+  DEPLOY_HOST: ${{ vars.OGD_SERVICES_HOST }}
+  DEPLOY_DIR:           ${{ vars.WEB_PATH }}/designer-dashboard/${{ github.ref_name }}
+  DEPLOY_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
+  URL_PATH:    /designer-dashboard/${{ github.ref_name }}
+  API_HOST:    ${{ vars.OGD_SERVICES_HOST }}
+  API_PATH:    ${{ vars.API_BASE_URL }}/data/app.wsgi/
+
+jobs:
+  release_deploy:
+    name: Release Deploy of Designer Dashboard
+    runs-on: ubuntu-22.04
+    concurrency:
+      group: ${{ github.repository }}-${{ github.ref }}-${{ github.workflow }}
+      cancel-in-progress: true
+
+    steps:
+
+  # 1. Local checkout & config
+    - name: Announce deploy
+      run: echo "Deploying to ${{ env.DEPLOY_URL }} from ${{ github.repository }} via ${{ github.actor }}"
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Config File
+      uses: ./.github/actions/DesignDash_config
+      with:
+        api_origin:   ${{ env.API_HOST }}
+        api_path:     ${{ env.API_PATH }}
+        package_home: ${{ env.URL_PATH }}
+
+  # 2. Build 
+    - name: Install Node
+      uses: actions/setup-node@v4.4.0
+      with:
+        node-version: 22
+    - name: Install libraries
+      run: npm clean-install
+        npm ci
+    - name: Build
+      run: npm run build
+
+  # 3. Remote config & deploy
+    - name: Connect to VPN
+      uses: opengamedata/actions-openconnect-vpn@v1.1
+      with:
+        username: ${{ secrets.VPN_USER }}
+        password: ${{ secrets.VPN_PASS }}
+        endpoint: "soe.vpn.wisc.edu"
+
+    - name: Setup Access Key
+      run: |
+        mkdir -p ~/.ssh
+        echo '${{secrets.DEPLOY_KEY}}' >> ./key.txt
+        chmod 600 ./key.txt
+
+    - name: Ensure directory exists
+      run: ssh -o StrictHostKeyChecking=no -T -i ./key.txt ${{ secrets.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+
+    - name: Upload to web server via rsync
+      uses: burnett01/rsync-deployments@5.2
+      with:
+        # switches:
+        # -v : verbose output
+        # -r : recurse into subdirectories
+        # -c : use checksum to determine what files to update/skip
+        # -t : preserve modification times
+        # -O : omit directory modification times
+        # --delete : NOT in use at moment; delete extraneous files from destination directories
+        # --exclude-from : skip any files in rsync-exclude
+        # --chmod : For each directory (D) and file (F), give user (u) and group (g) rwx permissions.
+        #           Give others (o) only read permissions, plus execute for directories.
+        switches: -vrctO --exclude-from 'rsync-exclude' --chmod=Du=rwx,Dg=rwx,Do=rx,Fu=rwx,Fg=rwx,Fo=r
+        path: build/*
+        remote_path: ${{ env.DEPLOY_DIR }}
+        remote_host: ${{ env.DEPLOY_HOST }}
+        remote_user: ${{ secrets.DEPLOY_USER }}
+        remote_key:  ${{ secrets.DEPLOY_KEY  }}
+
+  # 4. Cleanup & complete
+    - name: Upload logs as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        path: ./*.log
