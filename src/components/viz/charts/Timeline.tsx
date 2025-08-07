@@ -1,9 +1,9 @@
 import React from 'react';
 
 interface TimelineProps {
-  gameDataId: string;
+  dataset: GameData;
   chartId: string;
 }
-export const Timeline: React.FC<TimelineProps> = ({ gameDataId, chartId }) => {
+export const Timeline: React.FC<TimelineProps> = ({ dataset, chartId }) => {
   return <div>{/* TODO: D3 timeline implementation */}Timeline</div>;
 };

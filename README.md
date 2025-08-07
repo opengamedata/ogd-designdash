@@ -1,16 +1,17 @@
 # opengamedata-designdash
+
 A repository for the development of the game designer dashboard for game data visualization
 
 ## Code Layout
 
 Under the `src` folder, we have the following structure:
 
-- `apis`       : Abstraction layer code for interfacing with the OpenGameData APIs.
+- `apis` : Abstraction layer code for interfacing with the OpenGameData APIs.
 - `components` : Reusable view/control components for use in major view components, as well as structural components of the dashboard.
-- `enums`      : Simple enums for modes of operation
-- `hooks`      : Custom hooks for using external libraries
-- `requests`   : Classes for managing data requests to the APIs
-- `utils`      : Utility classes used within the app. The most important is APIResponse, which contains data resulting from API requests.
+- `enums` : Simple enums for modes of operation
+- `hooks` : Custom hooks for using external libraries
+- `requests` : Classes for managing data requests to the APIs
+- `utils` : Utility classes used within the app. The most important is APIResponse, which contains data resulting from API requests.
 - `visualizers`: Contains model, view, and controller components for each type of data visualizer.
   - `BaseVisualizer`: Contains base classes for the model and controller components for custom visualizers.
 

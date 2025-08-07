@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import useDataStore from '../../../store/useDataStore';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import * as d3 from 'd3';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
@@ -13,7 +12,7 @@ import {
 import useChartOption from '../../../hooks/useChartOption';
 
 interface SankeyProps {
-  gameDataId: string;
+  dataset: GameData;
   chartId: string;
 }
 
@@ -34,20 +33,12 @@ interface SankeyData {
   links: SankeyLink[];
 }
 
-export const Sankey: React.FC<SankeyProps> = ({ gameDataId, chartId }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
+export const Sankey: React.FC<SankeyProps> = ({ dataset, chartId }) => {
   const [edgeMode, setEdgeMode] = useChartOption<keyof typeof EdgeMode>(
     chartId,
     'edgeMode',
     'TopJobCompletionDestinations',
   );
-  const dataset = getDatasetByID(gameDataId);
-  if (!dataset)
-    return hasHydrated ? (
-      <div>Dataset not found</div>
-    ) : (
-      <div>Loading dataset...</div>
-    );
   const { data } = dataset;
 
   const sankeyData = useMemo(() => {
