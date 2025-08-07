@@ -5,32 +5,43 @@ import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import SearchableSelect from '../../layout/SearchableSelect';
 import useChartOption from '../../../hooks/useChartOption';
+import DatasetNotFound from '../DatasetNotFound';
 
 interface BarChartProps {
-  gameDataId: string;
+  dataset: GameData;
   chartId: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
+export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
   const [filter, setFilter] = useChartOption<string[]>(chartId, 'filter', []);
-  const dataset = getDatasetByID(gameDataId);
-  if (!dataset)
-    return hasHydrated ? (
-      <div>Dataset not found</div>
-    ) : (
-      <div>Loading dataset...</div>
-    );
 
-  const { data } = dataset;
+  // Create a safe data reference that won't cause issues if dataset is null
+  const data = dataset?.data || [];
 
   const renderChart = useCallback(
     (
       svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
       dimensions: { width: number; height: number },
     ) => {
-      if (!feature || !data.length) return;
+      // Clear any existing content
+      svg.selectAll('*').remove();
+
+      if (!feature || !data.length) {
+        // Render empty chart with placeholder text
+        svg
+          .append('text')
+          .attr('x', dimensions.width / 2)
+          .attr('y', dimensions.height / 2)
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#6b7280')
+          .text(
+            !feature
+              ? 'Select a feature to display chart'
+              : 'No data available',
+          );
+        return;
+      }
 
       // Get unique values and their counts for the selected feature
       const valueCounts = d3.rollup(
@@ -102,7 +113,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
           .attr('x', (d) => (xScale(d.value) || 0) + xScale.bandwidth() / 2)
           .attr('y', (d) => yScale(d.count) - 5)
           .attr('text-anchor', 'middle')
-          .attr('font-size', Math.max(10, Math.min(12, height / 30)))
+          .attr('font-size', Math.max(8, Math.min(10, height / 40)))
           .attr('fill', '#374151')
           .text((d) => d.count);
       }
@@ -153,6 +164,16 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
+  const filterOptions = useMemo(() => {
+    if (!feature || !dataset) return {};
+    const categories = Array.from(
+      new Set(data.map((d) => (d as Record<string, any>)[feature].toString())),
+    );
+    return Object.fromEntries(
+      categories.map((category) => [category, category]),
+    );
+  }, [feature, data, dataset]);
+
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
@@ -160,16 +181,6 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId, chartId }) => {
         .map(([key]) => [key, key]),
     );
   };
-
-  const filterOptions = useMemo(() => {
-    if (!feature) return {};
-    const categories = Array.from(
-      new Set(data.map((d) => (d as Record<string, any>)[feature].toString())),
-    );
-    return Object.fromEntries(
-      categories.map((category) => [category, category]),
-    );
-  }, [feature, data]);
 
   const handleFeatureChange = (value: string) => {
     if (value === feature) return;

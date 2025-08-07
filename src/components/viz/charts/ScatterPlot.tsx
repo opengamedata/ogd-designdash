@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import useDataStore from '../../../store/useDataStore';
 import * as d3 from 'd3';
 import {
   regressionLinear,
@@ -13,7 +12,7 @@ import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
 
 interface ScatterPlotProps {
-  gameDataId: string;
+  dataset: GameData;
   chartId: string;
 }
 
@@ -26,11 +25,9 @@ const RegressionLineType = {
 } as const;
 
 export const ScatterPlot: React.FC<ScatterPlotProps> = ({
-  gameDataId,
+  dataset,
   chartId,
 }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
-
   const [xFeature, setXFeature] = useChartOption<string>(
     chartId,
     'xFeature',
@@ -57,15 +54,6 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
   const [regressionLine, setRegressionLine] = useChartOption<
     keyof typeof RegressionLineType
   >(chartId, 'regressionLine', RegressionLineType.none);
-  const dataset = getDatasetByID(gameDataId);
-
-  if (!dataset) {
-    return hasHydrated ? (
-      <div>Dataset not found</div>
-    ) : (
-      <div>Loading dataset...</div>
-    );
-  }
   const { data } = dataset;
 
   const getFeatureOptions = () => {
