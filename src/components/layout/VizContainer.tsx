@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Move, Minus, Settings, Database } from 'lucide-react';
+import { Move, Minus, Settings, Database, Loader2 } from 'lucide-react';
 import { BarChart } from '../viz/charts/BarChart';
 import { Histogram } from '../viz/charts/Histogram';
 import { ScatterPlot } from '../viz/charts/ScatterPlot';
@@ -11,6 +11,9 @@ import DescriptiveStatistics from '../viz/charts/DescriptiveStatistics';
 import BoxPlot from '../viz/charts/BoxPlot';
 import { VizType, VizTypeKey } from '../../constants/vizTypes';
 import useLayoutStore from '../../store/useLayoutStore';
+import DatasetComparison from '../viz/charts/DatasetComparison';
+import useDataStore from '../../store/useDataStore';
+import DatasetNotFound from '../viz/DatasetNotFound';
 
 interface VizContainerProps {
   style?: React.CSSProperties;
@@ -45,24 +48,27 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
       const cur = state.currentLayout;
       return cur ? state.layouts[cur]?.charts[chartId] : undefined;
     });
+    const { getDatasetByID, hasHydrated } = useDataStore();
     const updateChartConfig = useLayoutStore(
       (state) => state.updateChartConfig,
     );
 
     const [containerMode, setContainerMode] = useState<'settings' | 'viz'>(
-      chartConfig?.vizType && chartConfig?.datasetId ? 'viz' : 'settings',
+      chartConfig?.vizType && chartConfig?.datasetIds?.length
+        ? 'viz'
+        : 'settings',
     );
     const [vizType, setVizType] = useState<VizTypeKey>(
       chartConfig?.vizType || 'bar',
     );
-    const [gameDataId, setGameDataId] = useState<string>(
-      chartConfig?.datasetId || '',
+    const [gameDataIds, setGameDataIds] = useState<string[]>(
+      chartConfig?.datasetIds || [],
     );
 
     useEffect(() => {
       if (chartConfig) {
         setVizType(chartConfig.vizType);
-        setGameDataId(chartConfig.datasetId);
+        setGameDataIds(chartConfig.datasetIds);
       }
     }, [chartConfig]);
 
@@ -71,60 +77,85 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
     }, [vizType]);
 
     useEffect(() => {
-      updateChartConfig(chartId, { datasetId: gameDataId });
-    }, [gameDataId]);
+      updateChartConfig(chartId, { datasetIds: gameDataIds });
+    }, [gameDataIds]);
 
     const renderChartContent = () => {
       if (containerMode === 'settings') {
         return (
           <VizSetup
-            gameDataId={gameDataId}
-            setGameDataId={setGameDataId}
+            gameDataIds={gameDataIds}
+            setGameDataIds={setGameDataIds}
             vizType={vizType}
             setVizType={setVizType}
             setContainerMode={setContainerMode}
           />
         );
       }
+      const dataset = getDatasetByID(gameDataIds[0]);
+
+      if (!dataset && hasHydrated) {
+        return <DatasetNotFound gameDataId={gameDataIds[0]} />;
+      }
+
+      if (!dataset) {
+        return (
+          <div className="flex items-center justify-center h-full">
+            <Loader2 className="w-4 h-4 animate-spin" />
+          </div>
+        );
+      }
 
       return (
         <>
           {vizType === 'bar' && (
-            <BarChart key={chartId} chartId={chartId} gameDataId={gameDataId} />
+            <BarChart key={chartId} chartId={chartId} dataset={dataset} />
           )}
           {vizType === 'histogram' && (
-            <Histogram
-              key={chartId}
-              chartId={chartId}
-              gameDataId={gameDataId}
-            />
+            <Histogram key={chartId} chartId={chartId} dataset={dataset} />
           )}
           {vizType === 'scatter' && (
-            <ScatterPlot
-              key={chartId}
-              chartId={chartId}
-              gameDataId={gameDataId}
-            />
+            <ScatterPlot key={chartId} chartId={chartId} dataset={dataset} />
           )}
           {vizType === 'timeline' && (
-            <Timeline key={chartId} chartId={chartId} gameDataId={gameDataId} />
+            <Timeline key={chartId} chartId={chartId} dataset={dataset} />
           )}
           {vizType === 'jobGraph' && (
-            <JobGraph key={chartId} chartId={chartId} gameDataId={gameDataId} />
+            <JobGraph key={chartId} chartId={chartId} dataset={dataset} />
           )}
           {vizType === 'sankey' && (
-            <Sankey key={chartId} chartId={chartId} gameDataId={gameDataId} />
+            <Sankey key={chartId} chartId={chartId} dataset={dataset} />
           )}
           {vizType === 'descriptiveStatistics' && (
             <DescriptiveStatistics
               key={chartId}
               chartId={chartId}
-              gameDataId={gameDataId}
+              dataset={dataset}
             />
           )}
           {vizType === 'boxPlot' && (
-            <BoxPlot key={chartId} chartId={chartId} gameDataId={gameDataId} />
+            <BoxPlot key={chartId} chartId={chartId} dataset={dataset} />
           )}
+          {vizType === 'datasetComparison' &&
+            (() => {
+              const datasets = gameDataIds
+                .map((id) => getDatasetByID(id))
+                .filter((dataset): dataset is GameData => Boolean(dataset));
+
+              if (datasets.length !== 2) {
+                return (
+                  <div>Please select exactly 2 datasets for comparison</div>
+                );
+              }
+
+              return (
+                <DatasetComparison
+                  key={chartId}
+                  chartId={chartId}
+                  datasets={datasets}
+                />
+              );
+            })()}
         </>
       );
     };
