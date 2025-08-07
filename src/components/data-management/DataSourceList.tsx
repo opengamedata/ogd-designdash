@@ -1,9 +1,6 @@
 import useDataStore from '../../store/useDataStore';
 import { ScissorsLineDashed, X } from 'lucide-react';
-import Dialog from '../layout/Dialog';
 import { useState } from 'react';
-import Select from '../layout/Select';
-import Input from '../layout/Input';
 import DatasetSplitter from './DatasetSplitter';
 import DatasetTSVPicker from './DatasetTSVPicker';
 
