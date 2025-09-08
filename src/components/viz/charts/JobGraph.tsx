@@ -18,6 +18,24 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
   );
   const { data } = dataset;
 
+  // Extract PopulationSummary data if it exists
+  const populationSummary = useMemo((): Record<string, any> | null => {
+    if (!data || data.length === 0) return null;
+
+    const firstRow = data[0] as any;
+    const populationSummaryData = firstRow['PopulationSummary'];
+    console.log('populationSummaryData', populationSummaryData);
+
+    if (!populationSummaryData) return null;
+
+    try {
+      return JSON.parse(populationSummaryData);
+    } catch (error) {
+      console.warn('Failed to parse PopulationSummary data:', error);
+      return null;
+    }
+  }, [data]);
+
   const nodes = useMemo(() => {
     const nodes = getNodes(data[0]);
     return nodes;
@@ -283,6 +301,37 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
         d.fy = null;
       }
 
+      // PopulationSummary
+      if (populationSummary) {
+        // Dynamically create label data from all key-value pairs
+        const labelData = Object.entries(populationSummary).map(
+          ([key, value]) => ({
+            label: key
+              .replace(/_/g, ' ')
+              .replace(/\b\w/g, (l) => l.toUpperCase()), // Convert snake_case to Title Case
+            value: typeof value === 'number' ? value.toFixed(1) : String(value),
+          }),
+        );
+
+        const labelSpacing = 15;
+        const startY = 20;
+        const labelX = dimensions.width - 10;
+        const fontSize = Math.max(10, Math.min(12, dimensions.height / 35));
+
+        svg
+          .selectAll('.population-summary')
+          .data(labelData)
+          .enter()
+          .append('text')
+          .attr('class', 'population-summary')
+          .attr('x', labelX)
+          .attr('y', (d, i) => startY + i * labelSpacing)
+          .attr('font-size', fontSize)
+          .attr('fill', '#6b7280')
+          .attr('text-anchor', 'end')
+          .text((d) => `${d.label}: ${d.value}`);
+      }
+
       // Return cleanup function to stop simulation when component unmounts or dimensions change
       return () => {
         simulation.stop();
@@ -290,7 +339,7 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
         d3.selectAll('.tooltip').remove();
       };
     },
-    [nodes, edges],
+    [nodes, edges, populationSummary],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
