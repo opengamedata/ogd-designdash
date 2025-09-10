@@ -1,87 +1,54 @@
-# opengamedata-designdash
+## Background
 
-A repository for the development of the game designer dashboard for game data visualization
+Field Day Lab processes rich gameplay data—population, session, and player features—via a data pipeline that outputs both TSV files and API endpoints. Currently, game designers, researchers, and educators lack an interactive, flexible way to explore and analyze these data, slowing insights and feedback loops. The Open Game Data visualization dashboard aims to empower educators, designers, and analysts to rapidly surface trends, patterns, and anomalies in game-based learning data.
 
-## Code Layout
+## Key Features
 
-Under the `src` folder, we have the following structure:
+1. **Multi-Visualization Support**
+   - Pre-built components for histogram, bar chart, scatterplot, box plot, descriptive statistics, force graph, timeline.
+   - Plugin interface for adding new chart types.
+2. **Grid-Based UI**
+   - Responsive, draggable/resizable panels using CSS Grid or a library (e.g., react-grid-layout).
+   - Save and restore layout configurations.
+3. **Data Source Selection**
+   - Per-panel selector: choose between file upload or API endpoint.
+   - Display validation errors for unsupported TSV schemas or API failures.
+4. **File Upload & API Integration**
+   - TSV parser with schema detection and mapping to feature sets.
+   - Configurable API client supporting pagination and filter parameters.
+5. **API Caching**
+   - Implement caching layer in LocalStorage with TTL.
+   - Cache invalidation controls (per-session or manual refresh).
 
-- `apis` : Abstraction layer code for interfacing with the OpenGameData APIs.
-- `components` : Reusable view/control components for use in major view components, as well as structural components of the dashboard.
-- `enums` : Simple enums for modes of operation
-- `hooks` : Custom hooks for using external libraries
-- `requests` : Classes for managing data requests to the APIs
-- `utils` : Utility classes used within the app. The most important is APIResponse, which contains data resulting from API requests.
-- `visualizers`: Contains model, view, and controller components for each type of data visualizer.
-  - `BaseVisualizer`: Contains base classes for the model and controller components for custom visualizers.
+## Technical Requirements
 
-## Getting Started with Create React App
+- **Framework:** React or Next.js with TypeScript.
+- **State Management:** Zustand for layout, data-layer, and cache state.
+- **Visualization Library:** D3.js.
+- **Data Abstraction Layer:** Adapter pattern to normalize TSV and API responses into a common format.
+- **Caching Strategy:** IndexedDB for dataset caching.
+- **Testing:** Unit tests for components (Jest + React Testing Library); integration tests for data adapters.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## User Stories
 
-### Available Scripts
+- **As a designer**, I want to fetch player features via API and view a force graph, so I can trace player progression.
+- **As a researcher**, I want to upload a session TSV file to generate a visualization dashboard, so I can inspect distribution of session durations.
+- **As a stakeholder**, I want the dashboard to load cached data instantly on revisit, so I save time waiting for API calls.
 
-In the project directory, you can run:
+## Assumptions & Constraints
 
-#### `npm start`
+- API schema may evolve; data adapter layer must handle minor breaking changes.
+- TSV files follow a consistent feature naming convention; major schema shifts require manual adapter updates.
+- Users have modern browsers supporting ES6 and LocalStorage.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Running the App locally
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Make sure you have node v22.17.1 (or newer) and npm v10.9.2 (or newer) install on your machine.
 
-#### `npm test`
+Install relevant npm packages:
+`npm install`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+For development:
+`npm run dev`
 
-#### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-#### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Visit `localhost:3000` on your web broswer.
