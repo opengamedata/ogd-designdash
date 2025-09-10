@@ -18,6 +18,41 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
   );
   const { data } = dataset;
 
+  // Get available edge modes based on what columns exist in the dataset
+  const availableEdgeModes = useMemo(() => {
+    if (!data || data.length === 0) return {};
+
+    const firstRow = data[0] as any;
+    const available: Record<string, string> = {};
+
+    // Check which edge mode columns exist in the data
+    Object.entries(EdgeMode).forEach(([key, value]) => {
+      if (firstRow.hasOwnProperty(key)) {
+        available[key] = value;
+      }
+    });
+
+    return available;
+  }, [data]);
+
+  // Ensure current edgeMode is available, fallback to first available if not
+  const currentEdgeMode = useMemo(() => {
+    if (Object.keys(availableEdgeModes).length === 0) {
+      return edgeMode; // Keep current if no data available yet
+    }
+
+    if (availableEdgeModes.hasOwnProperty(edgeMode)) {
+      return edgeMode;
+    }
+
+    // Fallback to first available edge mode
+    const firstAvailable = Object.keys(
+      availableEdgeModes,
+    )[0] as keyof typeof EdgeMode;
+    setEdgeMode(firstAvailable);
+    return firstAvailable;
+  }, [edgeMode, availableEdgeModes, setEdgeMode]);
+
   // Extract PopulationSummary data if it exists
   const populationSummary = useMemo((): Record<string, any> | null => {
     if (!data || data.length === 0) return null;
@@ -42,9 +77,9 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
   }, [data]);
 
   const edges = useMemo(() => {
-    const edges = getEdges(data[0], edgeMode);
+    const edges = getEdges(data[0], currentEdgeMode);
     return edges;
-  }, [data, edgeMode]);
+  }, [data, currentEdgeMode]);
 
   const renderChart = useCallback(
     (
@@ -349,11 +384,9 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
       <Select
         className="w-full max-w-sm"
         label="Edge Mode"
-        value={edgeMode}
+        value={currentEdgeMode}
         onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
-        options={Object.fromEntries(
-          Object.entries(EdgeMode).map(([key, value]) => [key, value]),
-        )}
+        options={availableEdgeModes}
       />
       <div ref={containerRef} className="flex-1 min-h-0">
         <svg ref={svgRef} className="w-full h-full"></svg>
