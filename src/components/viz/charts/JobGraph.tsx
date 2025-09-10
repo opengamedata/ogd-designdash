@@ -388,8 +388,25 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
         onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
         options={availableEdgeModes}
       />
-      <div ref={containerRef} className="flex-1 min-h-0">
+      <div ref={containerRef} className="flex-1 min-h-0 relative">
         <svg ref={svgRef} className="w-full h-full"></svg>
+        {/* Legend */}
+        <div className="absolute bottom-0 right-0 bg-white/90 backdrop-blur-sm rounded-lg p-3  text-xs">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-500 to-green-500 flex-shrink-0"></div>
+              <span className="text-gray-600">Node color = % completion</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gray-400 flex-shrink-0"></div>
+              <span className="text-gray-600">Node size = avg time</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 bg-gray-400 flex-shrink-0"></div>
+              <span className="text-gray-600">Link width = # players</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
