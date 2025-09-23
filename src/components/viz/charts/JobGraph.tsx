@@ -383,7 +383,8 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
         className="w-full max-w-sm"
-        label="Edge Mode"
+        label="Link Mode"
+        helpText="Controls how links are drawn between nodes"
         value={currentEdgeMode}
         onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
         options={availableEdgeModes}

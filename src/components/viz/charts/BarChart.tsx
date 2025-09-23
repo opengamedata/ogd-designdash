@@ -188,16 +188,17 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
-      <Select
-        className="w-full max-w-sm"
+      <SearchableSelect
+        className="w-full"
         label="Feature"
+        placeholder="Select a feature..."
         value={feature}
         onChange={handleFeatureChange}
         options={getFeatureOptions()}
       />
       {feature && (
         <SearchableSelect
-          className="w-fit"
+          className="w-full"
           label="Categories to include"
           placeholder="All"
           value={filter}

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import Select from '../../layout/Select';
+import SearchableSelect from '../../layout/SearchableSelect';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import useChartOption from '../../../hooks/useChartOption';
@@ -209,9 +209,10 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ dataset, chartId }) => {
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
-      <Select
+      <SearchableSelect
         className="w-full max-w-sm"
         label="Feature"
+        placeholder="Select a feature..."
         value={feature}
         onChange={(value) => setFeature(value)}
         options={getFeatureOptions()}

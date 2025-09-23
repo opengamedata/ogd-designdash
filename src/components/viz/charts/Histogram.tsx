@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
+import SearchableSelect from '../../layout/SearchableSelect';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import { Minus, Plus } from 'lucide-react';
 import Input from '../../layout/Input';
@@ -217,9 +218,10 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <div className="flex gap-2 items-end">
-        <Select
+        <SearchableSelect
           className="flex-1 max-w-sm"
           label="Feature"
+          placeholder="Select a feature..."
           value={feature}
           onChange={(value) => setFeature(value)}
           options={getFeatureOptions()}
@@ -227,6 +229,7 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
         <Select
           className="w-24"
           label="Bins"
+          helpText="Controls how granularly the data is divided"
           value={binCount.toString()}
           onChange={(value) => setBinCount(parseInt(value))}
           options={Object.fromEntries(

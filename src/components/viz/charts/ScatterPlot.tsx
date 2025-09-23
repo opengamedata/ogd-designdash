@@ -7,6 +7,7 @@ import {
   regressionLog,
 } from 'd3-regression';
 import Select from '../../layout/Select';
+import SearchableSelect from '../../layout/SearchableSelect';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
@@ -277,9 +278,10 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
     <div className="flex flex-col gap-2 p-2 h-full">
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
-          <Select
+          <SearchableSelect
             className="flex-3"
-            label="X Feature"
+            label="X-Axis"
+            placeholder="Select feature..."
             value={xFeature}
             onChange={(value) => {
               setXFeature(value);
@@ -324,9 +326,10 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
           />
         </div>
         <div className="flex flex-row gap-2">
-          <Select
+          <SearchableSelect
             className="flex-3"
-            label="Y Feature"
+            label="Y-Axis"
+            placeholder="Select feature..."
             value={yFeature}
             onChange={(value) => {
               setYFeature(value);
@@ -369,7 +372,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
         </div>
         <div className="flex flex-row gap-2">
           <Select
-            label="Regression Line"
+            label="Trend Line"
             value={regressionLine}
             onChange={(value) =>
               setRegressionLine(value as keyof typeof RegressionLineType)
