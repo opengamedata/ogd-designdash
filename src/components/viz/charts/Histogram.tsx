@@ -65,20 +65,18 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
       // Create histogram generator
+      const dataExtent = d3.extent(values) as [number, number];
       const histogram = d3
         .bin()
-        .domain(d3.extent(values) as [number, number])
+        .domain(dataExtent)
         .thresholds(
           d3.ticks(d3.min(values) || 0, d3.max(values) || 0, binCount),
         );
 
       const bins = histogram(values);
 
-      // X scale (linear)
-      const xScale = d3
-        .scaleLinear()
-        .domain([bins[0].x0 || 0, bins[bins.length - 1].x1 || 0])
-        .range([0, width]);
+      // X scale (linear) - use bin boundaries for proper alignment
+      const xScale = d3.scaleLinear().domain(dataExtent).range([0, width]);
 
       // Y scale (linear)
       const yScale = d3
@@ -122,8 +120,14 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
           .text((d) => d.length);
       }
 
-      // Add X axis
-      const xAxis = d3.axisBottom(xScale);
+      // Add X axis with ticks aligned to bin boundaries
+      const binBoundaries = bins
+        .flatMap((bin) => [bin.x0, bin.x1])
+        .filter((value): value is number => value !== undefined)
+        .filter((value, index, array) => array.indexOf(value) === index)
+        .sort((a, b) => a - b);
+      const xAxis = d3.axisBottom(xScale).tickValues(binBoundaries);
+
       chartGroup
         .append('g')
         .attr('transform', `translate(0,${height})`)
