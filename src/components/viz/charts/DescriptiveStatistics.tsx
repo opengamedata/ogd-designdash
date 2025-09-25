@@ -10,6 +10,7 @@ interface DescriptiveStatisticsProps {
 }
 
 const measures = {
+  count: 'Unique Values',
   mean: 'Mean',
   median: 'Median',
   mode: 'Mode',
@@ -36,6 +37,7 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
       .filter((value) => typeof value === 'number' && !isNaN(value));
 
     // Calculate the mean, median, mode, range, variance, standard deviation, skewness, and kurtosis
+    const count = new Set(values).size;
     const mean = d3.mean(values)?.toFixed(2);
     const median = d3.median(values);
     const mode = d3.mode(values);
@@ -46,6 +48,7 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
     // const kurtosis = d3.kurtosis(values);
 
     return {
+      count,
       mean,
       median,
       mode,
@@ -56,6 +59,12 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
   }, [feature, data]);
 
   const getFeatureOptions = () => {
+    if (dataset.featureLevel === 'population') {
+      return Object.fromEntries(
+        Object.keys(dataset.columnTypes).map((key) => [key, key]),
+      );
+    }
+
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
         .filter(([_, value]) => value === 'number')
@@ -63,8 +72,44 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
     );
   };
 
+  const jumbotron = () => {
+    if (!feature) return <></>;
+
+    if (dataset.featureLevel !== 'population' && measureSelected) {
+      return (
+        <>
+          <span className="text-6xl font-bold">
+            {measureSelected === 'range' && stats[measureSelected]
+              ? `${stats[measureSelected][0]} ~ ${stats[measureSelected][1]}`
+              : stats[measureSelected]}
+          </span>
+          <span className="text-lg">
+            <strong>
+              {measures[measureSelected as keyof typeof measures]}
+            </strong>
+            {' of '}
+            <strong>{feature}</strong>
+          </span>
+        </>
+      );
+    }
+
+    if (dataset.featureLevel === 'population' && data.length) {
+      return (
+        <>
+          <span className="text-6xl font-bold">
+            {(data[0] as Record<string, any>)[feature]}
+          </span>
+          <span className="text-lg">{feature}</span>
+        </>
+      );
+    }
+
+    return <></>;
+  };
+
   return (
-    <div className="flex flex-col gap-2 p-2 h-full ">
+    <div className="flex flex-col gap-2 p-2 h-full">
       <div className="flex flex-row gap-2">
         <SearchableSelect
           className="w-full max-w-sm"
@@ -74,33 +119,22 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
           onChange={(value) => setFeature(value)}
           options={getFeatureOptions()}
         />
-        <Select
-          className="w-full max-w-sm"
-          label="Measure"
-          value={measureSelected}
-          onChange={(value) =>
-            setMeasureSelected(value as keyof typeof measures)
-          }
-          options={measures}
-        />
-      </div>
-      <div className="flex flex-row gap-2 w-full justify-center h-full">
-        {feature && measureSelected && (
-          <div className="flex flex-col h-full justify-center items-center gap-6">
-            <span className="text-6xl font-bold">
-              {measureSelected === 'range' && stats[measureSelected]
-                ? `${stats[measureSelected][0]} ~ ${stats[measureSelected][1]}`
-                : stats[measureSelected]}
-            </span>
-            <span className="text-lg">
-              <strong>
-                {measures[measureSelected as keyof typeof measures]}
-              </strong>
-              {' of '}
-              <strong>{feature}</strong>
-            </span>
-          </div>
+        {dataset.featureLevel !== 'population' && (
+          <Select
+            className="w-full max-w-sm"
+            label="Measure"
+            value={measureSelected}
+            onChange={(value) =>
+              setMeasureSelected(value as keyof typeof measures)
+            }
+            options={measures}
+          />
         )}
+      </div>
+      <div className="flex-grow flex flex-row gap-2 w-full justify-center overflow-y-auto">
+        <div className="flex flex-col justify-center items-center gap-6 h-full ">
+          {jumbotron()}
+        </div>
       </div>
     </div>
   );
