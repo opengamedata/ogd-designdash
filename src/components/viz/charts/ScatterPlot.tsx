@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import {
   regressionLinear,
@@ -11,6 +11,7 @@ import SearchableSelect from '../../layout/SearchableSelect';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
 
 interface ScatterPlotProps {
   dataset: GameData;
@@ -55,12 +56,16 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
   const [regressionLine, setRegressionLine] = useChartOption<
     keyof typeof RegressionLineType
   >(chartId, 'regressionLine', RegressionLineType.none);
-  const { data } = dataset;
+  const { getFilteredDataset } = useDataStore();
+
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
 
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'number')
+        .filter(([_, value]) => value === 'Numeric')
         .map(([key]) => [key, key]),
     );
   };

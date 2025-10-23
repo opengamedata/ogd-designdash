@@ -10,8 +10,28 @@ declare global {
     OGDVersion: string;
     source: 'file' | 'api';
     data: d3.DSVRowArray<Object>;
-    columnTypes: Record<string, string>;
+    columnTypes: Record<string, ColumnType>;
     supportedChartTypes: VizTypeKey[];
+    filters?: Record<string, FeatureFilter>;
     additionalDetails?: Record<string, any>;
+    // Filtered dataset properties (added by getFilteredDataset)
+    originalData?: d3.DSVRowArray<Object>;
+    isFiltered?: boolean;
+    filterInfo?: {
+      totalRows: number;
+      filteredRows: number;
+      filterCount: number;
+    };
+  }
+  type ColumnType = 'Categorical' | 'Numeric' | 'Ordinal' | 'Time-series';
+  interface FeatureFilter {
+    filterType: 'categorical' | 'numeric';
+    // For categorical filters
+    selectedCategories?: string[];
+    // For numeric filters
+    range?: {
+      min?: number;
+      max?: number;
+    };
   }
 }

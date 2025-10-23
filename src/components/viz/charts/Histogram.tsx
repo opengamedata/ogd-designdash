@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import * as d3 from 'd3';
 import Select from '../../layout/Select';
 import SearchableSelect from '../../layout/SearchableSelect';
@@ -6,6 +6,7 @@ import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import { Minus, Plus } from 'lucide-react';
 import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
 
 interface HistogramProps {
   dataset: GameData;
@@ -23,8 +24,11 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
     min: number;
     max: number;
   }>(chartId, 'rangeFilter', { min: -Infinity, max: Infinity });
+  const { getFilteredDataset } = useDataStore();
 
-  const { data } = dataset;
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
 
   const renderChart = useCallback(
     (
@@ -214,7 +218,7 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'number')
+        .filter(([_, value]) => value === 'Numeric')
         .map(([key]) => [key, key]),
     );
   };
