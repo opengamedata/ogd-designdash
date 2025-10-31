@@ -4,9 +4,47 @@ import DataSourceList from '../components/sidebar/data-management/DataSourceList
 import CollapsibleSidePanel from '../components/sidebar/CollapsibleSidePanel';
 import LayoutManager from '../components/sidebar/LayoutManager';
 import FloatingHelpIcon from '../components/layout/FloatingHelpIcon';
+import { Upload } from 'lucide-react';
+import useDataStore from '../store/useDataStore';
+import useLayoutStore from '../store/useLayoutStore';
 
 const HomePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const { setCurrentLayout, loadLayout } = useLayoutStore();
+
+  const handleImport = (file: File) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (e) => {
+      const importJson = e.target?.result as string;
+      const importData = JSON.parse(importJson);
+
+      // Check if it's the new format (version 2+)
+      if (importData.version >= 2) {
+        // Restore the specific layout
+        if (importData.layout) {
+          useLayoutStore.setState((state) => ({
+            layouts: {
+              ...state.layouts,
+              [importData.layout.id]: importData.layout,
+            },
+          }));
+          setCurrentLayout(importData.layout.id);
+        }
+
+        // Restore only the relevant datasets
+        if (importData.datasets) {
+          useDataStore.setState((state) => ({
+            datasets: { ...state.datasets, ...importData.datasets },
+          }));
+        }
+      } else {
+        // Legacy format - use old method
+        const layout = loadLayout(importJson);
+        setCurrentLayout(layout.id);
+      }
+    };
+    fileReader.readAsText(file);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -18,7 +56,7 @@ const HomePage: React.FC = () => {
       {/* Collapsible Side Panels */}
       <CollapsibleSidePanel>
         <div className="flex flex-col h-full">
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 flex items-center justify-between">
             <nav className="flex space-x-2" aria-label="Tabs">
               <button
                 className={`px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none border-b-2 transition-colors ${
@@ -39,6 +77,28 @@ const HomePage: React.FC = () => {
                 Dashboards
               </button>
             </nav>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="file-upload"
+                  className="inline-flex items-center justify-center px-4 py-2 text-gray-500 rounded-md font-medium cursor-pointer  hover:bg-gray-200 transition-colors text-sm"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && file.type === 'application/json') {
+                      handleImport(file);
+                    }
+                  }}
+                  id="file-upload"
+                  className="hidden"
+                />
+              </div>
+            </div>
           </div>
           <div className="flex-1 mt-2">
             {activeTab === 0 && <DataSourceList />}
