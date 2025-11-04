@@ -96,6 +96,7 @@ const HomePage: React.FC = () => {
                   }}
                   id="file-upload"
                   className="hidden"
+                  accept="application/json"
                 />
               </div>
             </div>
