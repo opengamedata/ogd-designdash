@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import GridLayout from '../components/layout/GridLayout';
 import DataSourceList from '../components/sidebar/data-management/DataSourceList';
 import CollapsibleSidePanel from '../components/sidebar/CollapsibleSidePanel';
@@ -11,6 +11,7 @@ import useLayoutStore from '../store/useLayoutStore';
 const HomePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { setCurrentLayout, loadLayout } = useLayoutStore();
+  const layoutDataStoreJsonFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImport = (file: File) => {
     const fileReader = new FileReader();
@@ -80,13 +81,20 @@ const HomePage: React.FC = () => {
             <div className="flex items-center gap-2">
               <div className="flex flex-col gap-2">
                 <label
-                  htmlFor="file-upload"
+                  htmlFor="layout-data-store-json-file-upload"
                   className="inline-flex items-center justify-center px-4 py-2 text-gray-500 rounded-md font-medium cursor-pointer  hover:bg-gray-200 transition-colors text-sm"
+                  onClick={(e) => {
+                    // Ensure the label click triggers the input
+                    e.preventDefault();
+                    layoutDataStoreJsonFileInputRef.current?.click();
+                  }}
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Import
                 </label>
                 <input
+                  id="layout-data-store-json-file-upload"
+                  ref={layoutDataStoreJsonFileInputRef}
                   type="file"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -94,7 +102,6 @@ const HomePage: React.FC = () => {
                       handleImport(file);
                     }
                   }}
-                  id="file-upload"
                   className="hidden"
                   accept="application/json"
                 />
