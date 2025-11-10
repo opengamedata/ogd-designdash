@@ -16,6 +16,10 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
   const filteredDataset = getFilteredDataset(dataset.id);
 
   const getColumnTypeOptions = (feature: string) => {
+    if (feature.includes('PlayerProgression')) {
+      return { Graph: 'Graph' };
+    }
+
     const permittedTypes = {
       Categorical: 'Categorical',
       Ordinal: 'Ordinal',
