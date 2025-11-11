@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import SearchableSelect from '../../layout/select/SearchableSelect';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
@@ -18,6 +18,13 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ dataset, chartId }) => {
   // Get filtered dataset from centralized store
   const filteredDataset = getFilteredDataset(dataset.id);
   const data = filteredDataset?.data || [];
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
 
   const renderChart = useCallback(
     (

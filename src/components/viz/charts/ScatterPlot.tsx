@@ -71,6 +71,16 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
     );
   };
 
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (xFeature && !getFeatureOptions()[xFeature]) {
+      setXFeature('');
+    }
+    if (yFeature && !getFeatureOptions()[yFeature]) {
+      setYFeature('');
+    }
+  }, [xFeature, yFeature]);
+
   const renderChart = useCallback(
     (
       svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,

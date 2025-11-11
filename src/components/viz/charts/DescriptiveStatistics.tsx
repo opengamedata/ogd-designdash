@@ -64,6 +64,13 @@ const DescriptiveStatistics: React.FC<DescriptiveStatisticsProps> = ({
     };
   }, [feature, data]);
 
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
+
   const getFeatureOptions = () => {
     if (dataset.featureLevel === 'population') {
       return Object.fromEntries(

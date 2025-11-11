@@ -31,6 +31,13 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
   const filteredDataset = getFilteredDataset(dataset.id);
   const data = filteredDataset?.data || [];
 
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
+
   const renderChart = useCallback(
     (
       svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,

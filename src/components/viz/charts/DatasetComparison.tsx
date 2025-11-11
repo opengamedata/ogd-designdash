@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import SearchableSelect from '../../layout/select/SearchableSelect';
 import * as d3 from 'd3';
 import useChartOption from '../../../hooks/useChartOption';
@@ -22,6 +22,13 @@ const DatasetComparison: React.FC<DatasetComparisonProps> = ({
 }) => {
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
   const { getFilteredDataset } = useDataStore();
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
 
   const dataset1 = datasets[0];
   const dataset2 = datasets[1];

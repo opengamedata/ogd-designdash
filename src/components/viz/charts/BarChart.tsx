@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import SearchableSelect from '../../layout/select/SearchableSelect';
@@ -21,6 +21,13 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
   // Get filtered dataset from centralized store
   const filteredDataset = getFilteredDataset(dataset.id);
   const data = filteredDataset?.data || [];
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
 
   const renderChart = useCallback(
     (
