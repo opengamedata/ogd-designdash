@@ -2,8 +2,9 @@ import { useState, useMemo } from 'react';
 import SearchableSelect from '../../layout/select/SearchableSelect';
 import Input from '../../layout/Input';
 import useDataStore from '../../../store/useDataStore';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Info } from 'lucide-react';
 import * as d3 from 'd3';
+import FeatureSelect from '../../layout/select/FeatureSelect';
 
 export default function DatasetFilter({ dataset }: { dataset: GameData }) {
   const { addFilter, removeFilter, updateFilter } = useDataStore();
@@ -58,7 +59,7 @@ export default function DatasetFilter({ dataset }: { dataset: GameData }) {
         {!showAddFilter && (
           <button
             onClick={handleAddFilter}
-            className=" inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg font-medium cursor-pointer shadow-sm hover:bg-blue-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className=" inline-flex items-center justify-center px-3 py-1 bg-blue-400 text-white rounded-lg font-medium cursor-pointer shadow-sm hover:bg-blue-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Filter
@@ -87,11 +88,13 @@ const FilterItem = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     filter.selectedCategories ?? [],
   );
-  const [rangeMin, setRangeMin] = useState<string>(
-    filter.range?.min?.toString() ?? '',
-  );
-  const [rangeMax, setRangeMax] = useState<string>(
-    filter.range?.max?.toString() ?? '',
+  const [ranges, setRanges] = useState<Array<{ min: string; max: string }>>(
+    filter.ranges && filter.ranges.length > 0
+      ? filter.ranges.map((r) => ({
+          min: r.min === -Infinity ? '' : r.min.toString(),
+          max: r.max === Infinity ? '' : r.max.toString(),
+        }))
+      : [{ min: '', max: '' }],
   );
 
   const columnType = dataset.columnTypes[feature];
@@ -133,15 +136,45 @@ const FilterItem = ({
     onUpdate(feature, newFilter);
   };
 
-  const handleRangeChange = (min: string, max: string) => {
-    setRangeMin(min);
-    setRangeMax(max);
+  const handleRangeChange = (index: number, min: string, max: string) => {
+    const newRanges = [...ranges];
+    newRanges[index] = { min, max };
+    setRanges(newRanges);
+
+    // Convert to numeric ranges, filtering out empty ranges
+    const numericRanges = newRanges
+      .filter((r) => r.min || r.max)
+      .map((r) => ({
+        min: r.min ? Number(r.min) : -Infinity,
+        max: r.max ? Number(r.max) : Infinity,
+      }));
+
     const newFilter: FeatureFilter = {
       filterType: 'numeric',
-      range: {
-        min: min ? Number(min) : undefined,
-        max: max ? Number(max) : undefined,
-      },
+      ranges: numericRanges.length > 0 ? numericRanges : undefined,
+    };
+    onUpdate(feature, newFilter);
+  };
+
+  const handleAddRange = () => {
+    setRanges([...ranges, { min: '', max: '' }]);
+  };
+
+  const handleRemoveRange = (index: number) => {
+    const newRanges = ranges.filter((_, i) => i !== index);
+    setRanges(newRanges.length > 0 ? newRanges : [{ min: '', max: '' }]);
+
+    // Update filter with remaining ranges
+    const numericRanges = newRanges
+      .filter((r) => r.min || r.max)
+      .map((r) => ({
+        min: r.min ? Number(r.min) : -Infinity,
+        max: r.max ? Number(r.max) : Infinity,
+      }));
+
+    const newFilter: FeatureFilter = {
+      filterType: 'numeric',
+      ranges: numericRanges.length > 0 ? numericRanges : undefined,
     };
     onUpdate(feature, newFilter);
   };
@@ -168,19 +201,52 @@ const FilterItem = ({
             <span className="font-medium">Data range:</span> {range[0]} to{' '}
             {range[1]}
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Minimum value"
-              value={rangeMin}
-              onChange={(value) => handleRangeChange(value, rangeMax)}
-              placeholder="Enter min value"
-            />
-            <Input
-              label="Maximum value"
-              value={rangeMax}
-              onChange={(value) => handleRangeChange(rangeMin, value)}
-              placeholder="Enter max value"
-            />
+          <div className="space-y-2">
+            {ranges.map((rangeItem, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 border border-gray-200 rounded px-2 py-1.5 bg-white"
+              >
+                <span className="text-xs text-gray-500 w-16 flex-shrink-0">
+                  Range {index + 1}
+                </span>
+                <Input
+                  label=""
+                  value={rangeItem.min}
+                  onChange={(value) =>
+                    handleRangeChange(index, value, rangeItem.max)
+                  }
+                  placeholder="Min"
+                  className="flex-1"
+                />
+                <span className="text-xs text-gray-400">to</span>
+                <Input
+                  label=""
+                  value={rangeItem.max}
+                  onChange={(value) =>
+                    handleRangeChange(index, rangeItem.min, value)
+                  }
+                  placeholder="Max"
+                  className="flex-1"
+                />
+                {ranges.length > 1 && (
+                  <button
+                    onClick={() => handleRemoveRange(index)}
+                    className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded hover:bg-red-50 flex-shrink-0"
+                    title="Remove range"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              onClick={handleAddRange}
+              className="w-full px-2 py-1.5 text-xs text-blue-600 border border-blue-300 rounded hover:bg-blue-50 transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Range
+            </button>
           </div>
         </div>
       )}
@@ -216,8 +282,9 @@ interface AddFilterItemProps {
 const AddFilterItem = ({ dataset, onAdd, onCancel }: AddFilterItemProps) => {
   const [selectedFeature, setSelectedFeature] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [rangeMin, setRangeMin] = useState<string>('');
-  const [rangeMax, setRangeMax] = useState<string>('');
+  const [ranges, setRanges] = useState<Array<{ min: string; max: string }>>([
+    { min: '', max: '' },
+  ]);
 
   const availableFeatures = useMemo(() => {
     // Only show features that don't already have filters
@@ -261,17 +328,38 @@ const AddFilterItem = ({ dataset, onAdd, onCancel }: AddFilterItemProps) => {
   const isCategorical =
     columnType === 'Categorical' || columnType === 'Ordinal';
 
+  const handleRangeChange = (index: number, min: string, max: string) => {
+    const newRanges = [...ranges];
+    newRanges[index] = { min, max };
+    setRanges(newRanges);
+  };
+
+  const handleAddRange = () => {
+    setRanges([...ranges, { min: '', max: '' }]);
+  };
+
+  const handleRemoveRange = (index: number) => {
+    setRanges(ranges.filter((_, i) => i !== index));
+  };
+
   const handleAdd = () => {
     if (!selectedFeature) return;
 
     let filter: FeatureFilter;
     if (isNumeric) {
+      // Convert to numeric ranges, filtering out empty ranges
+      const numericRanges = ranges
+        .filter((r) => r.min || r.max)
+        .map((r) => ({
+          min: r.min ? Number(r.min) : -Infinity,
+          max: r.max ? Number(r.max) : Infinity,
+        }));
+
+      if (numericRanges.length === 0) return;
+
       filter = {
         filterType: 'numeric',
-        range: {
-          min: rangeMin ? Number(rangeMin) : undefined,
-          max: rangeMax ? Number(rangeMax) : undefined,
-        },
+        ranges: numericRanges,
       };
     } else if (isCategorical) {
       filter = {
@@ -287,19 +375,17 @@ const AddFilterItem = ({ dataset, onAdd, onCancel }: AddFilterItemProps) => {
 
   const canAdd =
     selectedFeature &&
-    ((isNumeric && (rangeMin || rangeMax)) ||
+    ((isNumeric && ranges.some((r) => r.min || r.max)) ||
       (isCategorical && selectedCategories.length > 0));
 
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
       <div className="space-y-4">
         <div>
-          <SearchableSelect
-            label="Select feature to filter"
-            value={selectedFeature}
-            onChange={setSelectedFeature}
-            options={availableFeatures}
-            placeholder="Choose a feature..."
+          <FeatureSelect
+            feature={selectedFeature}
+            handleFeatureChange={setSelectedFeature}
+            featureOptions={availableFeatures}
           />
         </div>
 
@@ -307,23 +393,57 @@ const AddFilterItem = ({ dataset, onAdd, onCancel }: AddFilterItemProps) => {
           <div className="space-y-3">
             {isNumeric && (
               <div className="space-y-3">
-                <div className="text-xs text-gray-600 bg-white px-3 py-2 rounded border">
-                  <span className="font-medium">Data range:</span> {range[0]} to{' '}
-                  {range[1]}
+                <div className="flex items-center text-xs text-gray-600 py-2">
+                  <Info className="w-4 h-4 mr-2" />
+                  <span className="font-medium">Data range:&nbsp;</span>{' '}
+                  {range[0]} to {range[1]}
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    label="Minimum value"
-                    value={rangeMin}
-                    onChange={setRangeMin}
-                    placeholder="Enter min value"
-                  />
-                  <Input
-                    label="Maximum value"
-                    value={rangeMax}
-                    onChange={setRangeMax}
-                    placeholder="Enter max value"
-                  />
+                <div className="space-y-2">
+                  {ranges.map((rangeItem, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 border border-gray-200 rounded px-2 py-1.5 bg-white"
+                    >
+                      <span className="text-xs text-gray-500 w-12 flex-shrink-0">
+                        Range {index + 1}:
+                      </span>
+                      <Input
+                        label=""
+                        value={rangeItem.min}
+                        onChange={(value) =>
+                          handleRangeChange(index, value, rangeItem.max)
+                        }
+                        placeholder="Min"
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-gray-400">to</span>
+                      <Input
+                        label=""
+                        value={rangeItem.max}
+                        onChange={(value) =>
+                          handleRangeChange(index, rangeItem.min, value)
+                        }
+                        placeholder="Max"
+                        className="flex-1"
+                      />
+                      {ranges.length > 1 && (
+                        <button
+                          onClick={() => handleRemoveRange(index)}
+                          className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded hover:bg-red-50 flex-shrink-0"
+                          title="Remove range"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    onClick={handleAddRange}
+                    className="w-full px-2 py-1.5 text-xs text-blue-600 border border-blue-300 rounded hover:bg-blue-50 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Add Range
+                  </button>
                 </div>
               </div>
             )}

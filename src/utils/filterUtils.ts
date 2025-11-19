@@ -16,15 +16,23 @@ export const applyFilters = (
     return Object.entries(filters).every(([featureName, filter]) => {
       const value = (row as Record<string, any>)[featureName];
 
-      if (filter.filterType === 'categorical') {
+      if (
+        filter.filterType === 'categorical' &&
+        (filter.selectedCategories?.length ?? 0) > 0
+      ) {
         return filter.selectedCategories?.includes(value.toString()) ?? true;
       } else if (filter.filterType === 'numeric') {
         const numValue = Number(value);
         if (isNaN(numValue)) return false;
 
-        const min = filter.range?.min ?? -Infinity;
-        const max = filter.range?.max ?? Infinity;
-        return numValue >= min && numValue <= max;
+        // Support multiple ranges (for histogram bin selection)
+        if (filter.ranges && filter.ranges.length > 0) {
+          return filter.ranges.some(
+            (range) => numValue >= range.min && numValue <= range.max,
+          );
+        }
+
+        return true;
       }
 
       return true;
@@ -69,4 +77,35 @@ export const getFilteredRowCount = (
   filters: Record<string, FeatureFilter>,
 ): number => {
   return applyFilters(data, filters).length;
+};
+
+/**
+ * Compare two arrays
+ * @param a - First array
+ * @param b - Second array
+ * @returns True if arrays are equal
+ */
+export const arraysEqual = (a: string[], b: string[]) => {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].sort();
+  const sortedB = [...b].sort();
+  return sortedA.every((val, i) => val === sortedB[i]);
+};
+
+/**
+ * Compare two ranges arrays
+ * @param a - First ranges array
+ * @param b - Second ranges array
+ * @returns True if ranges arrays are equal
+ */
+export const rangesEqual = (
+  a: Array<{ min: number; max: number }>,
+  b: Array<{ min: number; max: number }>,
+) => {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].sort((x, y) => x.min - y.min || x.max - y.max);
+  const sortedB = [...b].sort((x, y) => x.min - y.min || x.max - y.max);
+  return sortedA.every(
+    (range, i) => range.min === sortedB[i].min && range.max === sortedB[i].max,
+  );
 };
