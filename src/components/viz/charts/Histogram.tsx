@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import Select from '../../layout/select/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
@@ -12,7 +6,7 @@ import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
 import useDataStore from '../../../store/useDataStore';
 import FeatureSelect from '../../layout/select/FeatureSelect';
-import { applyFilters, rangesEqual } from '../../../utils/filterUtils';
+import { applyFilters } from '../../../utils/filterUtils';
 
 interface HistogramProps {
   dataset: GameData;
@@ -30,13 +24,10 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
     min: number;
     max: number;
   }>(chartId, 'rangeFilter', { min: -Infinity, max: Infinity });
-  const { getFilteredDataset, addFilter, removeFilter } = useDataStore();
+  const { addFilter, removeFilter } = useDataStore();
   const datasetRecord = useDataStore(
     useCallback((state) => state.datasets[dataset.id], [dataset.id]),
   );
-  const [selectedBins, setSelectedBins] = useState<
-    Array<{ min: number; max: number }>
-  >([]);
 
   // Get filtered dataset excluding current feature's filter
   const filtersExcludingFeature = useMemo(() => {
@@ -59,85 +50,60 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
     }) as typeof datasetRecord.data;
   }, [datasetRecord?.data, filtersExcludingFeature]);
 
-  // Refs for tracking and preventing loops
-  const lastStoreValueRef = useRef<string>('');
-  const isUpdatingStoreRef = useRef(false);
-  const prevSelectedBinsRef = useRef<Array<{ min: number; max: number }>>([]);
-  const storeRangesRef = useRef<Array<{ min: number; max: number }>>([]);
-
-  // Get current store value for the feature
-  const storeRanges = useMemo(() => {
-    if (!feature) return [];
-    const storeFilter = datasetRecord?.filters?.[feature];
-    if (storeFilter?.filterType === 'numeric' && storeFilter.ranges) {
-      storeRangesRef.current = storeFilter.ranges;
-      return storeFilter.ranges;
-    }
-    storeRangesRef.current = [];
-    return [];
-  }, [datasetRecord?.filters, feature]);
-
-  // Sync selectedBins with global store when it changes externally
-  useEffect(() => {
-    if (!feature) {
-      setSelectedBins([]);
-      lastStoreValueRef.current = '';
-      prevSelectedBinsRef.current = [];
-      return;
-    }
-
-    const storeValueKey = storeRanges
-      .map((r) => `${r.min}-${r.max}`)
-      .sort()
-      .join(',');
-    // Only update if store value changed externally (not from our own update)
-    if (
-      !isUpdatingStoreRef.current &&
-      storeValueKey !== lastStoreValueRef.current
-    ) {
-      setSelectedBins(storeRanges);
-      lastStoreValueRef.current = storeValueKey;
-      prevSelectedBinsRef.current = storeRanges;
-    }
-    isUpdatingStoreRef.current = false;
-  }, [storeRanges, feature]);
-
-  // Update global store when selectedBins changes (from bin clicks)
-  useEffect(() => {
-    if (!feature) return;
-
-    const prevSelected = prevSelectedBinsRef.current;
-    const hasChanged = !rangesEqual(selectedBins, prevSelected);
-
-    if (hasChanged) {
-      const currentStoreRanges = storeRangesRef.current;
-      if (!rangesEqual(selectedBins, currentStoreRanges)) {
-        isUpdatingStoreRef.current = true;
-        if (selectedBins.length > 0) {
-          addFilter(dataset.id, feature, {
-            filterType: 'numeric',
-            ranges: selectedBins,
-          });
-          lastStoreValueRef.current = selectedBins
-            .map((r) => `${r.min}-${r.max}`)
-            .sort()
-            .join(',');
-        } else {
-          removeFilter(dataset.id, feature);
-          lastStoreValueRef.current = '';
-        }
-      }
-      prevSelectedBinsRef.current = selectedBins;
-    }
-  }, [addFilter, dataset.id, feature, removeFilter, selectedBins]);
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'Numeric')
+        .map(([key]) => [key, key]),
+    );
+  };
 
   // prevent invalid feature selection
   useEffect(() => {
     if (feature && !getFeatureOptions()[feature]) {
       setFeature('');
     }
-    setSelectedBins([]);
   }, [feature]);
+
+  // Derive selectedBins directly from store (single source of truth)
+  const selectedBins = useMemo(() => {
+    if (!feature) return [];
+    const storeFilter = datasetRecord?.filters?.[feature];
+    return storeFilter?.filterType === 'numeric' && storeFilter.ranges
+      ? storeFilter.ranges
+      : [];
+  }, [datasetRecord?.filters, feature]);
+
+  // Handle bin clicks - update store directly
+  const handleBinToggle = useCallback(
+    (binRange: { min: number; max: number }) => {
+      if (!feature) return;
+
+      const isSelected = selectedBins.some(
+        (r) => r.min === binRange.min && r.max === binRange.max,
+      );
+      const nextSelected = isSelected
+        ? selectedBins.filter(
+            (r) => !(r.min === binRange.min && r.max === binRange.max),
+          )
+        : [...selectedBins, binRange];
+
+      if (nextSelected.length > 0) {
+        addFilter(dataset.id, feature, {
+          filterType: 'numeric',
+          ranges: nextSelected,
+        });
+      } else {
+        removeFilter(dataset.id, feature);
+      }
+    },
+    [addFilter, dataset.id, feature, removeFilter, selectedBins],
+  );
+
+  const handleClearSelection = useCallback(() => {
+    if (!feature) return;
+    removeFilter(dataset.id, feature);
+  }, [dataset.id, feature, removeFilter]);
 
   const renderChart = useCallback(
     (
@@ -236,15 +202,7 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
           const binMin = d.x0 ?? -Infinity;
           const binMax = d.x1 ?? Infinity;
           const binRange = { min: binMin, max: binMax };
-
-          setSelectedBins((current) => {
-            const isSelected = current.some(
-              (r) => r.min === binMin && r.max === binMax,
-            );
-            return isSelected
-              ? current.filter((r) => !(r.min === binMin && r.max === binMax))
-              : [...current, binRange];
-          });
+          handleBinToggle(binRange);
         });
 
       // Add bar labels (only if there's enough space and not too many bins)
@@ -353,18 +311,10 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
         .attr('fill', '#6b7280')
         .text(`Mode: ${mode.toFixed(2)}`);
     },
-    [feature, binCount, data, rangeFilter, selectedBins],
+    [feature, binCount, data, rangeFilter, selectedBins, handleBinToggle],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
-
-  const getFeatureOptions = () => {
-    return Object.fromEntries(
-      Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'Numeric')
-        .map(([key]) => [key, key]),
-    );
-  };
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
@@ -434,7 +384,7 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
           <button
             type="button"
             className="absolute right-2 top-2 z-10 rounded bg-gray-100/70 px-2 py-1 text-xs text-slate-600 backdrop-blur transition hover:border-slate-400 hover:text-slate-800"
-            onClick={() => setSelectedBins([])}
+            onClick={handleClearSelection}
           >
             Clear selection
           </button>

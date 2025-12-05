@@ -1,17 +1,11 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import SearchableSelect from '../../layout/select/SearchableSelect';
 import useChartOption from '../../../hooks/useChartOption';
 import useDataStore from '../../../store/useDataStore';
 import FeatureSelect from '../../layout/select/FeatureSelect';
-import { applyFilters, arraysEqual } from '../../../utils/filterUtils';
+import { applyFilters } from '../../../utils/filterUtils';
 
 interface BarChartProps {
   dataset: GameData;
@@ -29,7 +23,6 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
   const datasetRecord = useDataStore(
     useCallback((state) => state.datasets[dataset.id], [dataset.id]),
   );
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const isOrdinal = dataset?.columnTypes[feature] === 'Ordinal';
 
@@ -59,78 +52,43 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
     if (feature && !getFeatureOptions()[feature]) {
       setFeature('');
     }
-    setSelectedCategories([]);
   }, [feature]);
 
-  const lastStoreValueRef = useRef<string>('');
-  const isUpdatingStoreRef = useRef(false);
-  const prevSelectedCategoriesRef = useRef<string[]>([]);
-  const storeCategoriesRef = useRef<string[]>([]);
-
-  // Get current store value for the feature
-  const storeCategories = useMemo(() => {
+  // Derive selectedCategories directly from store (single source of truth)
+  const selectedCategories = useMemo(() => {
     if (!feature) return [];
     const storeFilter = datasetRecord?.filters?.[feature];
-    const categories =
-      storeFilter?.filterType === 'categorical'
-        ? (storeFilter.selectedCategories ?? [])
-        : [];
-    storeCategoriesRef.current = categories;
-    return categories;
+    return storeFilter?.filterType === 'categorical'
+      ? (storeFilter.selectedCategories ?? [])
+      : [];
   }, [datasetRecord?.filters, feature]);
 
-  // Sync selectedCategories with global store when it changes externally
-  useEffect(() => {
-    if (!feature) {
-      setSelectedCategories([]);
-      lastStoreValueRef.current = '';
-      prevSelectedCategoriesRef.current = [];
-      return;
-    }
+  // Handle bar clicks - update store directly
+  const handleCategoryToggle = useCallback(
+    (category: string) => {
+      if (!feature) return;
 
-    const storeValueKey = [...storeCategories].sort().join(',');
-    // Only update if store value changed externally (not from our own update)
-    if (
-      !isUpdatingStoreRef.current &&
-      storeValueKey !== lastStoreValueRef.current
-    ) {
-      setSelectedCategories(storeCategories);
-      lastStoreValueRef.current = storeValueKey;
-      // Update ref so second effect knows this was a store sync, not user change
-      prevSelectedCategoriesRef.current = storeCategories;
-    }
-    isUpdatingStoreRef.current = false;
-  }, [storeCategories, feature]);
+      const isSelected = selectedCategories.includes(category);
+      const nextSelected = isSelected
+        ? selectedCategories.filter((value) => value !== category)
+        : [...selectedCategories, category];
 
-  // Update global store when selectedCategories changes (from bar clicks)
-  useEffect(() => {
-    if (!feature) return;
-
-    // Only update if selectedCategories actually changed (not from store sync)
-    const prevSelected = prevSelectedCategoriesRef.current;
-    const hasChanged = !arraysEqual(selectedCategories, prevSelected);
-
-    if (hasChanged) {
-      // Check if this change would actually modify the store
-      // Use ref to get latest store value to avoid stale closure
-      const currentStoreCategories = storeCategoriesRef.current;
-      if (!arraysEqual(selectedCategories, currentStoreCategories)) {
-        isUpdatingStoreRef.current = true;
-        if (selectedCategories.length > 0) {
-          addFilter(dataset.id, feature, {
-            filterType: 'categorical',
-            selectedCategories,
-          });
-          lastStoreValueRef.current = [...selectedCategories].sort().join(',');
-        } else {
-          removeFilter(dataset.id, feature);
-          lastStoreValueRef.current = '';
-        }
+      if (nextSelected.length > 0) {
+        addFilter(dataset.id, feature, {
+          filterType: 'categorical',
+          selectedCategories: nextSelected,
+        });
+      } else {
+        removeFilter(dataset.id, feature);
       }
-      // Always update the ref after processing to prevent re-triggering
-      prevSelectedCategoriesRef.current = selectedCategories;
-    }
-  }, [addFilter, dataset.id, feature, removeFilter, selectedCategories]);
+    },
+    [addFilter, dataset.id, feature, removeFilter, selectedCategories],
+  );
+
+  const handleClearSelection = useCallback(() => {
+    if (!feature) return;
+    removeFilter(dataset.id, feature);
+  }, [dataset.id, feature, removeFilter]);
 
   const renderChart = useCallback(
     (
@@ -250,13 +208,7 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
             .style('opacity', 1);
         })
         .on('click', (_, d) => {
-          setSelectedCategories((current) => {
-            const isSelected = current.includes(d.value);
-            const nextSelected = isSelected
-              ? current.filter((value) => value !== d.value)
-              : [...current, d.value];
-            return nextSelected;
-          });
+          handleCategoryToggle(d.value);
         });
 
       // Add bar labels (only if there's enough space)
@@ -317,7 +269,7 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
         .attr('fill', '#374151')
         .text(feature);
     },
-    [feature, data, localFilter, selectedCategories],
+    [feature, data, localFilter, selectedCategories, handleCategoryToggle],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
@@ -375,7 +327,7 @@ export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
           <button
             type="button"
             className="absolute right-2 top-2 z-10 rounded bg-gray-100/70 px-2 py-1 text-xs text-slate-600 backdrop-blur transition hover:border-slate-400 hover:text-slate-800"
-            onClick={() => setSelectedCategories([])}
+            onClick={handleClearSelection}
           >
             Clear selection
           </button>
