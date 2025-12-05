@@ -5,6 +5,7 @@ import 'react-resizable/css/styles.css';
 import VizContainer from './VizContainer';
 import { v4 as uuidv4 } from 'uuid';
 import useLayoutStore, { ChartConfig } from '../../store/useLayoutStore';
+import { Plus } from 'lucide-react';
 
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
@@ -187,10 +188,11 @@ const GridLayout: React.FC = () => {
           {currentLayout && layouts[currentLayout]?.name}
         </div>
         <button
-          className="px-2 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200 focus:outline-none  focus:ring-gray-300"
+          className="inline-flex items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
           onClick={addChart}
           type="button"
         >
+          <Plus className="w-4 h-4 mr-2" />
           Add Chart
         </button>
       </div>

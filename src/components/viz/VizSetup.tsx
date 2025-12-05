@@ -134,7 +134,7 @@ const VizSetup = ({
           !vizType ||
           (vizType === 'datasetComparison' && !gameDataIds[1])
         }
-        className="px-2 py-1 bg-gray-700 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm disabled:cursor-not-allowed"
         onClick={visualize}
       >
         Apply
