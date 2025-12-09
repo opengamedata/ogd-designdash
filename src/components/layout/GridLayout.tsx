@@ -5,6 +5,7 @@ import 'react-resizable/css/styles.css';
 import VizContainer from './VizContainer';
 import { v4 as uuidv4 } from 'uuid';
 import useLayoutStore, { ChartConfig } from '../../store/useLayoutStore';
+import { Plus } from 'lucide-react';
 
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
@@ -121,6 +122,20 @@ const GridLayout: React.FC = () => {
     updateSpawnPoint(newLayout);
   };
 
+  const duplicateChart = (chartId: string) => {
+    const newCharts = { ...charts };
+    const newChartId = uuidv4();
+    newCharts[newChartId] = charts[chartId];
+    const chartToDuplicate = layout.find((item) => item.i === chartId);
+    if (!chartToDuplicate) return;
+    const newLayout = [
+      ...layout,
+      { ...chartToDuplicate, i: newChartId, x: spawnPoint.x, y: spawnPoint.y },
+    ];
+    saveCurrentLayout(newLayout, newCharts);
+    updateSpawnPoint(newLayout);
+  };
+
   /**
    * updateSpawnPoint is used to update the spawn point for the next chart.
    * It is used to ensure that the next chart is spawned in the correct position.
@@ -167,16 +182,17 @@ const GridLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen mb-20">
       <div className="flex items-center gap-8 mb-2">
         <div className="text-lg font-bold">
           {currentLayout && layouts[currentLayout]?.name}
         </div>
         <button
-          className="px-2 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200 focus:outline-none  focus:ring-gray-300"
+          className="inline-flex items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
           onClick={addChart}
           type="button"
         >
+          <Plus className="w-4 h-4 mr-2" />
           Add Chart
         </button>
       </div>
@@ -205,6 +221,7 @@ const GridLayout: React.FC = () => {
                   chartId={item.i}
                   className="bg-white border border-gray-200 rounded-md"
                   onRemove={removeChart}
+                  onDuplicate={duplicateChart}
                 />
               );
             })}

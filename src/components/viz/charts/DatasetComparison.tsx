@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
-import Select from '../../layout/Select';
+import { useEffect, useMemo } from 'react';
+import SearchableSelect from '../../layout/select/SearchableSelect';
 import * as d3 from 'd3';
 import useChartOption from '../../../hooks/useChartOption';
 import { tTestTwoSample } from 'simple-statistics';
+import useDataStore from '../../../store/useDataStore';
+import FeatureSelect from '../../layout/select/FeatureSelect';
 
 interface DatasetComparisonProps {
   datasets: GameData[];
@@ -19,11 +21,23 @@ const DatasetComparison: React.FC<DatasetComparisonProps> = ({
   chartId,
 }) => {
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const { getFilteredDataset } = useDataStore();
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
 
   const dataset1 = datasets[0];
   const dataset2 = datasets[1];
-  const { data: data1 } = dataset1;
-  const { data: data2 } = dataset2;
+
+  // Get filtered datasets from centralized store
+  const filteredDataset1 = getFilteredDataset(dataset1.id);
+  const filteredDataset2 = getFilteredDataset(dataset2.id);
+  const data1 = filteredDataset1?.data || [];
+  const data2 = filteredDataset2?.data || [];
 
   const stats = useMemo(() => {
     if (
@@ -55,7 +69,7 @@ const DatasetComparison: React.FC<DatasetComparisonProps> = ({
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset1.columnTypes)
-        .filter(([_, value]) => value === 'number')
+        .filter(([_, value]) => value === 'Numeric')
         .map(([key]) => [key, key]),
     );
   };
@@ -63,12 +77,18 @@ const DatasetComparison: React.FC<DatasetComparisonProps> = ({
   return (
     <div className="flex flex-col gap-2 p-2 h-full ">
       <div className="flex flex-row gap-2">
-        <Select
+        {/* <SearchableSelect
           className="w-full max-w-sm"
           label="Feature"
+          placeholder="Select a feature..."
           value={feature}
           onChange={(value) => setFeature(value)}
           options={getFeatureOptions()}
+        /> */}
+        <FeatureSelect
+          feature={feature}
+          handleFeatureChange={(value) => setFeature(value)}
+          featureOptions={getFeatureOptions()}
         />
       </div>
       <div className="flex flex-row gap-2 w-full justify-center h-full">

@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
-import Select from '../../layout/Select';
+import Select from '../../layout/select/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
-import { Minus, Plus } from 'lucide-react';
 import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
+import FeatureSelect from '../../layout/select/FeatureSelect';
+import { applyFilters } from '../../../utils/filterUtils';
 
 interface HistogramProps {
   dataset: GameData;
@@ -22,8 +24,86 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
     min: number;
     max: number;
   }>(chartId, 'rangeFilter', { min: -Infinity, max: Infinity });
+  const { addFilter, removeFilter } = useDataStore();
+  const datasetRecord = useDataStore(
+    useCallback((state) => state.datasets[dataset.id], [dataset.id]),
+  );
 
-  const { data } = dataset;
+  // Get filtered dataset excluding current feature's filter
+  const filtersExcludingFeature = useMemo(() => {
+    if (!datasetRecord?.filters) return undefined;
+    const { [feature]: _ignored, ...rest } = datasetRecord.filters;
+    return Object.keys(rest).length > 0 ? rest : undefined;
+  }, [datasetRecord?.filters, feature]);
+
+  const data = useMemo(() => {
+    if (!datasetRecord?.data) return [];
+    if (!filtersExcludingFeature) {
+      return datasetRecord.data;
+    }
+    const filteredData = applyFilters(
+      datasetRecord.data,
+      filtersExcludingFeature,
+    );
+    return Object.assign(filteredData, {
+      columns: datasetRecord.data.columns,
+    }) as typeof datasetRecord.data;
+  }, [datasetRecord?.data, filtersExcludingFeature]);
+
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'Numeric')
+        .map(([key]) => [key, key]),
+    );
+  };
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
+
+  // Derive selectedBins directly from store (single source of truth)
+  const selectedBins = useMemo(() => {
+    if (!feature) return [];
+    const storeFilter = datasetRecord?.filters?.[feature];
+    return storeFilter?.filterType === 'numeric' && storeFilter.ranges
+      ? storeFilter.ranges
+      : [];
+  }, [datasetRecord?.filters, feature]);
+
+  // Handle bin clicks - update store directly
+  const handleBinToggle = useCallback(
+    (binRange: { min: number; max: number }) => {
+      if (!feature) return;
+
+      const isSelected = selectedBins.some(
+        (r) => r.min === binRange.min && r.max === binRange.max,
+      );
+      const nextSelected = isSelected
+        ? selectedBins.filter(
+            (r) => !(r.min === binRange.min && r.max === binRange.max),
+          )
+        : [...selectedBins, binRange];
+
+      if (nextSelected.length > 0) {
+        addFilter(dataset.id, feature, {
+          filterType: 'numeric',
+          ranges: nextSelected,
+        });
+      } else {
+        removeFilter(dataset.id, feature);
+      }
+    },
+    [addFilter, dataset.id, feature, removeFilter, selectedBins],
+  );
+
+  const handleClearSelection = useCallback(() => {
+    if (!feature) return;
+    removeFilter(dataset.id, feature);
+  }, [dataset.id, feature, removeFilter]);
 
   const renderChart = useCallback(
     (
@@ -64,20 +144,27 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
       // Create histogram generator
+      const dataExtent = d3.extent(values) as [number, number];
       const histogram = d3
         .bin()
-        .domain(d3.extent(values) as [number, number])
+        .domain(dataExtent)
         .thresholds(
           d3.ticks(d3.min(values) || 0, d3.max(values) || 0, binCount),
         );
 
       const bins = histogram(values);
 
-      // X scale (linear)
-      const xScale = d3
-        .scaleLinear()
-        .domain([bins[0].x0 || 0, bins[bins.length - 1].x1 || 0])
-        .range([0, width]);
+      // Helper to check if a bin is selected
+      const isBinSelected = (bin: d3.Bin<number, number>) => {
+        const binMin = bin.x0 ?? -Infinity;
+        const binMax = bin.x1 ?? Infinity;
+        return selectedBins.some(
+          (range) => range.min === binMin && range.max === binMax,
+        );
+      };
+
+      // X scale (linear) - use bin boundaries for proper alignment
+      const xScale = d3.scaleLinear().domain(dataExtent).range([0, width]);
 
       // Y scale (linear)
       const yScale = d3
@@ -98,8 +185,25 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
           Math.max(0, xScale(d.x1 || 0) - xScale(d.x0 || 0) - 1),
         )
         .attr('height', (d) => height - yScale(d.length))
-        .attr('fill', '#ff8e38')
-        .attr('rx', 1);
+        .attr('fill', (d) => {
+          const selected = isBinSelected(d);
+          const hasSelection = selectedBins.length > 0;
+          return hasSelection && !selected ? '#d1d5db' : '#ff8e38';
+        })
+        .attr('rx', 1)
+        .style('cursor', 'pointer')
+        .on('mouseover', function () {
+          d3.select(this).transition().duration(200).style('opacity', 0.8);
+        })
+        .on('mouseout', function () {
+          d3.select(this).transition().duration(200).style('opacity', 1);
+        })
+        .on('click', (_, d) => {
+          const binMin = d.x0 ?? -Infinity;
+          const binMax = d.x1 ?? Infinity;
+          const binRange = { min: binMin, max: binMax };
+          handleBinToggle(binRange);
+        });
 
       // Add bar labels (only if there's enough space and not too many bins)
       if (bins.length <= 15) {
@@ -121,8 +225,14 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
           .text((d) => d.length);
       }
 
-      // Add X axis
-      const xAxis = d3.axisBottom(xScale);
+      // Add X axis with ticks aligned to bin boundaries
+      const binBoundaries = bins
+        .flatMap((bin) => [bin.x0, bin.x1])
+        .filter((value): value is number => value !== undefined)
+        .filter((value, index, array) => array.indexOf(value) === index)
+        .sort((a, b) => a - b);
+      const xAxis = d3.axisBottom(xScale).tickValues(binBoundaries);
+
       chartGroup
         .append('g')
         .attr('transform', `translate(0,${height})`)
@@ -201,32 +311,31 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
         .attr('fill', '#6b7280')
         .text(`Mode: ${mode.toFixed(2)}`);
     },
-    [feature, binCount, data, rangeFilter],
+    [feature, binCount, data, rangeFilter, selectedBins, handleBinToggle],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
-  const getFeatureOptions = () => {
-    return Object.fromEntries(
-      Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'number')
-        .map(([key]) => [key, key]),
-    );
-  };
-
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
       <div className="flex gap-2 items-end">
-        <Select
+        {/* <SearchableSelect
           className="flex-1 max-w-sm"
           label="Feature"
+          placeholder="Select a feature..."
           value={feature}
           onChange={(value) => setFeature(value)}
           options={getFeatureOptions()}
+          /> */}
+        <FeatureSelect
+          feature={feature}
+          handleFeatureChange={(value) => setFeature(value)}
+          featureOptions={getFeatureOptions()}
         />
         <Select
           className="w-24"
           label="Bins"
+          helpText="Controls how granularly the data is divided"
           value={binCount.toString()}
           onChange={(value) => setBinCount(parseInt(value))}
           options={Object.fromEntries(
@@ -270,7 +379,16 @@ export const Histogram: React.FC<HistogramProps> = ({ dataset, chartId }) => {
         />
       </div>
 
-      <div ref={containerRef} className="flex-1 min-h-0">
+      <div ref={containerRef} className="relative flex-1 min-h-0">
+        {selectedBins.length > 0 && (
+          <button
+            type="button"
+            className="absolute right-2 top-2 z-10 rounded bg-gray-100/70 px-2 py-1 text-xs text-slate-600 backdrop-blur transition hover:border-slate-400 hover:text-slate-800"
+            onClick={handleClearSelection}
+          >
+            Clear selection
+          </button>
+        )}
         <svg ref={svgRef} className="w-full h-full"></svg>
       </div>
     </div>

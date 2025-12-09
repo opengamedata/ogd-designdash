@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import * as d3 from 'd3';
-import Select from '../../layout/Select';
-import { getNodes, getEdges, EdgeMode } from './progressionGraphsUtil';
+import Select from '../../layout/select/Select';
+import { getNodes, getEdges, EdgeMode } from './jobGraphUtil';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
 
 interface JobGraphProps {
   dataset: GameData;
@@ -16,7 +17,11 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
     'edgeMode',
     'TopJobCompletionDestinations',
   );
-  const { data } = dataset;
+  const { getFilteredDataset } = useDataStore();
+
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
 
   // Get available edge modes based on what columns exist in the dataset
   const availableEdgeModes = useMemo(() => {
@@ -383,7 +388,8 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
     <div className="flex flex-col gap-2 p-2 h-full">
       <Select
         className="w-full max-w-sm"
-        label="Edge Mode"
+        label="Link Mode"
+        helpText="Controls how links are drawn between nodes"
         value={currentEdgeMode}
         onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
         options={availableEdgeModes}

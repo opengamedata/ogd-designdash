@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Move, Minus, Settings, Database, Loader2 } from 'lucide-react';
+import { Move, Minus, Copy, Database, Loader2 } from 'lucide-react';
 import { BarChart } from '../viz/charts/BarChart';
 import { Histogram } from '../viz/charts/Histogram';
 import { ScatterPlot } from '../viz/charts/ScatterPlot';
 import { Timeline } from '../viz/charts/Timeline';
 import { JobGraph } from '../viz/charts/JobGraph';
+import { ForceDirectedGraph } from '../viz/charts/ForceDirectedGraph';
 import { Sankey } from '../viz/charts/Sankey';
 import VizSetup from '../viz/VizSetup';
 import DescriptiveStatistics from '../viz/charts/DescriptiveStatistics';
@@ -14,6 +15,7 @@ import useLayoutStore from '../../store/useLayoutStore';
 import DatasetComparison from '../viz/charts/DatasetComparison';
 import useDataStore from '../../store/useDataStore';
 import DatasetNotFound from '../viz/DatasetNotFound';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface VizContainerProps {
   style?: React.CSSProperties;
@@ -23,6 +25,7 @@ interface VizContainerProps {
   onTouchEnd?: (e: React.TouchEvent) => void;
   chartId: string;
   onRemove: (chartId: string) => void;
+  onDuplicate: (chartId: string) => void;
   children?: React.ReactNode;
 }
 
@@ -40,6 +43,7 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
       onTouchEnd,
       chartId,
       onRemove,
+      onDuplicate,
       children,
     },
     ref,
@@ -123,6 +127,13 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
           {vizType === 'jobGraph' && (
             <JobGraph key={chartId} chartId={chartId} dataset={dataset} />
           )}
+          {vizType === 'forceDirectedGraph' && (
+            <ForceDirectedGraph
+              key={chartId}
+              chartId={chartId}
+              dataset={dataset}
+            />
+          )}
           {vizType === 'sankey' && (
             <Sankey key={chartId} chartId={chartId} dataset={dataset} />
           )}
@@ -178,6 +189,14 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
           >
             <Move size={14} className="text-gray-600" />
           </button>
+          <button
+            className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
+            onClick={() => onDuplicate(chartId)}
+            type="button"
+            title="Duplicate chart"
+          >
+            <Copy size={14} className="text-gray-600" />
+          </button>
           {containerMode === 'viz' && (
             <button
               className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
@@ -199,7 +218,11 @@ const VizContainer = React.forwardRef<HTMLDivElement, VizContainerProps>(
         </div>
 
         {/* Chart content */}
-        <div className="h-full w-full">{renderChartContent()}</div>
+        <div className="h-full w-full">
+          <ErrorBoundary resetKeys={[chartId, vizType, gameDataIds.join(',')]}>
+            {renderChartContent()}
+          </ErrorBoundary>
+        </div>
         {children}
       </div>
     );

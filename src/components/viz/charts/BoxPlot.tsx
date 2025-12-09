@@ -1,8 +1,10 @@
-import { useCallback } from 'react';
-import Select from '../../layout/Select';
+import { useCallback, useEffect } from 'react';
+import SearchableSelect from '../../layout/select/SearchableSelect';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
+import FeatureSelect from '../../layout/select/FeatureSelect';
 
 interface BoxPlotProps {
   dataset: GameData;
@@ -11,9 +13,18 @@ interface BoxPlotProps {
 
 const BoxPlot: React.FC<BoxPlotProps> = ({ dataset, chartId }) => {
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const { getFilteredDataset } = useDataStore();
 
-  // Create a safe data reference that won't cause issues if dataset is null
-  const data = dataset?.data || [];
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
 
   const renderChart = useCallback(
     (
@@ -202,19 +213,25 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ dataset, chartId }) => {
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'number')
+        .filter(([_, value]) => value === 'Numeric')
         .map(([key]) => [key, key]),
     );
   };
 
   return (
     <div className="flex flex-col gap-2 p-2 h-full">
-      <Select
+      {/* <SearchableSelect
         className="w-full max-w-sm"
         label="Feature"
+        placeholder="Select a feature..."
         value={feature}
         onChange={(value) => setFeature(value)}
         options={getFeatureOptions()}
+      /> */}
+      <FeatureSelect
+        feature={feature}
+        handleFeatureChange={(value) => setFeature(value)}
+        featureOptions={getFeatureOptions()}
       />
 
       <div ref={containerRef} className="flex-1 min-h-0">

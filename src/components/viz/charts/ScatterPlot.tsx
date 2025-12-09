@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import {
   regressionLinear,
@@ -6,10 +6,13 @@ import {
   regressionExp,
   regressionLog,
 } from 'd3-regression';
-import Select from '../../layout/Select';
+import Select from '../../layout/select/Select';
+import SearchableSelect from '../../layout/select/SearchableSelect';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
+import FeatureSelect from '../../layout/select/FeatureSelect';
 
 interface ScatterPlotProps {
   dataset: GameData;
@@ -54,15 +57,29 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
   const [regressionLine, setRegressionLine] = useChartOption<
     keyof typeof RegressionLineType
   >(chartId, 'regressionLine', RegressionLineType.none);
-  const { data } = dataset;
+  const { getFilteredDataset } = useDataStore();
+
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
 
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'number')
+        .filter(([_, value]) => value === 'Numeric')
         .map(([key]) => [key, key]),
     );
   };
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (xFeature && !getFeatureOptions()[xFeature]) {
+      setXFeature('');
+    }
+    if (yFeature && !getFeatureOptions()[yFeature]) {
+      setYFeature('');
+    }
+  }, [xFeature, yFeature]);
 
   const renderChart = useCallback(
     (
@@ -277,9 +294,10 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
     <div className="flex flex-col gap-2 p-2 h-full">
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
-          <Select
+          {/* <SearchableSelect
             className="flex-3"
-            label="X Feature"
+            label="X-Axis"
+            placeholder="Select feature..."
             value={xFeature}
             onChange={(value) => {
               setXFeature(value);
@@ -289,6 +307,14 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
               });
             }}
             options={getFeatureOptions()}
+          /> */}
+          <FeatureSelect
+            feature={xFeature}
+            handleFeatureChange={(value) => {
+              setXFeature(value);
+              setXRangeFilter({ min: -Infinity, max: Infinity });
+            }}
+            featureOptions={getFeatureOptions()}
           />
           <Input
             className="flex-1"
@@ -324,15 +350,24 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
           />
         </div>
         <div className="flex flex-row gap-2">
-          <Select
+          {/* <SearchableSelect
             className="flex-3"
-            label="Y Feature"
+            label="Y-Axis"
+            placeholder="Select feature..."
             value={yFeature}
             onChange={(value) => {
               setYFeature(value);
               setYRangeFilter({ min: -Infinity, max: Infinity });
             }}
             options={getFeatureOptions()}
+          /> */}
+          <FeatureSelect
+            feature={yFeature}
+            handleFeatureChange={(value) => {
+              setYFeature(value);
+              setYRangeFilter({ min: -Infinity, max: Infinity });
+            }}
+            featureOptions={getFeatureOptions()}
           />
           <Input
             className="flex-1"
@@ -369,7 +404,7 @@ export const ScatterPlot: React.FC<ScatterPlotProps> = ({
         </div>
         <div className="flex flex-row gap-2">
           <Select
-            label="Regression Line"
+            label="Trend Line"
             value={regressionLine}
             onChange={(value) =>
               setRegressionLine(value as keyof typeof RegressionLineType)

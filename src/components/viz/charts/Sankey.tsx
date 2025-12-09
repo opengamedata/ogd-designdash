@@ -2,14 +2,15 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import * as d3 from 'd3';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
-import Select from '../../layout/Select';
+import Select from '../../layout/select/Select';
 import {
   EdgeMode,
   getNodes,
   getEdges,
   detectGraphCycles,
-} from './progressionGraphsUtil';
+} from './jobGraphUtil';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
 
 interface SankeyProps {
   dataset: GameData;
@@ -39,7 +40,11 @@ export const Sankey: React.FC<SankeyProps> = ({ dataset, chartId }) => {
     'edgeMode',
     'TopJobCompletionDestinations',
   );
-  const { data } = dataset;
+  const { getFilteredDataset } = useDataStore();
+
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
 
   const sankeyData = useMemo(() => {
     return processDataForSankey(data[0], edgeMode);
