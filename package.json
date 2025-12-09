@@ -18,7 +18,7 @@
     "d3-sankey": "^0.12.3",
     "idb": "latest",
     "lucide-react": "^0.523.0",
-    "next": "latest",
+    "next": "^15.3.6",
     "react": "latest",
     "react-dom": "latest",
     "react-grid-layout": "^1.5.1",
