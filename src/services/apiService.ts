@@ -2,8 +2,7 @@ import axios from 'axios';
 import { DSVParsedArray } from 'd3';
 
 const BASE_URL =
-  // 'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/main/app.wsgi';
-  'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/issue/63-update-structure-for-file-content-endpoint/app.wsgi';
+  'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/main/app.wsgi';
 
 interface GamesResponse {
   type: string;
@@ -27,35 +26,35 @@ interface DatasetsResponse {
   };
   msg: string;
 }
-interface DatasetMetadataResponse {
-  type: string;
-  val: {
-    first_year: number;
-    first_month: number;
-    last_year: number;
-    last_month: number;
-    raw_file: string;
-    events_file: string | null;
-    sessions_file: string;
-    players_file: string;
-    population_file: string;
-    events_template: string;
-    sessions_template: string;
-    players_template: string;
-    population_template: string;
-    events_codespace: string;
-    sessions_codespace: string;
-    players_codespace: string;
-    detectors_link: string;
-    features_link: string;
-    found_matching_range: boolean;
-  };
-  msg: string;
-}
+// interface DatasetMetadataResponse {
+//   type: string;
+//   val: {
+//     first_year: number;
+//     first_month: number;
+//     last_year: number;
+//     last_month: number;
+//     raw_file: string;
+//     events_file: string | null;
+//     sessions_file: string;
+//     players_file: string;
+//     population_file: string;
+//     events_template: string;
+//     sessions_template: string;
+//     players_template: string;
+//     population_template: string;
+//     events_codespace: string;
+//     sessions_codespace: string;
+//     players_codespace: string;
+//     detectors_link: string;
+//     features_link: string;
+//     found_matching_range: boolean;
+//   };
+//   msg: string;
+// }
 export interface DatasetResponse {
   type: string;
   val: {
-    rows: object[];
+    rows: Record<string, any>[];
     columns: string[];
   };
   msg: string;
@@ -84,6 +83,9 @@ const apiService = {
     year: string,
     level: string,
   ) => {
+    if (month.length === 1) {
+      month = `0${month}`;
+    }
     const response = await axios.get(
       `${BASE_URL}/games/${gameId}/datasets/${month}/${year}/files/${level}`,
     );

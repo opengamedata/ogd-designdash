@@ -5,7 +5,7 @@ import SearchableSelect from '../../layout/select/SearchableSelect';
 import useChartOption from '../../../hooks/useChartOption';
 import useDataStore from '../../../store/useDataStore';
 import FeatureSelect from '../../layout/select/FeatureSelect';
-import { applyFilters } from '../../../utils/filterUtils';
+import { applyFilters } from '../../sidebar/data-management/filterUtils';
 
 interface BarChartProps {
   dataset: GameData;

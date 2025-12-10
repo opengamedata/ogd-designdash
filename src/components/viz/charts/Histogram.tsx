@@ -6,7 +6,7 @@ import Input from '../../layout/Input';
 import useChartOption from '../../../hooks/useChartOption';
 import useDataStore from '../../../store/useDataStore';
 import FeatureSelect from '../../layout/select/FeatureSelect';
-import { applyFilters } from '../../../utils/filterUtils';
+import { applyFilters } from '../../sidebar/data-management/filterUtils';
 
 interface HistogramProps {
   dataset: GameData;

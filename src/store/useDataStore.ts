@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, PersistStorage } from 'zustand/middleware';
 import { openDB } from 'idb';
-import { applyFilters } from '../utils/filterUtils';
+import { applyFilters } from '../components/sidebar/data-management/filterUtils';
 
 interface DataStore {
   // states
