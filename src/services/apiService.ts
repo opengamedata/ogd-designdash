@@ -2,8 +2,7 @@ import axios from 'axios';
 import { DSVParsedArray } from 'd3';
 
 const BASE_URL =
-  // 'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/main/app.wsgi';
-  'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/issue/63-update-structure-for-file-content-endpoint/app.wsgi';
+  'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/main/app.wsgi';
 
 interface GamesResponse {
   type: string;
@@ -84,6 +83,9 @@ const apiService = {
     year: string,
     level: string,
   ) => {
+    if (month.length === 1) {
+      month = `0${month}`;
+    }
     const response = await axios.get(
       `${BASE_URL}/games/${gameId}/datasets/${month}/${year}/files/${level}`,
     );
