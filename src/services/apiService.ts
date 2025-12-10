@@ -26,35 +26,35 @@ interface DatasetsResponse {
   };
   msg: string;
 }
-interface DatasetMetadataResponse {
-  type: string;
-  val: {
-    first_year: number;
-    first_month: number;
-    last_year: number;
-    last_month: number;
-    raw_file: string;
-    events_file: string | null;
-    sessions_file: string;
-    players_file: string;
-    population_file: string;
-    events_template: string;
-    sessions_template: string;
-    players_template: string;
-    population_template: string;
-    events_codespace: string;
-    sessions_codespace: string;
-    players_codespace: string;
-    detectors_link: string;
-    features_link: string;
-    found_matching_range: boolean;
-  };
-  msg: string;
-}
+// interface DatasetMetadataResponse {
+//   type: string;
+//   val: {
+//     first_year: number;
+//     first_month: number;
+//     last_year: number;
+//     last_month: number;
+//     raw_file: string;
+//     events_file: string | null;
+//     sessions_file: string;
+//     players_file: string;
+//     population_file: string;
+//     events_template: string;
+//     sessions_template: string;
+//     players_template: string;
+//     population_template: string;
+//     events_codespace: string;
+//     sessions_codespace: string;
+//     players_codespace: string;
+//     detectors_link: string;
+//     features_link: string;
+//     found_matching_range: boolean;
+//   };
+//   msg: string;
+// }
 export interface DatasetResponse {
   type: string;
   val: {
-    rows: object[];
+    rows: Record<string, any>[];
     columns: string[];
   };
   msg: string;

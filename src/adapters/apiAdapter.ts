@@ -8,8 +8,18 @@ export function normalizeApiResponse(
   selectedDataset: string,
   level: 'population' | 'player' | 'session',
 ) {
+  const rows = responseBody.val.rows as Record<string, any>[];
+
+  rows.forEach((row) => {
+    Object.keys(row).forEach((key) => {
+      if (row[key] === null) {
+        row[key] = 'null';
+      }
+    });
+  });
+
   // Convert the rows and columns to a DSVParsedArray
-  const data = Object.assign(responseBody.val.rows, {
+  const dsvParsedArray = Object.assign(rows, {
     columns: responseBody.val.columns,
   }) as DSVParsedArray<object>;
 
@@ -21,9 +31,9 @@ export function normalizeApiResponse(
     endDate: selectedDataset,
     OGDVersion: 'api',
     source: 'api',
-    data: data,
-    columnTypes: getColumnTypes(data),
-    supportedChartTypes: getSupportedChartTypes(data, level),
+    data: dsvParsedArray,
+    columnTypes: getColumnTypes(dsvParsedArray),
+    supportedChartTypes: getSupportedChartTypes(dsvParsedArray, level),
   };
 
   return dataset;
