@@ -4,23 +4,12 @@ import useDataStore from '../../../store/useDataStore';
 import SearchableSelect from '../../layout/select/SearchableSelect';
 import * as d3 from 'd3';
 import { useCallback, useMemo } from 'react';
-import { parseObjectFromString } from './jobGraphUtil';
+import { parseGraphFeature, type GraphFeature } from '../../../utils/graphFeatureUtils';
+import { CollapsibleChartConfig } from '../CollapsibleChartConfig';
 
 interface ForceDirectedGraphProps {
   dataset: GameData;
   chartId: string;
-}
-
-interface Graph {
-  nodes: { id: string; [key: string]: any }[];
-  links: { source: string; target: string; [key: string]: any }[];
-  encodings: {
-    nodeColor: string | null;
-    nodeSize: string | null;
-    nodeLabel: string;
-    nodeTooltip: string | null;
-    linkWidth: string;
-  };
 }
 
 /**
@@ -37,33 +26,27 @@ export const ForceDirectedGraph: React.FC<ForceDirectedGraphProps> = ({
   const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
 
   const { nodes, links, encodings } = useMemo(() => {
-    const defaultGraph: Graph = {
-      nodes: [],
-      links: [],
-      encodings: {
-        nodeLabel: '',
-        linkWidth: '',
-        nodeColor: null,
-        nodeSize: null,
-        nodeTooltip: null,
-      },
+    const defaultEncodings = {
+      nodeLabel: 'id',
+      linkWidth: 'link_count',
+      nodeColor: null as string | null,
+      nodeSize: null as string | null,
+      nodeTooltip: null as string | null,
     };
     if (feature && data.length > 0) {
-      try {
-        const parsed = parseObjectFromString<Graph>((data[0] as any)[feature] as string);
+      const parsed = parseGraphFeature((data[0] as Record<string, unknown>)[feature]);
+      if (parsed) {
         return {
           nodes: parsed.nodes,
           links: parsed.links,
-          encodings: parsed.encodings,
+          encodings: { ...defaultEncodings, ...parsed.encodings },
         };
-      } catch (error) {
-        console.error(error);
       }
     }
     return {
-      nodes: defaultGraph.nodes,
-      links: defaultGraph.links,
-      encodings: defaultGraph.encodings,
+      nodes: [],
+      links: [],
+      encodings: defaultEncodings,
     };
   }, [feature, data]);
 
@@ -352,15 +335,20 @@ export const ForceDirectedGraph: React.FC<ForceDirectedGraphProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 p-2 h-full">
-      <SearchableSelect
-        className="w-full max-w-sm"
-        label="Feature"
-        placeholder="Select a feature..."
-        value={feature}
-        onChange={handleFeatureChange}
-        options={getFeatureOptions()}
-      />
+    <div className="flex flex-col gap-2 px-2 pb-2 h-full">
+      <CollapsibleChartConfig
+        chartId={chartId}
+        collapsedLabel={feature || 'Force-Directed Graph'}
+      >
+        <SearchableSelect
+          className="w-full max-w-sm"
+          label="Feature"
+          placeholder="Select a feature..."
+          value={feature}
+          onChange={handleFeatureChange}
+          options={getFeatureOptions()}
+        />
+      </CollapsibleChartConfig>
       <div ref={containerRef} className="flex-1 min-h-0 relative">
         <svg ref={svgRef} className="w-full h-full" />
       </div>
