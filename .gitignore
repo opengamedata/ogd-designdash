@@ -1,6 +1,6 @@
 node_modules
 .next
-coverage# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+coverage # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 .vscode/terminals.json
 
 # dependencies
@@ -75,6 +75,9 @@ typings/
 
 # TypeScript cache
 *.tsbuildinfo
+
+# TypeScript build info
+tsconfig.tsbuildinfo
 
 # Optional npm cache directory
 .npm

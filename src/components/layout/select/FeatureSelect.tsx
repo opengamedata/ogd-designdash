@@ -1,10 +1,12 @@
 import SearchableSelect from './SearchableSelect';
 import { useMemo, useState, useEffect } from 'react';
+import { trackEvent } from '../../../lib/analytics';
 
 interface FeatureSelectProps {
   feature: string;
   handleFeatureChange: (feature: string) => void;
   featureOptions: Record<string, string>;
+  label?: string;
 }
 
 interface ParsedFeatures {
@@ -16,9 +18,14 @@ export default function FeatureSelect({
   feature,
   handleFeatureChange,
   featureOptions,
+  label = 'Feature',
 }: FeatureSelectProps) {
   const [selectedBaseFeature, setSelectedBaseFeature] = useState<string>('');
   const [selectedIteration, setSelectedIteration] = useState<string>('');
+
+  const emitFeatureSelected = (selectedFeature: string) => {
+    trackEvent('feature_selected', { feature: selectedFeature });
+  };
 
   // Parse features into simple and iterated categories
   const parsedFeatures: ParsedFeatures = useMemo(() => {
@@ -40,6 +47,9 @@ export default function FeatureSelect({
     return { simpleFeatures, iteratedFeatures };
   }, [featureOptions]);
 
+  const hasIterations = (baseFeature: string) =>
+    parsedFeatures.iteratedFeatures[baseFeature]?.length > 0;
+
   // Initialize state based on current feature
   useEffect(() => {
     if (feature.includes('_')) {
@@ -51,6 +61,21 @@ export default function FeatureSelect({
       setSelectedIteration('');
     }
   }, [feature]);
+
+  useEffect(() => {
+    if (
+      selectedBaseFeature &&
+      hasIterations(selectedBaseFeature) &&
+      !selectedIteration
+    ) {
+      const defaultIteration =
+        parsedFeatures.iteratedFeatures[selectedBaseFeature][0] || '';
+      setSelectedIteration(defaultIteration);
+      const selectedFeature = `${defaultIteration}_${selectedBaseFeature}`;
+      emitFeatureSelected(selectedFeature);
+      handleFeatureChange(selectedFeature);
+    }
+  }, [selectedBaseFeature, selectedIteration, parsedFeatures]);
 
   // Get all available base features (simple + iterated)
   const allBaseFeatures = useMemo(() => {
@@ -69,32 +94,31 @@ export default function FeatureSelect({
 
     // If it's a simple feature, directly call the handler
     if (parsedFeatures.simpleFeatures.includes(baseFeature)) {
+      emitFeatureSelected(baseFeature);
       handleFeatureChange(baseFeature);
     }
   };
 
   const handleIterationChange = (iteration: string) => {
     setSelectedIteration(iteration);
-    handleFeatureChange(`${iteration}_${selectedBaseFeature}`);
+    const selectedFeature = `${iteration}_${selectedBaseFeature}`;
+    emitFeatureSelected(selectedFeature);
+    handleFeatureChange(selectedFeature);
   };
 
-  const hasIterations =
-    parsedFeatures.iteratedFeatures[selectedBaseFeature]?.length > 0;
-
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 w-full">
       <SearchableSelect
-        className="min-w-xs"
-        label="Feature"
+        className="w-full min-w-0"
+        label={label}
         placeholder="Select a feature..."
         value={selectedBaseFeature}
         onChange={handleBaseFeatureChange}
         options={Object.fromEntries(allBaseFeatures.map((f) => [f, f]))}
       />
 
-      {hasIterations && (
+      {selectedBaseFeature && hasIterations(selectedBaseFeature) && (
         <SearchableSelect
-          className="max-w-sm"
           label="Iteration"
           placeholder="Select..."
           value={selectedIteration}
