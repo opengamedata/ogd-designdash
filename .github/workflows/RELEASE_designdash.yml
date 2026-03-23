@@ -2,9 +2,9 @@
 name: OGD Designer Dashboard - Release Script
 run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'push' && github.ref || 'Manual Run') }}
 on:
-  workflow_dispatch:
-  push: # Trigger automatically when we do a merge to production
-     branches: [ production ]
+  release:
+    types: [prereleased, released]
+  workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
 
 env:
   DEPLOY_HOST: ${{ vars.OGD_SERVICES_HOST }}
