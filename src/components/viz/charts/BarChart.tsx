@@ -1,32 +1,119 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import useDataStore from '../../../store/useDataStore';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
-import Select from '../../layout/Select';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
-import SearchableSelect from '../../layout/SearchableSelect';
+import SearchableSelect from '../../layout/select/SearchableSelect';
+import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
+import FeatureSelect from '../../layout/select/FeatureSelect';
+import { applyFilters } from '../../sidebar/data-management/filterUtils';
+import { CollapsibleChartConfig } from '../CollapsibleChartConfig';
 
 interface BarChartProps {
-  gameDataId: string;
+  dataset: GameData;
+  chartId: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
-  const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
-  const { data } = dataset;
-  const [feature, setFeature] = useState<string>('');
-  const [filter, setFilter] = useState<string[]>([]);
+export const BarChart: React.FC<BarChartProps> = ({ dataset, chartId }) => {
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const [localFilter, setLocalFilter] = useChartOption<string[]>(
+    chartId,
+    'filter',
+    [],
+  );
+  const { addFilter, removeFilter } = useDataStore();
+  const datasetRecord = useDataStore(
+    useCallback((state) => state.datasets[dataset.id], [dataset.id]),
+  );
 
+  const isOrdinal = dataset?.columnTypes[feature] === 'Ordinal';
+
+  // Get filtered dataset from centralized store
+  const filtersExcludingFeature = useMemo(() => {
+    if (!datasetRecord?.filters) return undefined;
+    const { [feature]: _ignored, ...rest } = datasetRecord.filters;
+    return Object.keys(rest).length > 0 ? rest : undefined;
+  }, [datasetRecord?.filters, feature]);
+
+  const data = useMemo(() => {
+    if (!datasetRecord?.data) return [];
+    if (!filtersExcludingFeature) {
+      return datasetRecord.data;
+    }
+    const filteredData = applyFilters(
+      datasetRecord.data,
+      filtersExcludingFeature,
+    );
+    return Object.assign(filteredData, {
+      columns: datasetRecord.data.columns,
+    }) as typeof datasetRecord.data;
+  }, [datasetRecord?.data, filtersExcludingFeature]);
+
+  // prevent invalid feature selection
   useEffect(() => {
-    setFilter([]);
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
   }, [feature]);
+
+  // Derive selectedCategories directly from store (single source of truth)
+  const selectedCategories = useMemo(() => {
+    if (!feature) return [];
+    const storeFilter = datasetRecord?.filters?.[feature];
+    return storeFilter?.filterType === 'categorical'
+      ? (storeFilter.selectedCategories ?? [])
+      : [];
+  }, [datasetRecord?.filters, feature]);
+
+  // Handle bar clicks - update store directly
+  const handleCategoryToggle = useCallback(
+    (category: string) => {
+      if (!feature) return;
+
+      const isSelected = selectedCategories.includes(category);
+      const nextSelected = isSelected
+        ? selectedCategories.filter((value) => value !== category)
+        : [...selectedCategories, category];
+
+      if (nextSelected.length > 0) {
+        addFilter(dataset.id, feature, {
+          filterType: 'categorical',
+          selectedCategories: nextSelected,
+        });
+      } else {
+        removeFilter(dataset.id, feature);
+      }
+    },
+    [addFilter, dataset.id, feature, removeFilter, selectedCategories],
+  );
+
+  const handleClearSelection = useCallback(() => {
+    if (!feature) return;
+    removeFilter(dataset.id, feature);
+  }, [dataset.id, feature, removeFilter]);
 
   const renderChart = useCallback(
     (
       svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
       dimensions: { width: number; height: number },
     ) => {
-      if (!feature || !data.length) return;
+      // Clear any existing content
+      svg.selectAll('*').remove();
+
+      if (!feature || !data.length) {
+        // Render empty chart with placeholder text
+        svg
+          .append('text')
+          .attr('x', dimensions.width / 2)
+          .attr('y', dimensions.height / 2)
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#6b7280')
+          .text(
+            !feature
+              ? 'Select a feature to display chart'
+              : 'No data available',
+          );
+        return;
+      }
 
       // Get unique values and their counts for the selected feature
       const valueCounts = d3.rollup(
@@ -40,10 +127,29 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
           value: String(value),
           count,
         }))
-        .filter((d) => filter.length === 0 || filter.includes(d.value));
+        .filter(
+          (d) => localFilter.length === 0 || localFilter.includes(d.value),
+        );
 
-      // Sort by count descending
-      // chartData.sort((a, b) => b.count - a.count);
+      // Sort data based on feature type
+      if (isOrdinal) {
+        // For ordinal data, sort by the actual values (assuming they can be compared)
+        chartData.sort((a, b) => {
+          const aNum = parseFloat(a.value);
+          const bNum = parseFloat(b.value);
+
+          // If both values are numbers, sort numerically
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            return aNum - bNum;
+          }
+
+          // Otherwise, sort alphabetically
+          return a.value.localeCompare(b.value);
+        });
+      } else {
+        // For categorical data, sort by count descending
+        chartData.sort((a, b) => b.count - a.count);
+      }
 
       // Chart dimensions with responsive margins
       const margin = {
@@ -83,8 +189,28 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         .attr('y', (d) => yScale(d.count))
         .attr('width', xScale.bandwidth())
         .attr('height', (d) => height - yScale(d.count))
-        .attr('fill', '#3b82f6')
-        .attr('rx', 2);
+        .attr('fill', (d) =>
+          selectedCategories.length && !selectedCategories.includes(d.value)
+            ? '#d1d5db'
+            : '#3b82f6',
+        )
+        .attr('rx', 2)
+        .style('cursor', 'pointer')
+        .on('mouseover', function () {
+          d3.select(this)
+            .transition()
+            .duration(200) // 1 second transition
+            .style('opacity', 0.8);
+        })
+        .on('mouseout', function () {
+          d3.select(this)
+            .transition()
+            .duration(200) // 1 second transition
+            .style('opacity', 1);
+        })
+        .on('click', (_, d) => {
+          handleCategoryToggle(d.value);
+        });
 
       // Add bar labels (only if there's enough space)
       if (chartData.length <= 20) {
@@ -98,7 +224,7 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
           .attr('x', (d) => (xScale(d.value) || 0) + xScale.bandwidth() / 2)
           .attr('y', (d) => yScale(d.count) - 5)
           .attr('text-anchor', 'middle')
-          .attr('font-size', Math.max(10, Math.min(12, height / 30)))
+          .attr('font-size', Math.max(8, Math.min(10, height / 40)))
           .attr('fill', '#374151')
           .text((d) => d.count);
       }
@@ -144,51 +270,74 @@ export const BarChart: React.FC<BarChartProps> = ({ gameDataId }) => {
         .attr('fill', '#374151')
         .text(feature);
     },
-    [feature, data, filter],
+    [feature, data, localFilter, selectedCategories, handleCategoryToggle],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
-  const getFeatureOptions = () => {
-    return Object.fromEntries(
-      Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'string')
-        .map(([key]) => [key, key]),
-    );
-  };
-
   const filterOptions = useMemo(() => {
-    if (!feature) return {};
+    if (!feature || !dataset) return {};
     const categories = Array.from(
-      new Set(data.map((d) => (d as Record<string, any>)[feature].toString())),
+      new Set(
+        data
+          .map((d) => (d as Record<string, any>)[feature])
+          .filter((value) => value != null)
+          .map((value) => value.toString()),
+      ),
     );
     return Object.fromEntries(
       categories.map((category) => [category, category]),
     );
-  }, [feature, data]);
+  }, [feature, data, dataset]);
+
+  const getFeatureOptions = () => {
+    return Object.fromEntries(
+      Object.entries(dataset.columnTypes)
+        .filter(([_, value]) => value === 'Categorical' || value === 'Ordinal')
+        .map(([key]) => [key, key]),
+    );
+  };
+
+  const handleFeatureChange = (value: string) => {
+    if (value === feature) return;
+    setFeature(value);
+    setLocalFilter([]);
+  };
 
   return (
-    <div className="flex flex-col gap-2 p-2 h-full">
-      <Select
-        className="w-full max-w-sm"
-        label="Feature"
-        value={feature}
-        onChange={(value) => setFeature(value)}
-        options={getFeatureOptions()}
-      />
-      {feature && (
-        <SearchableSelect
-          className="w-fit"
-          label="Categories to include"
-          placeholder="All"
-          value={filter}
-          onChange={(value) => setFilter(value)}
-          options={filterOptions}
-          selectMultiple
+    <div className="flex flex-col gap-2 px-2 pb-2 h-full">
+      <CollapsibleChartConfig
+        chartId={chartId}
+        collapsedLabel={feature || 'Bar Chart'}
+      >
+        <FeatureSelect
+          feature={feature}
+          handleFeatureChange={handleFeatureChange}
+          featureOptions={getFeatureOptions()}
         />
-      )}
+        {feature && (
+          <SearchableSelect
+            className="w-full max-w-sm"
+            label="Categories to include"
+            placeholder="All"
+            value={localFilter}
+            onChange={(value) => setLocalFilter(value)}
+            options={filterOptions}
+            selectMultiple
+          />
+        )}
+      </CollapsibleChartConfig>
 
-      <div ref={containerRef} className="flex-1 min-h-0">
+      <div ref={containerRef} className="relative flex-1 min-h-0">
+        {selectedCategories.length > 0 && (
+          <button
+            type="button"
+            className="absolute right-2 top-2 z-10 rounded bg-gray-100/70 px-2 py-1 text-xs text-slate-600 backdrop-blur transition hover:border-slate-400 hover:text-slate-800"
+            onClick={handleClearSelection}
+          >
+            Clear selection
+          </button>
+        )}
         <svg ref={svgRef} className="w-full h-full"></svg>
       </div>
     </div>

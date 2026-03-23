@@ -1,20 +1,30 @@
-import { useCallback, useState } from 'react';
-import useDataStore from '../../../store/useDataStore';
-import Select from '../../layout/Select';
+import { useCallback, useEffect } from 'react';
 import * as d3 from 'd3';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
+import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
+import FeatureSelect from '../../layout/select/FeatureSelect';
+import { CollapsibleChartConfig } from '../CollapsibleChartConfig';
 
 interface BoxPlotProps {
-  gameDataId: string;
+  dataset: GameData;
+  chartId: string;
 }
 
-const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
-  const { getDatasetByID, hasHydrated } = useDataStore();
-  const dataset = getDatasetByID(gameDataId);
-  if (!dataset) return hasHydrated ? <div>Dataset not found</div> : <div>Loading dataset...</div>;
-  const { data } = dataset;
+const BoxPlot: React.FC<BoxPlotProps> = ({ dataset, chartId }) => {
+  const [feature, setFeature] = useChartOption<string>(chartId, 'feature', '');
+  const { getFilteredDataset } = useDataStore();
 
-  const [feature, setFeature] = useState<string>('');
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
+
+  // prevent invalid feature selection
+  useEffect(() => {
+    if (feature && !getFeatureOptions()[feature]) {
+      setFeature('');
+    }
+  }, [feature]);
 
   const renderChart = useCallback(
     (
@@ -158,7 +168,7 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
         .attr('fill', '#374151')
         .text(feature);
 
-      // Add statistics text
+      // Add statistics info
       chartGroup
         .append('text')
         .attr('x', width - 10)
@@ -203,20 +213,23 @@ const BoxPlot: React.FC<BoxPlotProps> = ({ gameDataId }) => {
   const getFeatureOptions = () => {
     return Object.fromEntries(
       Object.entries(dataset.columnTypes)
-        .filter(([_, value]) => value === 'number')
+        .filter(([_, value]) => value === 'Numeric')
         .map(([key]) => [key, key]),
     );
   };
 
   return (
-    <div className="flex flex-col gap-2 p-2 h-full">
-      <Select
-        className="w-full max-w-sm"
-        label="Feature"
-        value={feature}
-        onChange={(value) => setFeature(value)}
-        options={getFeatureOptions()}
-      />
+    <div className="flex flex-col gap-2 px-2 pb-2 h-full">
+      <CollapsibleChartConfig
+        chartId={chartId}
+        collapsedLabel={feature || 'Box Plot'}
+      >
+        <FeatureSelect
+          feature={feature}
+          handleFeatureChange={(value) => setFeature(value)}
+          featureOptions={getFeatureOptions()}
+        />
+      </CollapsibleChartConfig>
 
       <div ref={containerRef} className="flex-1 min-h-0">
         <svg ref={svgRef} className="w-full h-full"></svg>
