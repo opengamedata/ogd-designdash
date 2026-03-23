@@ -2,13 +2,13 @@ import { Plus, Save, X, Pencil, Download, Upload } from 'lucide-react';
 import useLayoutStore, {
   DashboardLayoutWithMeta,
 } from '../../store/useLayoutStore';
+import useDataStore from '../../store/useDataStore';
 import { useState } from 'react';
-import Input from './Input';
+import Input from '../layout/Input';
+import { trackEvent } from '../../lib/analytics';
 
 const LayoutManager = () => {
   const {
-    serializeLayout,
-    loadLayout,
     layouts,
     currentLayout,
     createLayout,
@@ -17,10 +17,13 @@ const LayoutManager = () => {
     updateLayoutName,
   } = useLayoutStore();
 
+  const { datasets } = useDataStore();
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
   const handleCreate = () => {
+    trackEvent('dashboard_created');
     createLayout();
   };
 
@@ -38,8 +41,28 @@ const LayoutManager = () => {
   };
 
   const handleExport = (layout: DashboardLayoutWithMeta) => {
-    const serializedLayout = serializeLayout(layout);
-    const blob = new Blob([serializedLayout], {
+    // Get dataset IDs used in this specific layout
+    const usedDatasetIds = new Set<string>();
+    Object.values(layout.charts).forEach((chart) => {
+      chart.datasetIds.forEach((id) => usedDatasetIds.add(id));
+    });
+
+    // Filter datasets to only include those used in this layout
+    const relevantDatasets: Record<string, GameData> = {};
+    usedDatasetIds.forEach((datasetId) => {
+      if (datasets[datasetId]) {
+        relevantDatasets[datasetId] = datasets[datasetId];
+      }
+    });
+
+    // Export only the specific layout and relevant datasets
+    const exportData = {
+      version: 2,
+      layout: layout,
+      datasets: relevantDatasets,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: 'application/json',
     });
     const url = URL.createObjectURL(blob);
@@ -48,16 +71,7 @@ const LayoutManager = () => {
     a.download = `${layout.name}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  const handleImport = (file: File) => {
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      const layoutJson = e.target?.result as string;
-      const layout = loadLayout(layoutJson);
-      setCurrentLayout(layout.id);
-    };
-    fileReader.readAsText(file);
+    trackEvent('layout_export');
   };
 
   return (
@@ -66,33 +80,11 @@ const LayoutManager = () => {
         <div className="flex gap-2 my-2 justify-between">
           <button
             onClick={handleCreate}
-            className="inline-flex flex-1 items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
+            className="max-w-sm inline-flex flex-1 items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Dashboard
           </button>
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="file-upload"
-                className="inline-flex items-center justify-center px-4 py-2 bg-gray-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-gray-500 transition-colors text-sm"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Import
-              </label>
-              <input
-                type="file"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file && file.type === 'application/json') {
-                    handleImport(file);
-                  }
-                }}
-                id="file-upload"
-                className="hidden"
-              />
-            </div>
-          </div>
         </div>
         {Object.entries(layouts).map(([id, layout]) => (
           <div
@@ -100,7 +92,10 @@ const LayoutManager = () => {
             className={`p-3 hover:bg-blue-50 rounded-lg border border-gray-100 transition-colors ${
               currentLayout === id ? 'bg-blue-100' : 'bg-gray-50'
             }`}
-            onClick={() => setCurrentLayout(id)}
+            onClick={() => {
+              setCurrentLayout(id);
+              trackEvent('dashboard_switch', { layout_id: id, layout_name: layout.name });
+            }}
           >
             <div className="w-full flex justify-between items-center gap-2">
               {editingId === id ? (

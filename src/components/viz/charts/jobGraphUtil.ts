@@ -13,9 +13,10 @@ export const EdgeMode = {
 export const getEdges = (data: any, edgeMode: keyof typeof EdgeMode) => {
   let edges = [];
 
-  const rawLinks: Record<string, Record<string, string[]>> = JSON.parse(
-    data[edgeMode],
-  );
+  const rawLinks: Record<
+    string,
+    Record<string, string[]>
+  > = parseObjectFromString(data[edgeMode]);
 
   switch (edgeMode) {
     case 'TopJobCompletionDestinations':
@@ -65,7 +66,8 @@ export const getNodes = (data: any) => {
     if (
       key.substring(0, 3) !== 'job' &&
       key.substring(0, 6) !== 'county' &&
-      key.substring(0, 7) !== 'mission'
+      key.substring(0, 7) !== 'mission' &&
+      key.substring(0, 6) !== 'puzzle'
     )
       continue;
 
@@ -79,7 +81,9 @@ export const getNodes = (data: any) => {
 
     // AQUALAB specific: parse job difficulty json
     if (jobFeature === 'JobsAttempted-job-difficulties') {
-      nodes[jobNumber][jobFeature] = JSON.parse(nodes[jobNumber][jobFeature]);
+      nodes[jobNumber][jobFeature] = parseObjectFromString(
+        nodes[jobNumber][jobFeature],
+      );
     }
   }
   return nodes;
@@ -144,4 +148,13 @@ export function detectGraphCycles(
   }
 
   return hasDirectSelfLink || hasLongerCycle;
+}
+
+/**
+ * Parse an object from a string if it is a string, otherwise return the object
+ * @param data - The data to parse
+ * @returns The parsed object
+ */
+export function parseObjectFromString<T>(data: string | T): T {
+  return typeof data === 'string' ? (JSON.parse(data) as T) : data;
 }

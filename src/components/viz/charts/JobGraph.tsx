@@ -1,9 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { useResponsiveChart } from '../../../hooks/useResponsiveChart';
 import * as d3 from 'd3';
-import Select from '../../layout/Select';
-import { getNodes, getEdges, EdgeMode } from './progressionGraphsUtil';
+import Select from '../../layout/select/Select';
+import { getNodes, getEdges, EdgeMode } from './jobGraphUtil';
 import useChartOption from '../../../hooks/useChartOption';
+import useDataStore from '../../../store/useDataStore';
+import { CollapsibleChartConfig } from '../CollapsibleChartConfig';
 
 interface JobGraphProps {
   dataset: GameData;
@@ -16,7 +18,63 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
     'edgeMode',
     'TopJobCompletionDestinations',
   );
-  const { data } = dataset;
+  const { getFilteredDataset } = useDataStore();
+
+  // Get filtered dataset from centralized store
+  const filteredDataset = getFilteredDataset(dataset.id);
+  const data = filteredDataset?.data || [];
+
+  // Get available edge modes based on what columns exist in the dataset
+  const availableEdgeModes = useMemo(() => {
+    if (!data || data.length === 0) return {};
+
+    const firstRow = data[0] as any;
+    const available: Record<string, string> = {};
+
+    // Check which edge mode columns exist in the data
+    Object.entries(EdgeMode).forEach(([key, value]) => {
+      if (firstRow.hasOwnProperty(key)) {
+        available[key] = value;
+      }
+    });
+
+    return available;
+  }, [data]);
+
+  // Ensure current edgeMode is available, fallback to first available if not
+  const currentEdgeMode = useMemo(() => {
+    if (Object.keys(availableEdgeModes).length === 0) {
+      return edgeMode; // Keep current if no data available yet
+    }
+
+    if (availableEdgeModes.hasOwnProperty(edgeMode)) {
+      return edgeMode;
+    }
+
+    // Fallback to first available edge mode
+    const firstAvailable = Object.keys(
+      availableEdgeModes,
+    )[0] as keyof typeof EdgeMode;
+    setEdgeMode(firstAvailable);
+    return firstAvailable;
+  }, [edgeMode, availableEdgeModes, setEdgeMode]);
+
+  // Extract PopulationSummary data if it exists
+  const populationSummary = useMemo((): Record<string, any> | null => {
+    if (!data || data.length === 0) return null;
+
+    const firstRow = data[0] as any;
+    const populationSummaryData = firstRow['PopulationSummary'];
+
+    if (!populationSummaryData) return null;
+
+    try {
+      return JSON.parse(populationSummaryData);
+    } catch (error) {
+      console.warn('Failed to parse PopulationSummary data:', error);
+      return null;
+    }
+  }, [data]);
 
   const nodes = useMemo(() => {
     const nodes = getNodes(data[0]);
@@ -24,9 +82,9 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
   }, [data]);
 
   const edges = useMemo(() => {
-    const edges = getEdges(data[0], edgeMode);
+    const edges = getEdges(data[0], currentEdgeMode);
     return edges;
-  }, [data, edgeMode]);
+  }, [data, currentEdgeMode]);
 
   const renderChart = useCallback(
     (
@@ -283,6 +341,37 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
         d.fy = null;
       }
 
+      // PopulationSummary
+      if (populationSummary) {
+        // Dynamically create label data from all key-value pairs
+        const labelData = Object.entries(populationSummary).map(
+          ([key, value]) => ({
+            label: key
+              .replace(/_/g, ' ')
+              .replace(/\b\w/g, (l) => l.toUpperCase()), // Convert snake_case to Title Case
+            value: typeof value === 'number' ? value.toFixed(1) : String(value),
+          }),
+        );
+
+        const labelSpacing = 15;
+        const startY = 20;
+        const labelX = dimensions.width - 10;
+        const fontSize = Math.max(10, Math.min(12, dimensions.height / 35));
+
+        svg
+          .selectAll('.population-summary')
+          .data(labelData)
+          .enter()
+          .append('text')
+          .attr('class', 'population-summary')
+          .attr('x', labelX)
+          .attr('y', (d, i) => startY + i * labelSpacing)
+          .attr('font-size', fontSize)
+          .attr('fill', '#6b7280')
+          .attr('text-anchor', 'end')
+          .text((d) => `${d.label}: ${d.value}`);
+      }
+
       // Return cleanup function to stop simulation when component unmounts or dimensions change
       return () => {
         simulation.stop();
@@ -290,24 +379,47 @@ export const JobGraph: React.FC<JobGraphProps> = ({ dataset, chartId }) => {
         d3.selectAll('.tooltip').remove();
       };
     },
-    [nodes, edges],
+    [nodes, edges, populationSummary],
   );
 
   const { svgRef, containerRef } = useResponsiveChart(renderChart);
 
   return (
-    <div className="flex flex-col gap-2 p-2 h-full">
-      <Select
-        className="w-full max-w-sm"
-        label="Edge Mode"
-        value={edgeMode}
-        onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
-        options={Object.fromEntries(
-          Object.entries(EdgeMode).map(([key, value]) => [key, value]),
-        )}
-      />
-      <div ref={containerRef} className="flex-1 min-h-0">
+    <div className="flex flex-col gap-2 px-2 pb-2 h-full">
+      <CollapsibleChartConfig
+        chartId={chartId}
+        collapsedLabel={
+          availableEdgeModes[currentEdgeMode] || currentEdgeMode || 'Job Graph'
+        }
+      >
+        <Select
+          className="w-full max-w-sm"
+          label="Link Mode"
+          helpText="Controls how links are drawn between nodes"
+          value={currentEdgeMode}
+          onChange={(value) => setEdgeMode(value as keyof typeof EdgeMode)}
+          options={availableEdgeModes}
+        />
+      </CollapsibleChartConfig>
+      <div ref={containerRef} className="flex-1 min-h-0 relative">
         <svg ref={svgRef} className="w-full h-full"></svg>
+        {/* Legend */}
+        <div className="absolute bottom-0 right-0 bg-white/90 backdrop-blur-sm rounded-lg p-3  text-xs">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-500 to-green-500 flex-shrink-0"></div>
+              <span className="text-gray-600">Node color = % completion</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gray-400 flex-shrink-0"></div>
+              <span className="text-gray-600">Node size = avg time</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 bg-gray-400 flex-shrink-0"></div>
+              <span className="text-gray-600">Link width = # players</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
