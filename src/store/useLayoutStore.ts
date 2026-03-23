@@ -1,15 +1,15 @@
 import { create } from 'zustand';
-import { persist, PersistStorage } from 'zustand/middleware';
-import { openDB } from 'idb';
+import { persist } from 'zustand/middleware';
 import { Layout } from 'react-grid-layout';
 import { VizTypeKey } from '../constants/vizTypes';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ChartConfig {
   id: string;
-  datasetId: string;
+  datasetIds: string[];
   vizType: VizTypeKey;
   options: Record<string, any>;
+  title?: string;
 }
 
 interface DashboardLayout {
@@ -32,12 +32,17 @@ interface LayoutState {
   saveCurrentLayout: (
     layout: Layout[],
     charts: Record<string, ChartConfig>,
+    title?: string,
   ) => void;
   updateChartConfig: (chartId: string, config: Partial<ChartConfig>) => void;
   setChartOption: (chartId: string, key: string, value: any) => void;
   getChartOption: (chartId: string, key: string) => any;
+  getChartTitle: (chartId: string) => string | undefined;
+  setChartTitle: (chartId: string, title: string) => void;
   getLayoutIdByName: (name: string) => string | undefined;
   updateLayoutName: (id: string, name: string) => void;
+  serializeLayout: (layout: DashboardLayoutWithMeta) => string;
+  loadLayout: (serializedLayout: string) => DashboardLayoutWithMeta;
 }
 
 const useLayoutStore = create<LayoutState>()(
@@ -153,6 +158,14 @@ const useLayoutStore = create<LayoutState>()(
         if (!currentLayout) return undefined;
         return layouts[currentLayout]?.charts[chartId]?.options?.[key];
       },
+      getChartTitle: (chartId: string) => {
+        const { currentLayout, layouts } = get();
+        if (!currentLayout) return undefined;
+        return layouts[currentLayout]?.charts[chartId]?.title;
+      },
+      setChartTitle: (chartId: string, title: string) => {
+        get().updateChartConfig(chartId, { title });
+      },
       getLayoutIdByName: (name: string) => {
         const { layouts } = get();
         return Object.values(layouts).find((l) => l.name === name)?.id;
@@ -172,6 +185,39 @@ const useLayoutStore = create<LayoutState>()(
           };
         });
       },
+      serializeLayout: (layout: DashboardLayoutWithMeta): string => {
+        const layoutJson = {
+          id: layout.id,
+          name: layout.name,
+          layout: layout.layout,
+          charts: layout.charts,
+        };
+        return JSON.stringify(layoutJson);
+      },
+      loadLayout: (serializedLayout: string): DashboardLayoutWithMeta => {
+        const layout = JSON.parse(serializedLayout);
+        // Validate if the parsed layout is of type DashboardLayoutWithMeta
+        if (
+          typeof layout !== 'object' ||
+          layout === null ||
+          typeof layout.id !== 'string' ||
+          typeof layout.name !== 'string' ||
+          typeof layout.layout !== 'object' ||
+          layout.layout === null ||
+          typeof layout.charts !== 'object' ||
+          layout.charts === null
+        ) {
+          throw new Error(
+            'Invalid layout format: not a DashboardLayoutWithMeta',
+          );
+        }
+
+        set((state) => ({
+          layouts: { ...state.layouts, [layout.id]: layout },
+        }));
+
+        return layout;
+      },
     }),
     {
       name: 'ogd-layout-store',
@@ -190,5 +236,5 @@ const useLayoutStore = create<LayoutState>()(
   ),
 );
 
-export type { ChartConfig, DashboardLayoutWithMeta };
+export type { ChartConfig, DashboardLayoutWithMeta, LayoutState };
 export default useLayoutStore;

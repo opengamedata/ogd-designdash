@@ -35,6 +35,7 @@ const SearchableSelect = ({
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setFilteredOptions(options);
@@ -43,8 +44,9 @@ const SearchableSelect = ({
   useEffect(() => {
     const filtered = Object.entries(options).filter(
       ([key, displayName]) =>
-        displayName.toLowerCase().includes(search.toLowerCase()) ||
-        key.toLowerCase().includes(search.toLowerCase()),
+        (displayName &&
+          displayName.toLowerCase().includes(search.toLowerCase())) ||
+        (key && key.toLowerCase().includes(search.toLowerCase())),
     );
     setFilteredOptions(Object.fromEntries(filtered));
   }, [search, options]);
@@ -62,6 +64,19 @@ const SearchableSelect = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isOpen && scrollContainerRef.current) {
+      const selectedKey =
+        selectMultiple && Array.isArray(value) ? value[0] : (value as string);
+      if (selectedKey && selectedKey in filteredOptions) {
+        const selectedEl = Array.from(
+          scrollContainerRef.current.querySelectorAll('[data-value]'),
+        ).find((el) => el.getAttribute('data-value') === selectedKey);
+        selectedEl?.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+      }
+    }
+  }, [isOpen, selectMultiple, value, filteredOptions]);
 
   const handleSelect = (selectedKey: string) => {
     if (selectMultiple) {
@@ -104,7 +119,7 @@ const SearchableSelect = ({
       </label>
       <div className="relative w-full" ref={dropdownRef}>
         <div
-          className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1 pr-10 cursor-pointer min-h-[32px] flex items-center"
+          className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full px-2 py-1 pr-10 cursor-pointer min-h-[32px] flex items-center"
           onClick={() => setIsOpen(!isOpen)}
         >
           {selectMultiple && Array.isArray(value) && value.length > 0 ? (
@@ -127,7 +142,7 @@ const SearchableSelect = ({
             </div>
           ) : (
             <span
-              className={getDisplayValue() ? 'text-gray-900' : 'text-gray-500'}
+              className={`${getDisplayValue() ? 'text-gray-900' : 'text-gray-500'} truncate`}
             >
               {getDisplayValue() || placeholder}
             </span>
@@ -136,7 +151,7 @@ const SearchableSelect = ({
         <ChevronDown className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
 
         {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          <div className="absolute z-10 w-max min-w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-hidden">
             <div className="p-2 border-b border-gray-200">
               <input
                 type="text"
@@ -148,11 +163,12 @@ const SearchableSelect = ({
                 autoFocus
               />
             </div>
-            <div className="max-h-48 overflow-y-auto">
+            <div ref={scrollContainerRef} className="max-h-48 overflow-y-auto">
               {Object.entries(filteredOptions).length > 0 ? (
                 Object.entries(filteredOptions).map(([key, displayName]) => (
                   <div
                     key={key}
+                    data-value={key}
                     className={`px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 ${
                       (selectMultiple &&
                         Array.isArray(value) &&

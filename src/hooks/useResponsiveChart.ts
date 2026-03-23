@@ -18,7 +18,6 @@ export const useResponsiveChart = (
   ) => (() => void) | void,
   options: UseResponsiveChartOptions = {},
 ) => {
-  const { minWidth = 200, minHeight = 200 } = options;
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<ChartDimensions>({
@@ -34,9 +33,10 @@ export const useResponsiveChart = (
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
-        if (width >= minWidth && height >= minHeight) {
-          setDimensions({ width, height });
-        }
+        setDimensions({
+          width: Math.max(0, width),
+          height: Math.max(0, height),
+        });
       }
     });
 
@@ -45,7 +45,7 @@ export const useResponsiveChart = (
     return () => {
       resizeObserver.disconnect();
     };
-  }, [minWidth, minHeight]);
+  }, []);
 
   // Render chart when dimensions or renderChart changes
   useEffect(() => {
@@ -66,9 +66,19 @@ export const useResponsiveChart = (
       .attr('height', dimensions.height);
 
     // Call the render function and store cleanup
-    const cleanup = renderChart(d3.select(svgRef.current), dimensions);
-    if (cleanup) {
-      cleanupRef.current = cleanup;
+    // Note: Errors thrown here won't be caught by ErrorBoundary
+    // (ErrorBoundaries only catch errors during render, not in useEffect)
+    // For async errors, components should handle them individually
+    try {
+      const cleanup = renderChart(d3.select(svgRef.current), dimensions);
+      if (cleanup) {
+        cleanupRef.current = cleanup;
+      }
+    } catch (error) {
+      console.error('Error rendering chart:', error);
+      // Re-throw to propagate error (though ErrorBoundary won't catch it)
+      // This is mainly for logging and debugging
+      throw error;
     }
   }, [dimensions, renderChart]);
 

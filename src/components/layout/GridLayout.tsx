@@ -4,7 +4,9 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import VizContainer from './VizContainer';
 import { v4 as uuidv4 } from 'uuid';
-import useLayoutStore, { ChartConfig } from '../../store/useLayoutStore';
+import useLayoutStore from '../../store/useLayoutStore';
+import { Plus, Wrench } from 'lucide-react';
+import { trackEvent } from '../../lib/analytics';
 
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
@@ -34,12 +36,10 @@ const GridLayout: React.FC = () => {
   const Grid = useMemo(() => WidthProvider(Responsive), []);
 
   // Remove local state for layout and charts
-  // const [layout, setLayout] = useState<Layout[]>([]);
   const [spawnPoint, setSpawnPoint] = useState<{ x: number; y: number }>({
     x: DEFAULT_CHART_WIDTH,
     y: 0,
   });
-  // const [charts, setCharts] = useState<Record<string, ChartConfig>>({});
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Use layout and charts from store
@@ -49,6 +49,7 @@ const GridLayout: React.FC = () => {
     createLayout,
     saveCurrentLayout,
     hasHydrated,
+    setChartOption,
   } = useLayoutStore();
   const layout =
     currentLayout && layouts[currentLayout]
@@ -76,9 +77,10 @@ const GridLayout: React.FC = () => {
         initialCharts = {
           [firstId]: {
             id: firstId,
-            datasetId: '',
+            datasetIds: [],
             vizType: 'bar' as const,
             options: {},
+            title: '',
           },
         };
       }
@@ -88,15 +90,33 @@ const GridLayout: React.FC = () => {
     }
   }, [hasHydrated, currentLayout, layouts, isInitialized]);
 
+  const [editConfigMode, setEditConfigMode] = useState(true);
+  useEffect(() => {
+    if (!isInitialized) return;
+    console.log('editConfigMode', editConfigMode);
+    if (editConfigMode) {
+      // set all charts to config mode
+      Object.keys(charts).forEach((chartId) => {
+        setChartOption(chartId, 'showConfig', true);
+      });
+    } else {
+      // set all charts to viz mode
+      Object.keys(charts).forEach((chartId) => {
+        setChartOption(chartId, 'showConfig', false);
+      });
+    }
+  }, [editConfigMode]);
+
   const addChart = () => {
     const newChartId = uuidv4();
     const newCharts = {
       ...charts,
       [newChartId]: {
         id: newChartId,
-        datasetId: '',
+        datasetIds: [],
         vizType: 'bar' as const,
         options: {},
+        title: '',
       },
     };
     const newLayout = [
@@ -111,12 +131,30 @@ const GridLayout: React.FC = () => {
     ];
     saveCurrentLayout(newLayout, newCharts);
     updateSpawnPoint(newLayout);
+    trackEvent('chart_added');
   };
 
   const removeChart = (chartId: string) => {
     const newCharts = { ...charts };
     delete newCharts[chartId];
     const newLayout = layout.filter((item) => item.i !== chartId);
+    saveCurrentLayout(newLayout, newCharts);
+    updateSpawnPoint(newLayout);
+  };
+
+  const duplicateChart = (chartId: string) => {
+    const newCharts = { ...charts };
+    const newChartId = uuidv4();
+    newCharts[newChartId] = {
+      ...charts[chartId],
+      id: newChartId,
+    };
+    const chartToDuplicate = layout.find((item) => item.i === chartId);
+    if (!chartToDuplicate) return;
+    const newLayout = [
+      ...layout,
+      { ...chartToDuplicate, i: newChartId, x: spawnPoint.x, y: spawnPoint.y },
+    ];
     saveCurrentLayout(newLayout, newCharts);
     updateSpawnPoint(newLayout);
   };
@@ -167,17 +205,26 @@ const GridLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="flex items-center gap-8 mb-2">
+    <div className="min-h-screen mb-20">
+      <div className="flex items-center gap-4 mb-2">
         <div className="text-lg font-bold">
           {currentLayout && layouts[currentLayout]?.name}
         </div>
         <button
-          className="px-2 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200 focus:outline-none  focus:ring-gray-300"
+          className="inline-flex items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
           onClick={addChart}
           type="button"
         >
+          <Plus className="w-4 h-4 mr-2" />
           Add Chart
+        </button>
+        <button
+          className="inline-flex items-center justify-center px-4 py-2 bg-gray-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-gray-500 transition-colors text-sm"
+          onClick={() => setEditConfigMode(!editConfigMode)}
+          type="button"
+        >
+          <Wrench className="w-4 h-4 mr-2" />
+          Toggle Chart Editing
         </button>
       </div>
 
@@ -205,6 +252,7 @@ const GridLayout: React.FC = () => {
                   chartId={item.i}
                   className="bg-white border border-gray-200 rounded-md"
                   onRemove={removeChart}
+                  onDuplicate={duplicateChart}
                 />
               );
             })}
