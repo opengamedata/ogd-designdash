@@ -5,10 +5,10 @@ branding:
   icon: 'clipboard'
   color: 'blue'
 inputs:
-  config_base:
+  env_base:
     description: Path to the base folder with the config file(s)
     required: false
-    default: 'src/config'
+    default: '.'
   api_origin:
     description: "API Server name for hitting the ogd-server api"
     required: true
@@ -21,21 +21,23 @@ inputs:
     description: "URL of the package homepage location"
     required: true
     default: 'homepage placeholder'
+  gtag:
+    description: "The Google Analytics ID/Tag"
+    required: true
+    default: 'gtag placeholder'
 runs:
   using: "composite"
   steps:
-    - name: Set up config
-      run: cp ${{inputs.config_base}}/config.js.template ${{inputs.config_base}}/config.js 
+    - name: Set up environment file
+      run: cp ${{inputs.config_base}}/.env.example ${{inputs.config_base}}/.env.local
       shell: bash
-    - name: Set API origin server
-      run: sed -i 's@API_ORIGIN_DEFAULT@${{inputs.api_origin}}@g' ${{inputs.config_base}}/config.js
+    - name: Set API base path
+      run: sed -i 's@BASE_URL=@BASE_URL=${{inputs.api_origin}}/${{inputs.api_path}}@g' ${{inputs.config_base}}/.env.local
       shell: bash
-    - name: Set API path on server
-      run: sed -i 's@API_PATH_DEFAULT@${{inputs.api_path}}@g' ${{inputs.config_base}}/config.js
-      shell: bash
-    - name: Set dashboard base directory
-      run: sed -i 's@BASE_URL@${{inputs.package_home}}@g' ${{inputs.config_base}}/config.js
+    - name: Set Google Analytics
+      run: sed -i 's@BASE_URL=@BASE_URL=${{inputs.gtag}}@g' ${{inputs.config_base}}/.env.local
       shell: bash
     - name: Set package homepage
       run: sed -i 's@BASE_PATH@${{inputs.package_home}}@g' next.config.js
       shell: bash
+      
