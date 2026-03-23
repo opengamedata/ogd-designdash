@@ -42,6 +42,7 @@ jobs:
         api_origin:   ${{ env.API_HOST }}
         api_path:     ${{ env.API_PATH }}
         package_home: ${{ env.URL_PATH }}
+        gtag:         ${{ vars.GA_ID_DASHBOARD }}
 
   # 2. Build 
     - name: Install Node

@@ -4,6 +4,7 @@ export const VizType = {
   scatter: 'Scatter Plot',
   timeline: 'Timeline',
   jobGraph: 'Job Graph',
+  forceDirectedGraph: 'Force Graph',
   descriptiveStatistics: 'Descriptive Statistics',
   boxPlot: 'Box Plot',
   sankey: 'Sankey Diagram',
