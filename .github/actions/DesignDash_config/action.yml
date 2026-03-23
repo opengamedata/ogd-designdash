@@ -35,7 +35,7 @@ runs:
       run: sed -i 's@BASE_URL=@BASE_URL=${{inputs.api_origin}}/${{inputs.api_path}}@g' ${{inputs.config_base}}/.env.local
       shell: bash
     - name: Set Google Analytics
-      run: sed -i 's@BASE_URL=@BASE_URL=${{inputs.gtag}}@g' ${{inputs.config_base}}/.env.local
+      run: sed -i 's@NEXT_PUBLIC_GA_MEASUREMENT_ID=@NEXT_PUBLIC_GA_MEASUREMENT_ID=${{inputs.gtag}}@g' ${{inputs.config_base}}/.env.local
       shell: bash
     - name: Set package homepage
       run: sed -i 's@BASE_PATH@${{inputs.package_home}}@g' next.config.js
