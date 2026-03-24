@@ -10,7 +10,7 @@ env:
   DEPLOY_HOST: ${{ vars.OGD_SERVICES_HOST }}
   DEPLOY_DIR:           ${{ vars.WEB_PATH }}/designer-dashboard/${{ github.ref_name }}
   DEPLOY_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
-  URL_PATH:    /designer-dashboard/${{ github.ref_name }}
+  URL_PATH:    designer-dashboard/${{ github.ref_name }}
   API_HOST:    ${{ vars.OGD_SERVICES_HOST }}
   API_PATH:    ${{ vars.API_BASE_URL }}/data/app.wsgi/
 
