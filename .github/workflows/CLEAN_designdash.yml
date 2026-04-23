@@ -1,0 +1,54 @@
+# Workflow to clean out the directory where a deleted "Autocoder" branch's files were deployed on the CI server
+name: OGD Designer Dashboard - Cleanup Dead Branch
+run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'delete' && github.event.ref || 'Manual Run') }}
+
+on:
+  delete: # Trigger automatically when we do a deletion of a branch
+  workflow_dispatch:
+
+env:
+  DEPLOY_HOST: ${{ vars.OGD_STAGING_HOST }}
+  DEPLOY_PATH:         ${{ vars.WEB_PATH }}/${{ github.event.repository.name }}/${{ github.event.ref }}
+  DEPLOY_URL:  ${{ vars.OGD_STAGING_HOST }}/${{ github.event.repository.name }}/${{ github.event.ref }}
+    
+jobs:
+  branch_delete:
+    name: Dead Branch Cleanup
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-22.04
+    # concurrency:
+    #   group: ${{ github.repository }}-${{ github.ref }}-${{ github.workflow }}
+    #   cancel-in-progress: false
+    
+    steps:
+
+    # 1. Local checkout & config
+    
+    # 2. Build 
+
+    # 3. Remote config & clean
+    - name: Connect to VPN
+      uses: opengamedata/actions-openconnect-vpn@v1.1
+      with:
+        username: ${{ secrets.VPN_USER }}
+        password: ${{ secrets.VPN_PASS }}
+        endpoint: "soe.vpn.wisc.edu"
+
+    - name: Setup Access Key
+      run: |
+        mkdir -p ~/.ssh
+        echo '${{secrets.CLEAN_KEY}}' >> ./key.txt
+        chmod 600 ./key.txt
+
+    - name: Remove branch folder
+      run: ssh -o StrictHostKeyChecking=no -T -i ./key.txt ${{ secrets.CLEAN_USER }}@${{ env.DEPLOY_HOST }} "rm -r ${{ env.DEPLOY_PATH }}"
+    
+    - name: Announce cleanup
+      run: echo "Removed branch deploy at ${{ env.DEPLOY_URL }}"
+
+    - name: On fail, upload logs as artifacts
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        path: ./*.log
+    

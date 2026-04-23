@@ -1,16 +1,16 @@
 # Workflow to build and deploy designer dashboard to server.
 name: OGD Designer Dashboard - Release Script
-run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'push' && github.ref || 'Manual Run') }}
+run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'release' && github.ref || 'Manual Run') }}
 on:
-  workflow_dispatch:
-  push: # Trigger automatically when we do a merge to production
-     branches: [ production ]
+  release:
+    types: [prereleased, released]
+  workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
 
 env:
   DEPLOY_HOST: ${{ vars.OGD_SERVICES_HOST }}
   DEPLOY_DIR:           ${{ vars.WEB_PATH }}/designer-dashboard/${{ github.ref_name }}
   DEPLOY_URL:  ${{ vars.OGD_SERVICES_HOST }}/designer-dashboard/${{ github.ref_name }}
-  URL_PATH:    /designer-dashboard/${{ github.ref_name }}
+  URL_PATH:    designer-dashboard/${{ github.ref_name }}
   API_HOST:    ${{ vars.OGD_SERVICES_HOST }}
   API_PATH:    ${{ vars.API_BASE_URL }}/data/app.wsgi/
 
@@ -35,6 +35,7 @@ jobs:
         api_origin:   ${{ env.API_HOST }}
         api_path:     ${{ env.API_PATH }}
         package_home: ${{ env.URL_PATH }}
+        gtag:         ${{ vars.GA_ID_DASHBOARD }}
 
   # 2. Build 
     - name: Install Node
