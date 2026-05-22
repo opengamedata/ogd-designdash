@@ -2,13 +2,18 @@ import axios from 'axios';
 import { DSVParsedArray } from 'd3';
 
 const BASE_URL =
-  'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/main/app.wsgi';
+  'https://ogd-services.fielddaylab.wisc.edu/apis/files/v2.0.0/app.wsgi';
 
 interface GamesResponse {
   type: string;
   val: {
     game_ids: string[];
   };
+  msg: string;
+}
+interface GameManifestResponse {
+  type: string;
+  val: GameManifest;
   msg: string;
 }
 interface DatasetsResponse {
@@ -35,6 +40,12 @@ export interface DatasetResponse {
   msg: string;
 }
 
+interface GameManifestResponse {
+  type: string;
+  val: GameManifest;
+  msg: string;
+}
+
 const apiService = {
   getGames: async () => {
     const response = await axios.get(`${BASE_URL}/games`);
@@ -54,6 +65,12 @@ const apiService = {
       `${BASE_URL}/games/${gameId}/datasets/${year}/${month}/${level}`,
     );
     return response.data as DatasetResponse;
+  },
+  getGameManifest: async (gameId: string, month: string, year: string) => {
+    const response = await axios.get(
+      `${BASE_URL}/games/${gameId}/datasets/${year}/${month}/manifest`,
+    );
+    return response.data as GameManifestResponse;
   },
 };
 

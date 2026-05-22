@@ -4,6 +4,7 @@ declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
   }
+
   interface GameData {
     id: string;
     game: string;
@@ -32,6 +33,7 @@ declare global {
     | 'Ordinal'
     | 'Time-series'
     | 'Graph';
+
   interface FeatureFilter {
     filterType: 'categorical' | 'numeric';
     // For categorical filters
@@ -41,5 +43,26 @@ declare global {
       min: number;
       max: number;
     }>;
+  }
+
+  interface GameManifest {
+    game_id: string;
+    population: Record<string, any>;
+    output: Record<string, any>;
+    versioning: Record<string, any>;
+    game_state: Record<string, any>;
+    events: {
+      event_name: string;
+      description: string;
+      event_data: Record<string, any>;
+      module?: string;
+    }[];
+    features: {
+      feature_name: string;
+      module: string;
+      description: string;
+      return_type: string;
+      aggregation_levels: string[];
+    }[];
   }
 }
