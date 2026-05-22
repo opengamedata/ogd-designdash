@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.65",
     "@ai-sdk/react": "^3.0.143",
     "@stdlib/stats-base-dists-t-cdf": "^0.2.3",
     "@tailwindcss/postcss": "^4.1.10",

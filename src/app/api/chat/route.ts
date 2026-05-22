@@ -5,25 +5,23 @@ import {
   tool,
   stepCountIs,
 } from 'ai';
-import { ollama } from 'ai-sdk-ollama';
 import apiService from '../../../services/apiService';
+import { getChatModel } from '../../../lib/ai/getChatModel';
 import { z } from 'zod';
-
-// import { createOllama } from 'ai-sdk-ollama';
-
-// export const ollama = createOllama({
-//   baseURL: process.env.OLLAMA_BASE_URL,
-// });
 
 export async function POST(request: Request) {
   const { messages }: { messages: UIMessage[] } = await request.json();
 
-  if (!process.env.OLLAMA_MODEL) {
-    return new Response('OLLAMA_MODEL is not set', { status: 500 });
+  let model;
+  try {
+    model = getChatModel();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Invalid AI configuration';
+    return new Response(message, { status: 500 });
   }
 
   const result = streamText({
-    model: ollama(process.env.OLLAMA_MODEL),
+    model,
     tools: {
       lookupGames: tool({
         description: 'Lookup games from the Open Game Data dataset repository.',
@@ -49,21 +47,6 @@ export async function POST(request: Request) {
           return manifest.val.features;
         },
       }),
-      // fetchDataset: tool({
-      //   description:
-      //     'Fetch a dataset from the Open Game Data dataset repository. Use your best judgement to convert user input into valid input for this tool.',
-      //   inputSchema: z.object({
-      //     game: z.string(),
-      //     month: z.string().regex(/^(0[1-9]|1[0-2])$/, 'Month must be 01-12'),
-      //     year: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
-      //     level: z.enum(['population', 'player', 'session']),
-      //   }),
-      //   execute: async ({ game, month, year, level }) => {
-      //     const dataset = await apiService.getDataset(game, month, year, level);
-
-      //     return dataset;
-      //   },
-      // }),
       addDataset: tool({
         description:
           'Fetch a dataset from the Open Game Data dataset repository and add it to the local storage. Use your best judgement to convert user input into valid input for this tool.',

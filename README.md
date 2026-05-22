@@ -47,6 +47,18 @@ Make sure you have node v22.17.1 (or newer) and npm v10.9.2 (or newer) install o
 
 Copy `.env.example` to `.env.local` and optionally add your Google Analytics measurement ID (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) for usage tracking. Analytics only runs in production when the ID is set.
 
+### Chat AI provider
+
+The in-app chat uses the Vercel AI SDK. Choose a provider via `AI_PROVIDER` in `.env.local` (restart the dev server after changing):
+
+| Variable | Required when | Purpose |
+| -------- | ------------- | ------- |
+| `AI_PROVIDER` | No (default `ollama`) | `ollama` or `openai` |
+| `OLLAMA_MODEL` | `AI_PROVIDER=ollama` | Ollama model name |
+| `OLLAMA_BASE_URL` | No | Custom Ollama host (default `http://127.0.0.1:11434`) |
+| `OPENAI_API_KEY` | `AI_PROVIDER=openai` | OpenAI API key (server only) |
+| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini` |
+
 Install relevant npm packages:
 `npm install`
 
