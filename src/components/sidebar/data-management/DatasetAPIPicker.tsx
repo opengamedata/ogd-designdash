@@ -41,6 +41,9 @@ const DatasetAPIPicker = () => {
           ) {
             return acc;
           }
+          if (dataset.total_sessions === 0) {
+            return acc;
+          }
           acc[`${dataset.year}/${dataset.month}`] = [];
           if (dataset.sessions_file !== null) {
             acc[`${dataset.year}/${dataset.month}`].push('session');
@@ -223,10 +226,10 @@ const DatasetAPIPicker = () => {
                   onChange={setSelectedGame}
                 />
               )}
-              {datasets && (
+              {selectedGame && (
                 <SearchableSelect
                   label="Month"
-                  options={Object.keys(datasets).reduce(
+                  options={Object.keys(datasets ?? {}).reduce(
                     (acc, key) => {
                       acc[key] = key;
                       return acc;
@@ -235,9 +238,24 @@ const DatasetAPIPicker = () => {
                   )}
                   value={selectedDataset}
                   onChange={setSelectedDataset}
+                  placeholder={
+                    isLoadingDatasets ? 'Loading months...' : 'Select month...'
+                  }
                 />
               )}
             </div>
+            {errorDatasets && (
+              <p>Error loading months: {errorDatasets.message}</p>
+            )}
+            {selectedGame &&
+              !isLoadingDatasets &&
+              !errorDatasets &&
+              datasets &&
+              Object.keys(datasets).length === 0 && (
+                <p className="text-sm text-gray-500">
+                  No datasets with importable files were found for this game.
+                </p>
+              )}
           </div>
 
           {datasets && selectedDataset && (
