@@ -229,13 +229,15 @@ const DatasetAPIPicker = () => {
               {selectedGame && (
                 <SearchableSelect
                   label="Month"
-                  options={Object.keys(datasets ?? {}).reduce(
-                    (acc, key) => {
-                      acc[key] = key;
-                      return acc;
-                    },
-                    {} as Record<string, string>,
-                  )}
+                  options={Object.keys(datasets ?? {})
+                    .reverse() // Display months in descending order
+                    .reduce(
+                      (acc, key) => {
+                        acc[key] = key;
+                        return acc;
+                      },
+                      {} as Record<string, string>,
+                    )}
                   value={selectedDataset}
                   onChange={setSelectedDataset}
                   placeholder={
