@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
 import Dialog from './Dialog';
 
-const FloatingHelpIcon: React.FC = () => {
+const UserGuideDialog: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => setIsOpen(true);
@@ -10,11 +10,11 @@ const FloatingHelpIcon: React.FC = () => {
 
   return (
     <>
-      {/* Floating Help Icon */}
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 left-6 z-40 hover:bg-blue-100  rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        aria-label="Open help"
+        className="cursor-pointer"
+        aria-label="How to use the app"
+        title="How to use the app"
       >
         <HelpCircle className="w-6 h-6" />
       </button>
@@ -60,7 +60,7 @@ const FloatingHelpIcon: React.FC = () => {
 
           {/* Tips Section */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-blue-200 pb-2">
+            <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-primary/60 pb-2">
               Tips
             </h2>
 
@@ -69,12 +69,12 @@ const FloatingHelpIcon: React.FC = () => {
               <h3 className="text-xl font-semibold text-gray-700">
                 What files do I upload?
               </h3>
-              <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+              <div className="bg-primary/10 p-4 rounded-lg border-l-4 border-primary/20">
                 <p className="text-gray-700">
                   You can upload <strong>Open Game Data TSV files</strong> to
                   the app. Make sure the TSV files follow the naming convention:
                 </p>
-                <code className="block mt-2 p-2 bg-gray-100 rounded text-sm font-mono text-gray-800">
+                <code className="block mt-2 p-2 bg-white rounded text-sm font-mono text-gray-800">
                   GAMENAME_STARTDATE_to_ENDDATE_VERSION_FEATURE-LEVEL.tsv
                 </code>
               </div>
@@ -227,4 +227,4 @@ const FloatingHelpIcon: React.FC = () => {
   );
 };
 
-export default FloatingHelpIcon;
+export default UserGuideDialog;
