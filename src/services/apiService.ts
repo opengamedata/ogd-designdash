@@ -1,8 +1,6 @@
 import axios from 'axios';
-import { DSVParsedArray } from 'd3';
 
-const BASE_URL =
-  'https://ogd-services.fielddaylab.wisc.edu/apis/files/v2.0.0/app.wsgi';
+const BASE_URL = process.env.NEXT_PUBLIC_OGD_FILES_API_URL;
 
 interface GamesResponse {
   type: string;

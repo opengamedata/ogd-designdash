@@ -4,7 +4,7 @@ import AppChatPanel from '../components/chat/AppChatPanel';
 import DataSourceList from '../components/sidebar/data-management/DataSourceList';
 import CollapsibleSidePanel from '../components/sidebar/CollapsibleSidePanel';
 import LayoutManager from '../components/sidebar/LayoutManager';
-import FloatingHelpIcon from '../components/layout/FloatingHelpIcon';
+import TopBar from '../components/layout/TopBar';
 import DatasetDeepLinkProvider from '../components/providers/DatasetDeepLinkProvider';
 import { Upload } from 'lucide-react';
 import useDataStore from '../store/useDataStore';
@@ -54,15 +54,17 @@ const HomePage: React.FC = () => {
 
   return (
     <DatasetDeepLinkProvider>
-      <>
-        <div className="flex h-screen min-h-0 flex-row overflow-hidden bg-gray-50">
+      <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-gray-50">
+        <TopBar />
+
+        <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
           <CollapsibleSidePanel side="left" collapsedLabel="Data">
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-gray-200">
                 <nav className="flex space-x-2" aria-label="Tabs">
                   <button
                     className={`px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none border-b-2 transition-colors ${
-                      activeTab === 0 ? 'border-blue-500' : 'border-transparent'
+                      activeTab === 0 ? 'border-primary' : 'border-transparent'
                     }`}
                     onClick={() => setActiveTab(0)}
                     aria-selected={activeTab === 0}
@@ -71,7 +73,7 @@ const HomePage: React.FC = () => {
                   </button>
                   <button
                     className={`px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none border-b-2 transition-colors ${
-                      activeTab === 1 ? 'border-blue-500' : 'border-transparent'
+                      activeTab === 1 ? 'border-primary' : 'border-transparent'
                     }`}
                     onClick={() => setActiveTab(1)}
                     aria-selected={activeTab === 1}
@@ -115,7 +117,6 @@ const HomePage: React.FC = () => {
             </div>
           </CollapsibleSidePanel>
 
-          {/* Main: own scroll; panels stay full viewport height */}
           <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-4">
             <GridLayout />
           </div>
@@ -137,9 +138,7 @@ const HomePage: React.FC = () => {
             </div>
           </CollapsibleSidePanel>
         </div>
-
-        <FloatingHelpIcon />
-      </>
+      </div>
     </DatasetDeepLinkProvider>
   );
 };
