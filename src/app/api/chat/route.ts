@@ -7,6 +7,7 @@ import {
   stepCountIs,
 } from 'ai';
 import apiService from '../../../services/apiService';
+import { getAssistantAvailability } from '../../../lib/ai/assistantFeature';
 import { getChatModel } from '../../../lib/ai/getChatModel';
 import {
   buildDashboardInputSchema,
@@ -49,6 +50,14 @@ function buildSystemPrompt(dashboardContextText?: string): string {
 }
 
 export async function POST(request: Request) {
+  const availability = getAssistantAvailability();
+  if (!availability.enabled) {
+    return Response.json(
+      { error: 'Assistant is not available', reason: availability.reason },
+      { status: 503 },
+    );
+  }
+
   const {
     messages,
     dashboardContext: dashboardContextText,
@@ -57,14 +66,7 @@ export async function POST(request: Request) {
     dashboardContext?: string;
   } = await request.json();
 
-  let model;
-  try {
-    model = getChatModel();
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Invalid AI configuration';
-    return new Response(message, { status: 500 });
-  }
+  const model = getChatModel();
 
   const result = streamText({
     model,

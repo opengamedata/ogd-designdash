@@ -49,15 +49,24 @@ Copy `.env.example` to `.env.local` and optionally add your Google Analytics mea
 
 ### Chat AI provider
 
-The in-app chat uses the Vercel AI SDK. Choose a provider via `AI_PROVIDER` in `.env.local` (restart the dev server after changing):
+The in-app assistant is **opt-in**. Set `AI_ASSISTANT_ENABLED=true` in `.env.local` and configure a valid provider below. When the flag is off or provider env vars are missing, the Assistant side panel is hidden and `/api/chat` returns 503.
 
 | Variable | Required when | Purpose |
 | -------- | ------------- | ------- |
-| `AI_PROVIDER` | No (default `ollama`) | `ollama` or `openai` |
+| `AI_ASSISTANT_ENABLED` | Yes (to enable assistant) | Master switch for UI and API; unset or `false` disables the assistant |
+| `AI_PROVIDER` | When assistant enabled (default `ollama`) | `ollama` or `openai` |
 | `OLLAMA_MODEL` | `AI_PROVIDER=ollama` | Ollama model name |
 | `OLLAMA_BASE_URL` | No | Custom Ollama host (default `http://127.0.0.1:11434`) |
 | `OPENAI_API_KEY` | `AI_PROVIDER=openai` | OpenAI API key (server only) |
 | `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini` |
+
+**Per-environment guidance:**
+
+- **Local dev (with Ollama):** `AI_ASSISTANT_ENABLED=true`, `AI_PROVIDER=ollama`, `OLLAMA_MODEL=<your-model>`
+- **Staging / prod with LLM:** `AI_ASSISTANT_ENABLED=true` plus valid OpenAI or Ollama config
+- **Prod without LLM:** `AI_ASSISTANT_ENABLED=false` (provider vars can be omitted)
+
+Restart the dev server after changing env vars.
 
 Install relevant npm packages:
 `npm install`

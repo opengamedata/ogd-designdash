@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import type { GetServerSideProps } from 'next';
 import GridLayout from '../components/layout/GridLayout';
 import AppChatPanel from '../components/chat/AppChatPanel';
 import DataSourceList from '../components/sidebar/data-management/DataSourceList';
@@ -10,8 +11,13 @@ import { Upload } from 'lucide-react';
 import useDataStore from '../store/useDataStore';
 import useLayoutStore from '../store/useLayoutStore';
 import { trackEvent } from '../lib/analytics';
+import { isAssistantEnabled } from '../lib/ai/assistantFeature';
 
-const HomePage: React.FC = () => {
+type HomePageProps = {
+  assistantEnabled: boolean;
+};
+
+const HomePage: React.FC<HomePageProps> = ({ assistantEnabled }) => {
   const [activeTab, setActiveTab] = useState(0);
   const { setCurrentLayout, loadLayout } = useLayoutStore();
   const layoutDataStoreJsonFileInputRef = useRef<HTMLInputElement>(null);
@@ -121,22 +127,24 @@ const HomePage: React.FC = () => {
             <GridLayout />
           </div>
 
-          <CollapsibleSidePanel
-            side="right"
-            collapsedLabel="Assistant"
-            scrollBody={false}
-            defaultOpen={false}
-            widthClassName="w-[min(28rem,34vw)]"
-          >
-            <div className="flex h-full min-h-0 flex-col gap-2">
-              <h2 className="shrink-0 text-sm font-semibold text-gray-800">
-                Assistant
-              </h2>
-              <div className="min-h-0 flex-1">
-                <AppChatPanel />
+          {assistantEnabled && (
+            <CollapsibleSidePanel
+              side="right"
+              collapsedLabel="Assistant"
+              scrollBody={false}
+              defaultOpen={false}
+              widthClassName="w-[min(28rem,34vw)]"
+            >
+              <div className="flex h-full min-h-0 flex-col gap-2">
+                <h2 className="shrink-0 text-sm font-semibold text-gray-800">
+                  Assistant
+                </h2>
+                <div className="min-h-0 flex-1">
+                  <AppChatPanel />
+                </div>
               </div>
-            </div>
-          </CollapsibleSidePanel>
+            </CollapsibleSidePanel>
+          )}
         </div>
       </div>
     </DatasetDeepLinkProvider>
@@ -144,3 +152,9 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
+
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => ({
+  props: {
+    assistantEnabled: isAssistantEnabled(),
+  },
+});

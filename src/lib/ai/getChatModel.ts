@@ -1,28 +1,16 @@
 import { openai } from '@ai-sdk/openai';
 import type { LanguageModel } from 'ai';
 import { createOllama, ollama as defaultOllama } from 'ai-sdk-ollama';
+import {
+  getResolvedAiProvider,
+  validateAiProviderConfig,
+  type AiProvider,
+} from './aiProviderConfig';
 
-export type AiProvider = 'ollama' | 'openai';
-
-const AI_PROVIDERS: AiProvider[] = ['ollama', 'openai'];
-
-function resolveProvider(provider?: string): AiProvider {
-  const value = (provider ?? process.env.AI_PROVIDER ?? 'ollama').toLowerCase();
-
-  if (!AI_PROVIDERS.includes(value as AiProvider)) {
-    throw new Error(
-      `Invalid AI_PROVIDER "${value}". Must be one of: ${AI_PROVIDERS.join(', ')}`,
-    );
-  }
-
-  return value as AiProvider;
-}
+export type { AiProvider };
 
 function getOllamaModel(): LanguageModel {
-  const model = process.env.OLLAMA_MODEL;
-  if (!model) {
-    throw new Error('OLLAMA_MODEL is not set');
-  }
+  const model = process.env.OLLAMA_MODEL!;
 
   const client = process.env.OLLAMA_BASE_URL
     ? createOllama({ baseURL: process.env.OLLAMA_BASE_URL })
@@ -32,15 +20,14 @@ function getOllamaModel(): LanguageModel {
 }
 
 function getOpenAiModel(): LanguageModel {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is not set');
-  }
-
   return openai(process.env.OPENAI_MODEL ?? 'gpt-4o-mini');
 }
 
+export { validateAiProviderConfig };
+
 export function getChatModel(provider?: string): LanguageModel {
-  const resolved = resolveProvider(provider);
+  validateAiProviderConfig(provider);
+  const resolved = getResolvedAiProvider(provider);
 
   switch (resolved) {
     case 'ollama':
