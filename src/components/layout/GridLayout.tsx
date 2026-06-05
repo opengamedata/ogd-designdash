@@ -207,7 +207,7 @@ const GridLayout: React.FC = () => {
   const [prompt, setPrompt] = useState('');
 
   return (
-    <div className="min-h-screen mb-20">
+    <div>
       <div className="flex items-center gap-4 mb-2">
         <div className="text-lg font-bold">
           {currentLayout && layouts[currentLayout]?.name}

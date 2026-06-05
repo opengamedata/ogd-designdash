@@ -54,7 +54,7 @@ const HomePage: React.FC = () => {
 
   return (
     <DatasetDeepLinkProvider>
-      <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-gray-50">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden bg-gray-50">
         <TopBar />
 
         <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
