@@ -13,7 +13,7 @@ import { X } from 'lucide-react';
 import { trackEvent } from '../../../lib/analytics';
 
 const DatasetAPIPicker = () => {
-  const { addDataset, hasDataset } = useDataStore();
+  const { addDataset, hasDataset, addGameManifest } = useDataStore();
   const [isOpen, setIsOpen] = useState(false);
   const {
     data: games,
@@ -39,6 +39,9 @@ const DatasetAPIPicker = () => {
             dataset.players_file === null &&
             dataset.population_file === null
           ) {
+            return acc;
+          }
+          if (dataset.total_sessions === 0) {
             return acc;
           }
           acc[`${dataset.year}/${dataset.month}`] = [];
@@ -77,6 +80,7 @@ const DatasetAPIPicker = () => {
       api.getDataset(game, dataset.split('/')[1], dataset.split('/')[0], level),
     onSuccess: (responseBody, variables) => {
       if (responseBody) {
+        console.log(responseBody);
         const dataset = normalizeApiResponse(
           responseBody,
           variables.game,
@@ -98,11 +102,32 @@ const DatasetAPIPicker = () => {
     },
   });
 
+  const importGameManifestMutation = useMutation({
+    mutationFn: ({ game, dataset }: { game: string; dataset: string }) =>
+      api.getGameManifest(game, dataset.split('/')[1], dataset.split('/')[0]),
+    onSuccess: (responseBody, variables) => {
+      if (responseBody) {
+        const manifest = responseBody.val;
+        addGameManifest(
+          variables.game,
+          variables.dataset.split('/')[0],
+          variables.dataset.split('/')[1],
+          manifest,
+        );
+        console.log(manifest);
+      }
+    },
+  });
+
   function handleImportDataset(level: 'population' | 'player' | 'session') {
     if (!selectedGame || !selectedDataset) return;
     setImportingLevels((prev) => new Set(prev).add(level));
     importDatasetMutation.mutate({
       level,
+      game: selectedGame,
+      dataset: selectedDataset,
+    });
+    importGameManifestMutation.mutate({
       game: selectedGame,
       dataset: selectedDataset,
     });
@@ -148,13 +173,13 @@ const DatasetAPIPicker = () => {
               generateAPIDatasetID(selectedGame, selectedDataset, level),
             )
           }
-          className={`w-full ${isImported ? 'bg-gray-400' : 'bg-blue-400 hover:bg-blue-500'} text-white px-4 py-2 rounded-md font-medium cursor-pointer shadow transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`w-full ${isImported ? 'bg-gray-400' : 'bg-primary hover:bg-primary/80'} text-white px-4 py-2 rounded-md font-medium cursor-pointer transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isImporting
             ? 'Importing...'
             : isImported
               ? 'Imported'
-              : 'Add to Dashboard'}
+              : 'Add to Data Sources'}
         </button>
       </div>
     );
@@ -164,7 +189,7 @@ const DatasetAPIPicker = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
+        className="w-full inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md font-medium cursor-pointer hover:bg-primary/80 transition-colors text-sm"
       >
         <Search className="w-4 h-4 mr-2" />
         Browse Datasets
@@ -202,21 +227,38 @@ const DatasetAPIPicker = () => {
                   onChange={setSelectedGame}
                 />
               )}
-              {datasets && (
+              {selectedGame && (
                 <SearchableSelect
                   label="Month"
-                  options={Object.keys(datasets).reduce(
-                    (acc, key) => {
-                      acc[key] = key;
-                      return acc;
-                    },
-                    {} as Record<string, string>,
-                  )}
+                  options={Object.keys(datasets ?? {})
+                    .reverse() // Display months in descending order
+                    .reduce(
+                      (acc, key) => {
+                        acc[key] = key;
+                        return acc;
+                      },
+                      {} as Record<string, string>,
+                    )}
                   value={selectedDataset}
                   onChange={setSelectedDataset}
+                  placeholder={
+                    isLoadingDatasets ? 'Loading months...' : 'Select month...'
+                  }
                 />
               )}
             </div>
+            {errorDatasets && (
+              <p>Error loading months: {errorDatasets.message}</p>
+            )}
+            {selectedGame &&
+              !isLoadingDatasets &&
+              !errorDatasets &&
+              datasets &&
+              Object.keys(datasets).length === 0 && (
+                <p className="text-sm text-gray-500">
+                  No datasets with importable files were found for this game.
+                </p>
+              )}
           </div>
 
           {datasets && selectedDataset && (

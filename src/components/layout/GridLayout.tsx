@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import useLayoutStore from '../../store/useLayoutStore';
 import { Plus, Wrench } from 'lucide-react';
 import { trackEvent } from '../../lib/analytics';
-
+import Input from './Input';
 const MAX_COLS = 12;
 const DEFAULT_CHART_WIDTH = 4;
 const DEFAULT_CHART_HEIGHT = 3;
@@ -204,14 +204,16 @@ const GridLayout: React.FC = () => {
     setSpawnPoint({ x: nextX, y: nextY });
   };
 
+  const [prompt, setPrompt] = useState('');
+
   return (
-    <div className="min-h-screen mb-20">
+    <div>
       <div className="flex items-center gap-4 mb-2">
         <div className="text-lg font-bold">
           {currentLayout && layouts[currentLayout]?.name}
         </div>
         <button
-          className="inline-flex items-center justify-center px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm"
+          className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md font-medium cursor-pointer hover:bg-primary/80 transition-colors text-sm"
           onClick={addChart}
           type="button"
         >
@@ -219,7 +221,7 @@ const GridLayout: React.FC = () => {
           Add Chart
         </button>
         <button
-          className="inline-flex items-center justify-center px-4 py-2 bg-gray-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-gray-500 transition-colors text-sm"
+          className="inline-flex items-center justify-center px-4 py-2 text-primary border-1 border-primary rounded-md font-medium cursor-pointer hover:bg-primary/5 transition-colors text-sm"
           onClick={() => setEditConfigMode(!editConfigMode)}
           type="button"
         >
@@ -228,12 +230,24 @@ const GridLayout: React.FC = () => {
         </button>
       </div>
 
-      <div className="">
+      <div>
         {/* Grid */}
         {isInitialized ? (
           <Grid
-            layouts={{ lg: layout, md: layout, sm: layout, xs: layout }}
-            cols={{ lg: MAX_COLS, md: MAX_COLS, sm: MAX_COLS, xs: MAX_COLS }}
+            layouts={{
+              lg: layout,
+              md: layout,
+              sm: layout,
+              xs: layout,
+              xxs: layout,
+            }}
+            cols={{
+              lg: MAX_COLS,
+              md: MAX_COLS,
+              sm: MAX_COLS,
+              xs: MAX_COLS,
+              xxs: MAX_COLS,
+            }}
             draggableHandle=".drag-handle"
             isResizable={true}
             onLayoutChange={(l: Layout[]) => {

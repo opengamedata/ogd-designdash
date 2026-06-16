@@ -78,6 +78,7 @@ typings/
 
 # TypeScript build info
 tsconfig.tsbuildinfo
+skills-lock.json
 
 # Optional npm cache directory
 .npm
@@ -134,3 +135,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+# LLM agentic
+/.cursor/
+/.agents/
+skills-lock.json

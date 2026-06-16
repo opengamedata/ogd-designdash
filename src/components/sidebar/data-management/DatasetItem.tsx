@@ -1,5 +1,6 @@
 import { Filter, ChevronRight, ScissorsLineDashed, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import Input from '../../layout/Input';
 import Select from '../../layout/select/Select';
 import useDataStore from '../../../store/useDataStore';
 import DatasetFilter from './DatasetFilter';
@@ -12,6 +13,7 @@ interface DatasetItemProps {
 
 const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [featureSearch, setFeatureSearch] = useState('');
   const { updateDatasetColumnType, getFilteredDataset } = useDataStore();
   const filteredDataset = getFilteredDataset(dataset.id);
 
@@ -93,6 +95,14 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
     return features;
   }, [dataset.columnTypes, iteratedFeatureMap]);
 
+  const filteredDisplayFeatures = useMemo(() => {
+    const q = featureSearch.trim().toLowerCase();
+    if (!q) return displayFeatures;
+    return displayFeatures.filter((f) =>
+      f.displayName.toLowerCase().includes(q),
+    );
+  }, [displayFeatures, featureSearch]);
+
   const getColumnTypeOptions = (feature: string) => {
     if (feature.includes('PlayerProgression')) {
       return { Graph: 'Graph' };
@@ -115,6 +125,7 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
   };
 
   const ItemDetails = () => {
+    const [searchFeature, setSearchFeature] = useState('');
     return (
       <div className="w-full mt-2 px-4">
         <hr className="border-gray-200 my-2" />
@@ -123,39 +134,53 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
 
         <hr className="border-gray-200 my-2" />
         <div className="font-bold text-sm text-gray-800 p-2">Features</div>
+        <div className="px-1 pb-2">
+          <Input
+            placeholder="Search..."
+            value={searchFeature}
+            onChange={(value) => setSearchFeature(value)}
+            debounce
+          />
+        </div>
         <div>
-          {displayFeatures.map(
-            ({
-              displayName,
-              relatedFeatureKeys,
-              sampleFeatureKey,
-              columnType,
-              isIterated,
-            }) => (
-              <div
-                className="grid grid-cols-4 gap-2 items-center px-2 py-1 w-full hover:bg-gray-100 rounded-md transition-all duration-200"
-                key={displayName}
-              >
-                <div className="text-sm col-span-3">
-                  {displayName}
-                  {isIterated && (
-                    <span className="ml-1 text-xs text-gray-500">
-                      (iterated)
-                    </span>
-                  )}
+          {displayFeatures
+            .filter((feature) =>
+              feature.displayName
+                .toLowerCase()
+                .includes(searchFeature.toLowerCase()),
+            )
+            .map(
+              ({
+                displayName,
+                relatedFeatureKeys,
+                sampleFeatureKey,
+                columnType,
+                isIterated,
+              }) => (
+                <div
+                  className="grid grid-cols-4 gap-2 items-center px-2 py-1 w-full hover:bg-gray-100 rounded-md transition-all duration-200"
+                  key={displayName}
+                >
+                  <div className="text-sm col-span-3">
+                    {displayName}
+                    {isIterated && (
+                      <span className="ml-1 text-xs text-gray-500">
+                        (iterated)
+                      </span>
+                    )}
+                  </div>
+                  <Select
+                    value={columnType ?? ''}
+                    onChange={(value) => {
+                      relatedFeatureKeys.forEach((featureKey) => {
+                        updateDatasetColumnType(dataset.id, featureKey, value);
+                      });
+                    }}
+                    options={getColumnTypeOptions(sampleFeatureKey)}
+                  />
                 </div>
-                <Select
-                  value={columnType ?? ''}
-                  onChange={(value) => {
-                    relatedFeatureKeys.forEach((featureKey) => {
-                      updateDatasetColumnType(dataset.id, featureKey, value);
-                    });
-                  }}
-                  options={getColumnTypeOptions(sampleFeatureKey)}
-                />
-              </div>
-            ),
-          )}
+              ),
+            )}
         </div>
       </div>
     );
@@ -170,7 +195,7 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
         <div className="flex-1">
           <div className="flex gap-2 items-center">
             <ChevronRight
-              className={`w-4 h-4 hover:text-blue-500 transition-colors ${showDetails && 'rotate-90'}  transition-transform duration-100 `}
+              className={`w-4 h-4 hover:text-primary transition-colors ${showDetails && 'rotate-90'}  transition-transform duration-100 `}
               onClick={() => setShowDetails(!showDetails)}
             />
             <div className="font-medium text-sm text-gray-800 select-none">
@@ -201,14 +226,14 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
         </div>
         <button
           onClick={() => onSplit(dataset.id)}
-          className="ml-2 p-1 text-gray-400 hover:text-blue-500 transition-colors"
+          className="ml-2 p-1 text-gray-500 hover:text-primary transition-colors"
           title="Split dataset"
         >
           <ScissorsLineDashed className="w-4 h-4" />
         </button>
         <button
           onClick={() => onRemove(dataset.id)}
-          className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors"
+          className="ml-2 p-1 text-gray-500 hover:text-red-500 transition-colors"
           title="Remove dataset"
         >
           <X className="w-4 h-4" />
