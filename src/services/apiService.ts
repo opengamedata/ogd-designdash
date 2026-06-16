@@ -1,14 +1,17 @@
 import axios from 'axios';
-import { DSVParsedArray } from 'd3';
 
-const BASE_URL =
-  'https://ogd-staging.fielddaylab.wisc.edu/wsgi-bin/opengamedata/apis/ogd-api-files/main/app.wsgi';
+const BASE_URL = process.env.NEXT_PUBLIC_OGD_FILES_API_URL;
 
 interface GamesResponse {
   type: string;
   val: {
     game_ids: string[];
   };
+  msg: string;
+}
+interface GameManifestResponse {
+  type: string;
+  val: GameManifest;
   msg: string;
 }
 interface DatasetsResponse {
@@ -35,25 +38,37 @@ export interface DatasetResponse {
   msg: string;
 }
 
+interface GameManifestResponse {
+  type: string;
+  val: GameManifest;
+  msg: string;
+}
+
 const apiService = {
   getGames: async () => {
     const response = await axios.get(`${BASE_URL}/games`);
     return response.data as GamesResponse;
   },
-  getDatasets: async (gameId: string) => {
-    const response = await axios.get(`${BASE_URL}/games/${gameId}/datasets`);
+  getDatasets: async (gameName: string) => {
+    const response = await axios.get(`${BASE_URL}/games/${gameName}/datasets`);
     return response.data as DatasetsResponse;
   },
   getDataset: async (
-    gameId: string,
+    gameName: string,
     month: string,
     year: string,
     level: string,
   ) => {
     const response = await axios.get(
-      `${BASE_URL}/games/${gameId}/datasets/${year}/${month}/${level}`,
+      `${BASE_URL}/games/${gameName}/datasets/${year}/${month}/${level}`,
     );
     return response.data as DatasetResponse;
+  },
+  getGameManifest: async (gameId: string, month: string, year: string) => {
+    const response = await axios.get(
+      `${BASE_URL}/games/${gameId}/datasets/${year}/${month}/manifest`,
+    );
+    return response.data as GameManifestResponse;
   },
 };
 

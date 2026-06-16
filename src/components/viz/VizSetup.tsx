@@ -54,7 +54,7 @@ const VizSetup = ({
       viz_type: vizType,
       dataset_id: gameDataIds.join(', '),
     });
-    
+
     if (gameDataIds.length) {
       setContainerMode('viz');
     }
@@ -68,7 +68,9 @@ const VizSetup = ({
 
   return (
     <div className="h-full flex flex-col gap-6 justify-center items-start p-4">
-      {!hasHydrated && <div>Loading datasets...</div>}
+      {!hasHydrated && (
+        <div className="text-sm text-gray-500">Loading datasets...</div>
+      )}
       <div className="w-full space-y-3">
         <Select
           className="w-full"
@@ -158,7 +160,7 @@ const VizSetup = ({
           !vizType ||
           (vizType === 'datasetComparison' && !gameDataIds[1])
         }
-        className="px-4 py-2 bg-blue-400 text-white rounded-md font-medium cursor-pointer shadow hover:bg-blue-500 transition-colors text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="px-4 py-2 bg-primary text-white rounded-md font-medium cursor-pointer hover:bg-primary/80 transition-colors text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
         onClick={visualize}
       >
         Apply
