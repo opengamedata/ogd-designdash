@@ -25,6 +25,10 @@ inputs:
     description: "The Google Analytics ID/Tag"
     required: true
     default: 'gtag placeholder'
+  enable_ai_assist:
+    description: "Whether to enable the AI assistant feature"
+    required: false
+    default: 'false'
 runs:
   using: "composite"
   steps:
@@ -32,10 +36,13 @@ runs:
       run: cp ${{inputs.env_base}}/.env.example ${{inputs.env_base}}/.env.local
       shell: bash
     - name: Set API base path
-      run: sed -i 's@BASE_URL=@BASE_URL=${{inputs.api_origin}}/${{inputs.api_path}}@g' ${{inputs.env_base}}/.env.local
+      run: sed -i 's@NEXT_PUBLIC_OGD_FILES_API_URL=@NEXT_PUBLIC_OGD_FILES_API_URL=${{inputs.api_origin}}/${{inputs.api_path}}@g' ${{inputs.env_base}}/.env.local
       shell: bash
     - name: Set Google Analytics
       run: sed -i 's@NEXT_PUBLIC_GA_MEASUREMENT_ID=@NEXT_PUBLIC_GA_MEASUREMENT_ID=${{inputs.gtag}}@g' ${{inputs.env_base}}/.env.local
+      shell: bash
+    - name: Set AI Assist Enabled
+      run: sed -i 's@AI_ASSISTANT_ENABLED=false@AI_ASSISTANT_ENABLED=${{ inputs.enable_ai_assist }}@g' ${{inputs.env_base}}/.env.local
       shell: bash
     - name: Set package homepage
       run: sed -i 's@BASE_PATH@${{inputs.package_home}}@g' next.config.js

@@ -36,13 +36,14 @@ jobs:
       run: echo "Deploying to ${{ env.DEPLOY_URL }} from ${{ github.repository }} via ${{ github.actor }}"
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Set up Config File
+    - name: Set up Config File for AI deploy
       uses: ./.github/actions/DesignDash_config
       with:
         api_origin:   ${{ env.API_HOST }}
         api_path:     ${{ env.API_PATH }}
         package_home: ${{ env.URL_PATH }}
         gtag:         ${{ vars.GA_ID_DASHBOARD }}
+        enable_ai_assist: 'true'
 
   # 2. Build 
     - name: Install Node
