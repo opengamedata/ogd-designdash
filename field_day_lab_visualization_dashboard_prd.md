@@ -1,3 +1,5 @@
+> Historical planning document (June 2025). For implemented behavior, configuration, and operations, start with [README](README.md). Planned features below are not a support guarantee.
+
 **Product Requirements Document (PRD)**
 
 **Project Name:** Field Day Lab Visualization Dashboard  
