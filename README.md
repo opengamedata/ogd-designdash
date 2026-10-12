@@ -20,6 +20,17 @@ Field Day Lab processes rich gameplay data—population, session, and player fea
    - Implement caching layer in LocalStorage with TTL.
    - Cache invalidation controls (per-session or manual refresh).
 
+## Dashboard updates
+
+- Download individual charts as PNG images or copy them to the clipboard.
+- Chart titles follow dataset changes unless customized; comparison settings preserve the second dataset when the first changes.
+- Dataset Filters and Features sections collapse independently. Multi-select menus include Select all, Select none, and Exclude selection.
+- Descriptive statistics include quartiles and consistent number formatting; categorical bar charts sort alphabetically.
+- Force graphs and Sankey diagrams aggregate graph features across filtered player/session rows. Cached datasets refresh their graph metadata on load.
+- New API imports and assistant dataset requests use player/session data. Dataset links default to player data. Legacy population TSV parsing and explicit population links remain supported, but Sankey no longer uses the old job-graph data source.
+
+These updates retain the static lab and Cloud Run deployment targets described below. Assistant UI visibility still uses `NEXT_PUBLIC_AI_ASSISTANT_ENABLED` at build time; the homepage does not require server-side rendering.
+
 ## Technical Requirements
 
 - **Framework:** React or Next.js with TypeScript.
