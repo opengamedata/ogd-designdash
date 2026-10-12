@@ -1,162 +1,65 @@
-## Background
+# OpenGameData Design Dashboard
 
-Field Day Lab processes rich gameplay data—population, session, and player features—via a data pipeline that outputs both TSV files and API endpoints. Currently, game designers, researchers, and educators lack an interactive, flexible way to explore and analyze these data, slowing insights and feedback loops. The Open Game Data visualization dashboard aims to empower educators, designers, and analysts to rapidly surface trends, patterns, and anomalies in game-based learning data.
+A browser-based dashboard for exploring gameplay feature datasets from TSV files or the OGD Files API. It supports draggable charts, dataset filters and splits, statistics, graph visualizations, dashboard JSON sharing, and chart image export. An optional server-side assistant can recommend features and create charts.
 
-## Key Features
+## Start here
 
-1. **Multi-Visualization Support**
-   - Pre-built components for histogram, bar chart, scatterplot, box plot, descriptive statistics, force graph, timeline.
-   - Plugin interface for adding new chart types.
-2. **Grid-Based UI**
-   - Responsive, draggable/resizable panels using CSS Grid or a library (e.g., react-grid-layout).
-   - Save and restore layout configurations.
-3. **Data Source Selection**
-   - Per-panel selector: choose between file upload or API endpoint.
-   - Display validation errors for unsupported TSV schemas or API failures.
-4. **File Upload & API Integration**
-   - TSV parser with schema detection and mapping to feature sets.
-   - Configurable API client supporting pagination and filter parameters.
-5. **API Caching**
-   - Implement caching layer in LocalStorage with TTL.
-   - Cache invalidation controls (per-session or manual refresh).
+| Task | Guide |
+| --- | --- |
+| Run locally and perform a sanity check | This page |
+| Configure API access, analytics, or the assistant | [Configuration](docs/configuration.md) |
+| Import data, save work, and share dashboards | [Using the dashboard](docs/usage.md) |
+| Diagnose a failure | [Troubleshooting](docs/troubleshooting.md) |
+| Change the code or understand persistence | [Technical documentation](technical_documentation.md) |
 
-## Dashboard updates
+## Local setup
 
-- Download individual charts as PNG images or copy them to the clipboard.
-- Chart titles follow dataset changes unless customized; comparison settings preserve the second dataset when the first changes.
-- Dataset Filters and Features sections collapse independently. Multi-select menus include Select all, Select none, and Exclude selection.
-- Descriptive statistics include quartiles and consistent number formatting; categorical bar charts sort alphabetically.
-- Force graphs and Sankey diagrams aggregate graph features across filtered player/session rows. Cached datasets refresh their graph metadata on load.
-- New API imports and assistant dataset requests use player/session data. Dataset links default to player data. Legacy population TSV parsing and explicit population links remain supported, but Sankey no longer uses the old job-graph data source.
-
-These updates retain the static lab and Cloud Run deployment targets described below. Assistant UI visibility still uses `NEXT_PUBLIC_AI_ASSISTANT_ENABLED` at build time; the homepage does not require server-side rendering.
-
-## Technical Requirements
-
-- **Framework:** React or Next.js with TypeScript.
-- **State Management:** Zustand for layout, data-layer, and cache state.
-- **Visualization Library:** D3.js.
-- **Data Abstraction Layer:** Adapter pattern to normalize TSV and API responses into a common format.
-- **Caching Strategy:** IndexedDB for dataset caching.
-- **Testing:** Unit tests for components (Jest + React Testing Library); integration tests for data adapters.
-
-## User Stories
-
-- **As a designer**, I want to fetch player features via API and view a force graph, so I can trace player progression.
-- **As a researcher**, I want to upload a session TSV file to generate a visualization dashboard, so I can inspect distribution of session durations.
-- **As a stakeholder**, I want the dashboard to load cached data instantly on revisit, so I save time waiting for API calls.
-
-## Assumptions & Constraints
-
-- API schema may evolve; data adapter layer must handle minor breaking changes.
-- TSV files follow a consistent feature naming convention; major schema shifts require manual adapter updates.
-- Users have modern browsers supporting ES6 and LocalStorage.
-
-## Running the App locally
-
-Make sure you have node v22.17.1 (or newer) and npm v10.9.2 (or newer) install on your machine.
-
-Copy `.env.example` to `.env.local` and optionally add your Google Analytics measurement ID (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) for usage tracking. Analytics only runs in production when the ID is set.
-
-### Chat AI provider
-
-The in-app assistant is **opt-in**. Set `AI_ASSISTANT_ENABLED=true` and `NEXT_PUBLIC_AI_ASSISTANT_ENABLED=true` in `.env.local` and configure a valid provider below. When the server flag is off or provider env vars are missing, `/api/chat` returns 503. When the public flag is off, the Assistant side panel is hidden.
-
-| Variable | Required when | Purpose |
-| -------- | ------------- | ------- |
-| `AI_ASSISTANT_ENABLED` | Yes (to enable `/api/chat`) | Server master switch; unset or `false` disables the API |
-| `NEXT_PUBLIC_AI_ASSISTANT_ENABLED` | Yes (to show Assistant UI) | Client build-time switch for the side panel |
-| `AI_PROVIDER` | When assistant enabled (default `ollama`) | `ollama` or `openai` |
-| `OLLAMA_MODEL` | `AI_PROVIDER=ollama` | Ollama model name |
-| `OLLAMA_BASE_URL` | No | Custom Ollama host (default `http://127.0.0.1:11434`) |
-| `OPENAI_API_KEY` | `AI_PROVIDER=openai` | OpenAI API key (server only) |
-| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini` |
-
-**Per-environment guidance:**
-
-- **Local dev (with Ollama):** `AI_ASSISTANT_ENABLED=true`, `NEXT_PUBLIC_AI_ASSISTANT_ENABLED=true`, `AI_PROVIDER=ollama`, `OLLAMA_MODEL=<your-model>`
-- **Cloud Run with LLM:** both assistant flags `true`, `AI_PROVIDER=openai`, plus Secret Manager `OPENAI_API_KEY`
-- **Prod without LLM / static lab export:** both flags `false` (provider vars can be omitted)
-
-Restart the dev server after changing env vars.
-
-Install relevant npm packages:
-`npm install`
-
-For development:
-`npm run dev`
-
-Visit `localhost:3000` on your web broswer.
-
-### Deploy targets
-
-This repo supports two deploy paths that **coexist**:
-
-| Target | How | Trigger |
-| ------ | --- | ------- |
-| **Lab static** (existing) | `DEPLOY_TARGET=static` (default) → static export + VPN/rsync | [`.github/workflows/CI_designdash.yml`](.github/workflows/CI_designdash.yml), [`RELEASE_designdash.yml`](.github/workflows/RELEASE_designdash.yml) |
-| **Cloud Run** | `DEPLOY_TARGET=cloudrun` → Next.js standalone Node server | [`CI_validate.yml`](.github/workflows/CI_validate.yml), [`CD_cloudrun_staging.yml`](.github/workflows/CD_cloudrun_staging.yml), [`CD_cloudrun_prod.yml`](.github/workflows/CD_cloudrun_prod.yml) |
-
-Local Cloud Run-style build:
+Use Node.js **22** (the major version used by Docker and CI) and npm. The original development baseline was Node 22.17.1 / npm 10.9.2. Docker is only needed to test the container; an API account or AI key is not required for the bundled TSV sanity check.
 
 ```bash
+git clone https://github.com/opengamedata/ogd-designdash.git
+cd ogd-designdash
+npm ci
+cp .env.example .env.local
+DEPLOY_TARGET=cloudrun npm run dev -- --hostname 127.0.0.1 --port 3000
+```
+
+The command selects `DEPLOY_TARGET=cloudrun` for local development, so the app is available at [http://127.0.0.1:3000](http://127.0.0.1:3000), without the static deployment's `/BASE_PATH` prefix. The assistant starts disabled. Stop the server with Ctrl+C. Use another port if 3000 is occupied; browser-saved work is specific to the host and port.
+
+To use API imports, set `NEXT_PUBLIC_OGD_FILES_API_URL` in `.env.local` to your team's Files API base URL, **without** `/games` or a trailing slash, and restart. For Cloud Run, find the deployed value in the GitHub `CLOUDRUN_OGD_FILES_API_URL` variable. For lab hosting, inspect the generated `.env.local` from the deployment workflow. No live service URL or credential is assumed by this repository.
+
+## Five-minute sanity check
+
+1. Open the app and upload [the synthetic player TSV](docs/examples/DEMO_20260101_to_20260131_demo_player-features.tsv) through the Data panel's TSV upload control. Keep its filename intact.
+2. Select the imported dataset in a chart, choose Histogram, and click Apply. Select `Score` in the chart's settings.
+3. Add a filter under the dataset, confirm the chart changes, and collapse/expand Filters and Features.
+4. Change the chart to Descriptive Statistics and select Quartiles for `Score`. With no filters, the expected quartiles are **17.5, 25, 32.5**.
+5. Hover over a rendered chart to download its PNG. Try clipboard copy if the browser supports it.
+6. In Dashboards, rename the dashboard and export its JSON. Reload to check persistence. Import the JSON in a separate browser profile to check that the layout and its data restore.
+
+The fixture contains only invented values. API discovery and AI chat are separate integration checks; a successful TSV test does not prove those services are configured.
+
+## Development checks
+
+```bash
+npm test -- --runInBand --coverage=false
+npm run lint
 DEPLOY_TARGET=cloudrun npm run build
 ```
 
-Local Docker image (optional):
+Stop the dev server before production builds. Run build targets sequentially: they share intermediate Next.js output. To check static export, override the local target explicitly:
 
 ```bash
-docker build \
-  --build-arg DEPLOY_TARGET=cloudrun \
-  --build-arg NEXT_PUBLIC_OGD_FILES_API_URL=https://example.com/api \
-  -t designdash:local .
-docker run --rm -p 8080:8080 \
-  -e AI_ASSISTANT_ENABLED=false \
-  designdash:local
+DEPLOY_TARGET=static npm run build
 ```
 
-## Cloud Run (staging + production)
+Static output is placed in `build/`; standalone server output is in `.next/standalone/`. The Dockerfile packages and starts the standalone server with `node server.js`; static assets must be served at the configured base path (default `/BASE_PATH`). `npm start` is not the documented standalone-container entry point and cannot serve a static export.
 
-v1 deploys two services only (no per-branch previews): `designdash-staging` and `designdash-prod`. Lab VPN/rsync workflows are unchanged.
+The feature-port validation passed 46 tests, with one pre-existing page-mount test skipped, and both build targets. Lint still has known errors and is non-blocking in validation CI; see [technical documentation](technical_documentation.md) for test limitations. Counts are a recorded baseline, not a guarantee for later commits.
 
-### One-time GCP setup
+## Deployment model
 
-1. Enable APIs: Cloud Run, Artifact Registry, IAM Credentials (for Workload Identity Federation). Secret Manager only if you later enable the assistant.
-2. Create Artifact Registry Docker repo `ogd-dashboard` in your region (e.g. `us-central1-docker.pkg.dev/<project>/ogd-dashboard`).
-3. Create a deploy service account with roles: `roles/run.admin`, `roles/artifactregistry.writer`, `roles/iam.serviceAccountUser`.
-4. Configure [Workload Identity Federation](https://github.com/google-github-actions/auth#workload-identity-federation-through-a-service-account) so GitHub Actions can assume that service account (no JSON keys).
-5. In the GitHub repo, create Environments **`cloudrun-staging`** and **`cloudrun-prod`** (optional approval on prod).
+- **Lab static:** HTML/JS assets served through the existing VPN/SSH/rsync workflows. It cannot execute `/api/chat`.
+- **Cloud Run:** a standalone Next.js Node server with `/api/chat`, when explicitly enabled and configured. Staging deploys from qualifying pushes to `main`; production deploys on a released GitHub release. Both also support manual dispatch.
 
-Optional (assistant off by default): create Secret Manager secret `designdash-openai-api-key` and grant the Cloud Run runtime SA `roles/secretmanager.secretAccessor` only when you set `CLOUDRUN_AI_ASSISTANT_ENABLED=true`.
-
-### GitHub repository / environment variables
-
-Set these repo (or environment-scoped) variables for the Cloud Run workflows:
-
-| Variable | Purpose |
-| -------- | ------- |
-| `GCP_PROJECT_ID` | GCP project ID |
-| `GCP_REGION` | e.g. `us-central1` |
-| `GCP_WORKLOAD_IDENTITY_PROVIDER` | Full WIF provider resource name |
-| `GCP_SERVICE_ACCOUNT` | Deployer service account email |
-| `CLOUDRUN_OGD_FILES_API_URL` | Public HTTPS OGD Files API base URL (`NEXT_PUBLIC_OGD_FILES_API_URL`) |
-| `CLOUDRUN_GA_ID` | Optional GA4 measurement ID |
-| `CLOUDRUN_AI_ASSISTANT_ENABLED` | Leave unset/`false` (default). Only set `true` if enabling the assistant |
-| `CLOUDRUN_AI_PROVIDER` | Only needed when assistant enabled (`openai`) |
-| `CLOUDRUN_OPENAI_MODEL` | Only needed when assistant enabled (defaults to `gpt-4o-mini`) |
-
-`NEXT_PUBLIC_*` values are also passed as Docker **build-args** (client bundles bake them in at image build time). Prefer environment-scoped vars if staging and prod need different API/GA values.
-
-### Workflows
-
-- **Validate** (`CI_validate.yml`): PR + push to `main` — install, lint (non-blocking while debt exists), test, `DEPLOY_TARGET=cloudrun` build. No deploy.
-- **Staging** (`CD_cloudrun_staging.yml`): push to `main` — build/push image → deploy `designdash-staging` → smoke `GET /`.
-- **Production** (`CD_cloudrun_prod.yml`): GitHub release (`released`) — same for `designdash-prod`.
-
-Auth uses [`.github/actions/cloudrun_auth`](.github/actions/cloudrun_auth/action.yml) (WIF). Do not reuse `DesignDash_config` (lab static path only).
-
-### Runtime notes
-
-- Cloud Run listens on `$PORT` (image defaults to `8080`).
-- Ollama is for local dev only; use OpenAI (or leave the assistant disabled) on Cloud Run.
-- OGD Files API must be reachable from Cloud Run over public HTTPS in v1 (no Cloud VPN / private egress).
+The workflows and container files are the source of truth for deployment behavior. The [2025 PRD](field_day_lab_visualization_dashboard_prd.md) is historical planning material, not a description of all shipped features.
