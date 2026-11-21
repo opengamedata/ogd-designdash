@@ -3,7 +3,7 @@ const deployTarget = process.env.DEPLOY_TARGET || 'static'; // 'static' | 'cloud
 
 const nextConfig = {
   reactStrictMode: true,
-  // Pre-existing lint debt is reported in CI_validate; do not fail production builds on it.
+  // Pre-existing lint debt is reported in CI and release workflows; do not fail production builds on it.
   eslint: {
     ignoreDuringBuilds: true,
   },

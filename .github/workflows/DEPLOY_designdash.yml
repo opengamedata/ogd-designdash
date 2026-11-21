@@ -1,0 +1,54 @@
+name: OGD Designer Dashboard - Deploy Cloud Run image
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      service:
+        type: string
+        required: true
+      image:
+        type: string
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: ${{ github.repository }}-${{ inputs.environment }}-deploy
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate deployer
+        uses: ./.github/actions/cloudrun_auth
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          region: ${{ vars.GCP_REGION }}
+          service: ${{ inputs.service }}
+          image: ${{ inputs.image }}
+          # Public access is configured once by an admin, not by the CI identity.
+          flags: --port=8080 --service-account=${{ vars.GCP_RUNTIME_SERVICE_ACCOUNT }}
+          env_vars_update_strategy: overwrite
+          env_vars: |
+            AI_ASSISTANT_ENABLED=${{ vars.CLOUDRUN_AI_ASSISTANT_ENABLED || 'false' }}
+            AI_PROVIDER=${{ vars.CLOUDRUN_AI_PROVIDER || 'openai' }}
+            OPENAI_MODEL=${{ vars.CLOUDRUN_OPENAI_MODEL || 'gpt-4o-mini' }}
+          secrets_update_strategy: overwrite
+          secrets: ${{ vars.CLOUDRUN_AI_ASSISTANT_ENABLED == 'true' && 'OPENAI_API_KEY=designdash-openai-api-key:latest' || '{}' }}
+      - name: Smoke test
+        env:
+          SERVICE_URL: ${{ steps.deploy.outputs.url }}
+        run: curl -fS --retry 5 --retry-delay 3 --retry-all-errors "${SERVICE_URL}/"

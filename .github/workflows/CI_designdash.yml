@@ -4,13 +4,40 @@ run-name: ${{ format('{0} - {1}', github.workflow, github.event_name == 'push' &
 
 on:
   workflow_dispatch: # Allow manual trigger of this workflow from the Actions tab
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'src/**'
+      - 'public/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.js'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.env.example'
+      - 'tsconfig.json'
+      - 'jest.config.ts'
+      - '.eslintrc.js'
+      - 'postcss.config.js'
   push:
     paths:
-    - '.github/workflows/CI_designdash.yml'
-    - '.github/actions/**'
-    - 'src/**'
-    - 'package.json'
-    - 'next.config.js'
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'src/**'
+      - 'public/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.js'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.env.example'
+      - 'tsconfig.json'
+      - 'jest.config.ts'
+      - '.eslintrc.js'
+      - 'postcss.config.js'
 
 env:
   # Environment has variables for the host, the path on the host filesystem, the path in the URL, and the full deploy URL
@@ -22,7 +49,36 @@ env:
   API_PATH:    ${{ vars.API_BASE_URL }}/data/app.wsgi/
 
 jobs:
+  validate:
+    name: Lint, test, and build both targets
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Existing lint debt remains non-blocking.
+      - name: Lint
+        continue-on-error: true
+        run: npm run lint
+      - name: Test
+        run: npm test -- --ci --coverage=false --runInBand
+      - name: Build static export
+        run: npm run build
+        env:
+          DEPLOY_TARGET: static
+      - name: Build standalone server
+        run: npm run build
+        env:
+          DEPLOY_TARGET: cloudrun
+
   ci_deploy:
+    needs: validate
+    if: github.event_name != 'pull_request'
     name: CI Deploy of Designer Dashboard
     runs-on: ubuntu-22.04
     concurrency:
@@ -43,7 +99,7 @@ jobs:
         api_path:     ${{ env.API_PATH }}
         package_home: ${{ env.URL_PATH }}
         gtag:         ${{ vars.GA_ID_DASHBOARD }}
-        enable_ai_assist: 'true'
+        enable_ai_assist: 'false'
 
   # 2. Build 
     - name: Install Node
@@ -51,8 +107,7 @@ jobs:
       with:
         node-version: 22
     - name: Install libraries
-      run: npm clean-install
-        npm ci
+      run: npm ci
     # - name: Install NextJS
     #   run: npm install -g next
     - name: Build
@@ -100,3 +155,24 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: ./*.log
+
+  cloudrun_build:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/BUILD_designdash.yml
+    with:
+      environment: cloudrun-staging
+
+  cloudrun_deploy:
+    needs: cloudrun_build
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/DEPLOY_designdash.yml
+    with:
+      environment: cloudrun-staging
+      service: designdash-staging
+      image: ${{ needs.cloudrun_build.outputs.image }}

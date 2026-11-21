@@ -15,7 +15,35 @@ env:
   API_PATH:    ${{ vars.API_BASE_URL }}/data/app.wsgi/
 
 jobs:
+  validate:
+    name: Lint, test, and build both targets
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Existing lint debt remains non-blocking.
+      - name: Lint
+        continue-on-error: true
+        run: npm run lint
+      - name: Test
+        run: npm test -- --ci --coverage=false --runInBand
+      - name: Build static export
+        run: npm run build
+        env:
+          DEPLOY_TARGET: static
+      - name: Build standalone server
+        run: npm run build
+        env:
+          DEPLOY_TARGET: cloudrun
+
   release_deploy:
+    needs: validate
     name: Release Deploy of Designer Dashboard
     runs-on: ubuntu-22.04
     concurrency:
@@ -43,8 +71,7 @@ jobs:
       with:
         node-version: 22
     - name: Install libraries
-      run: npm clean-install
-        npm ci
+      run: npm ci
     - name: Build
       run: npm run build
 
@@ -90,3 +117,24 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: ./*.log
+
+  cloudrun_build:
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' || github.event.action == 'released'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/BUILD_designdash.yml
+    with:
+      environment: cloudrun-prod
+
+  cloudrun_deploy:
+    needs: cloudrun_build
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/DEPLOY_designdash.yml
+    with:
+      environment: cloudrun-prod
+      service: designdash-prod
+      image: ${{ needs.cloudrun_build.outputs.image }}
