@@ -69,10 +69,13 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
           relatedFeatureKeys.find((key) => key.includes('_')) ||
           relatedFeatureKeys[0];
 
+        const relatedTypes = relatedFeatureKeys.map(
+          (key) => dataset.columnTypes[key],
+        );
         const resolvedColumnType =
-          relatedFeatureKeys
-            .map((key) => dataset.columnTypes[key])
-            .find((type) => Boolean(type)) ?? columnType;
+          relatedTypes.find((type) => type === 'Graph') ??
+          relatedTypes.find((type) => Boolean(type)) ??
+          columnType;
 
         features.push({
           displayName: baseFeature,
@@ -103,22 +106,24 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
     );
   }, [displayFeatures, featureSearch]);
 
-  const getColumnTypeOptions = (feature: string) => {
-    if (feature.includes('PlayerProgression')) {
-      return { Graph: 'Graph' };
+  const getColumnTypeOptions = (
+    feature: string,
+    columnType: ColumnType | undefined,
+  ) => {
+    if (columnType === 'Graph') {
+      return { Graph: 'Graph' } as Record<string, ColumnType>;
     }
 
     const permittedTypes = {
       Categorical: 'Categorical',
       Ordinal: 'Ordinal',
-    } as Record<string, string>;
+    } as Record<string, ColumnType>;
 
-    const TSparseResult = typeof (dataset.data[0] as any)[feature];
-    if (TSparseResult === 'number') {
-      return { ...permittedTypes, Numeric: 'Numeric' } as Record<
-        string,
-        ColumnType
-      >;
+    const firstValue = (dataset.data[0] as Record<string, unknown> | undefined)?.[
+      feature
+    ];
+    if (typeof firstValue === 'number') {
+      return { ...permittedTypes, Numeric: 'Numeric' };
     }
 
     return permittedTypes;
@@ -126,6 +131,7 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
 
   const ItemDetails = () => {
     const [searchFeature, setSearchFeature] = useState('');
+    const [showFeatures, setShowFeatures] = useState(true);
     return (
       <div className="w-full mt-2 px-4">
         <hr className="border-gray-200 my-2" />
@@ -133,7 +139,19 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
         <DatasetFilter dataset={dataset} />
 
         <hr className="border-gray-200 my-2" />
-        <div className="font-bold text-sm text-gray-800 p-2">Features</div>
+        <button
+          type="button"
+          className="flex w-full items-center gap-2 p-2 text-left font-bold text-sm text-gray-800"
+          onClick={() => setShowFeatures(!showFeatures)}
+          aria-expanded={showFeatures}
+        >
+          <ChevronRight
+            className={`w-4 h-4 shrink-0 hover:text-primary transition-colors transition-transform duration-100 ${showFeatures && 'rotate-90'}`}
+          />
+          Features
+        </button>
+        {showFeatures && (
+        <>
         <div className="px-1 pb-2">
           <Input
             placeholder="Search..."
@@ -176,12 +194,17 @@ const DatasetItem = ({ dataset, onSplit, onRemove }: DatasetItemProps) => {
                         updateDatasetColumnType(dataset.id, featureKey, value);
                       });
                     }}
-                    options={getColumnTypeOptions(sampleFeatureKey)}
+                    options={getColumnTypeOptions(
+                      sampleFeatureKey,
+                      columnType,
+                    )}
                   />
                 </div>
               ),
             )}
         </div>
+        </>
+        )}
       </div>
     );
   };

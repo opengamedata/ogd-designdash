@@ -1,0 +1,60 @@
+name: OGD Designer Dashboard - Build Cloud Run image
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+    outputs:
+      image:
+        description: Immutable image reference for deployment
+        value: ${{ jobs.build.outputs.image }}
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      IMAGE: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/ogd-dashboard/app
+    outputs:
+      image: ${{ env.IMAGE }}@${{ steps.image.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+      # Match the runtime's Linux/Node environment while retaining separate build logs.
+      - name: Build standalone app in Node 22 Bookworm
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/app" -w /app -e HOME=/tmp \
+            -e DEPLOY_TARGET -e NEXT_PUBLIC_OGD_FILES_API_URL \
+            -e NEXT_PUBLIC_GA_MEASUREMENT_ID -e NEXT_PUBLIC_AI_ASSISTANT_ENABLED \
+            -e NEXT_TELEMETRY_DISABLED=1 \
+            node:22-bookworm-slim sh -c 'npm ci && npm run build'
+        env:
+          DEPLOY_TARGET: cloudrun
+          NEXT_PUBLIC_OGD_FILES_API_URL: ${{ vars.CLOUDRUN_OGD_FILES_API_URL }}
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ vars.CLOUDRUN_GA_ID }}
+          NEXT_PUBLIC_AI_ASSISTANT_ENABLED: ${{ vars.CLOUDRUN_AI_ASSISTANT_ENABLED || 'false' }}
+      - name: Authenticate image publisher
+        uses: ./.github/actions/cloudrun_auth
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_BUILD_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+      - name: Configure Artifact Registry
+        env:
+          GCP_REGION: ${{ vars.GCP_REGION }}
+        run: gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and push runtime image
+        id: image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}:${{ inputs.environment }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          cache-from: type=gha,scope=${{ inputs.environment }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.environment }}

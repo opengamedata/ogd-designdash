@@ -1,0 +1,11 @@
+# Only the runtime artifact enters the image build context.
+**
+!public/
+!public/**
+!.next/
+!.next/standalone/
+!.next/standalone/**
+!.next/static/
+!.next/static/**
+!Dockerfile
+!.dockerignore
